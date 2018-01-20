@@ -1,0 +1,10 @@
+/Debug/*
+/Release/*
+/x64/*
+/.vs/*
+/hou/*
+/TD/*
+/data/*
+*.filters
+*.user
+todo.txt
