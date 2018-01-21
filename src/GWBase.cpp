@@ -5,5 +5,5 @@
 #include "GWBase.hpp"
 
 namespace GWBase {
-	const long double pi = ::acos(long double(-1));
+	const long double pi = ::acos((long double)-1);
 }

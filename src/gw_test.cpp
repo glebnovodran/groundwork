@@ -18,5 +18,10 @@ int main(int argc, char* argv[]) {
 	float res = a.dot(b);
 	a.add(b);
 	a.scl(0.5);
+	float maxAbsElem = a.max_abs_elem();
+
+	float la = a.length();
+	float laf = a.length_fast();
+
 	return 0;
 }
