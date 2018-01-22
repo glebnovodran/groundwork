@@ -37,6 +37,13 @@ namespace GWTuple {
 		}
 	}
 
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void copy(TUPLE_DST_T& dst, TUPLE_SRC_T src) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = typename TUPLE_DST_T::elem_t(src.elems[i]);
+		}
+	}
+
 	template<typename TUPLE_DST_T, typename TUPLE_SRC_T0, typename TUPLE_SRC_T1> inline void add(TUPLE_DST_T& dst, const TUPLE_SRC_T0& src0, const TUPLE_SRC_T1& src1) {
 		int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC_T0::ELEMS_NUM, TUPLE_SRC_T1::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
@@ -73,7 +80,7 @@ namespace GWTuple {
 	template<typename TUPLE_DST_T, typename TUPLE_SRC_T0, typename TUPLE_SRC_T1> inline void div(TUPLE_DST_T& dst, const TUPLE_SRC_T0& src0, const TUPLE_SRC_T1& src1) {
 		int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC_T0::ELEMS_NUM, TUPLE_SRC_T1::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
-			dst.elems[i] = typename TUPLE_DST_T::elem_t(src0.elems[i] + src1.elems[i]);
+			dst.elems[i] = typename TUPLE_DST_T::elem_t(src0.elems[i] / src1.elems[i]);
 		}
 	}
 
@@ -121,22 +128,22 @@ namespace GWTuple {
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t min_abs_elem(const TUPLE_T& v) {
 		int n = TUPLE_T::ELEMS_NUM;
-		typename TUPLE_T::elem_t min = ::abs(v.elems[0]);
+		typename TUPLE_T::elem_t minVal = ::fabs(v.elems[0]);
 		for (int i = 1; i < n; ++i) {
-			typename TUPLE_T::elem_t absVal = ::abs(v.elems[i]);
-			if (min > absVal) { min = absVal; }
+			typename TUPLE_T::elem_t absVal = ::fabs(v.elems[i]);
+			minVal = std::min(minVal, absVal);
 		}
-		return min;
+		return minVal;
 	}
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t max_abs_elem(const TUPLE_T& v) {
 		int n = TUPLE_T::ELEMS_NUM;
-		typename TUPLE_T::elem_t max = ::abs(v.elems[0]);
+		typename TUPLE_T::elem_t maxVal = ::fabs(v.elems[0]);
 		for (int i = 1; i < n; ++i) {
-			typename TUPLE_T::elem_t absVal = ::abs(v.elems[i]);
-			if (max < absVal) { max = absVal; }
+			typename TUPLE_T::elem_t absVal = ::fabs(v.elems[i]);
+			maxVal = std::max(maxVal, absVal);
 		}
-		return max;
+		return maxVal;
 	}
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t magnitude_fast(const TUPLE_T& v) {

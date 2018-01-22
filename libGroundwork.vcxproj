@@ -25,6 +25,7 @@
     <ClCompile Include="src\GWVector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\groundwork.hpp" />
     <ClInclude Include="src\GWBase.hpp" />
     <ClInclude Include="src\GWMatrix.hpp" />
     <ClInclude Include="src\GWQuaternion.hpp" />
