@@ -151,6 +151,7 @@ namespace GWTuple {
 		return ::sqrt(magSq);
 	}
 
+	// Mike Day "Vector length and normalization difficulties"
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t magnitude(const TUPLE_T& v) {
 		using namespace GWTuple;
 		typename TUPLE_T::elem_t maxAbsElem = max_abs_elem(v);
@@ -162,6 +163,24 @@ namespace GWTuple {
 			res = magnitude_fast(tuple) * maxAbsElem;
 		}
 		return res;
+	}
+
+	// Mike Day "Vector length and normalization difficulties"
+	template<typename TUPLE_T> inline void normalize(TUPLE_T& v) {
+		typename TUPLE_T::elem_t maxAbsElem = max_abs_elem(v);
+		if (maxAbsElem > 0) {
+			typename TUPLE_T::elem_t divisor = 1 / maxAbsElem;
+			scl(v, divisor);
+			typename TUPLE_T::elem_t mag = magnitude_fast(v);
+			scl(v, 1 / mag);
+		}
+	}
+
+	template<typename TUPLE_T> inline void normalize_fast(TUPLE_T& v) {
+		typename TUPLE_T::elem_t mag = magnitude_fast(v);
+		if (mag > 0) {
+			scl(v, 1 / mag);
+		}
 	}
 }
 

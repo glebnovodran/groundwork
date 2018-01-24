@@ -12,12 +12,13 @@ public:
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(*this, tuple); }
 	void set(const GWVectorBase& v) { GWTuple::copy(*this, v); }
 	void add(const GWVectorBase& v) { GWTuple::add(*this, v); }
+	void add(const GWVectorBase& v0, const GWVectorBase& v1) { GWTuple::add(*this, v0, v1); }
 	void sub(const GWVectorBase& v) { GWTuple::sub(*this, v); }
+	void sub(const GWVectorBase& v0, const GWVectorBase& v1) { GWTuple::sub(*this, v0, v1); }
 	void mul(const GWVectorBase& v) { GWTuple::mul(*this, v); }
 	void div(const GWVectorBase& v) { GWTuple::div(*this, v); }
-	template<typename SCALE_T> void scl(const SCALE_T s) { GWTuple::scl(*this, s); }
-
-	T dot(const GWVectorBase& v) const { return GWTuple::inner(*this, v); };
+	void div(const GWVectorBase& v0, const GWVectorBase& v1) { GWTuple::div(*this, v0, v1); }
+	void scl(T s) { GWTuple::scl(*this, s); }
 
 	T min_elem() const { return GWTuple::min_elem(*this); }
 	T max_elem() const { return GWTuple::max_elem(*this); }
@@ -25,17 +26,39 @@ public:
 	T min_abs_elem() const { return GWTuple::min_abs_elem(*this); }
 	T max_abs_elem() const { return GWTuple::max_abs_elem(*this); }
 
-	T length2() const { return dot(*this); }
+	T length_sq() const { return dot(*this); }
 	T length_fast() const { return GWTuple::magnitude_fast(*this); }
 	T length() const { return GWTuple::magnitude(*this); }
 
-	static GWVectorBase cross(const GWVectorBase& v0, const GWVectorBase& v1) {
+	void normalize() { GWTuple::normalize(*this); }
+
+	T dot(const GWVectorBase& v) const { return GWTuple::inner(*this, v); };
+
+	void cross(const GWVectorBase& v0, const GWVectorBase& v1) {
 		T x = v0.y*v1.z - v0.z*v1.y;
 		T y = v0.z*v1.x - v0.x*v1.z;
 		T z = v0.x*v1.y - v0.y*v1.x;
-		return GWVectorBase(x, y, z);
+		GWTuple::set(*this, x, y, z);
 	}
+
+	void cross(const GWVectorBase& v) { cross(*this, v); }
 };
+
+namespace GWVector {
+	template<typename T> inline T dot(const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
+		return v0.dot(v1);
+	}
+
+	template<typename T> inline GWVectorBase<T> cross(const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
+		GWVectorBase<T> res;
+		res.cross(v0, v1);
+		return res;
+	}
+
+	template<typename T> inline GWVectorBase<T> triple(const GWVectorBase<T>& v0, const GWVectorBase<T>& v1, const GWVectorBase<T>& v2) {
+		return v0.cross(v1).dot(v2);
+	}
+}
 
 template<typename T> inline GWVectorBase<T> operator + (const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
 	GWVectorBase<T> v = v0;

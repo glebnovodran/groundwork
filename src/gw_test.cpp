@@ -19,7 +19,8 @@ void test_vec() {
 	GWVectorF a(1.0f, 0.0f, 0.0f);
 	GWVectorF b(0.0f, 1.0f, 0.0f);
 
-	GWVectorF c = GWVectorF::cross(a, b);
+	GWVectorF c;
+	c.cross(a, b);
 	GWVectorF d = 0.5f * (a + b);
 	c.set(b);
 	GWTuple3f tupleA = { 0.0f, 1.0f, 2.0f };
@@ -32,11 +33,12 @@ void test_vec() {
 	GWVectorF fromTuple4;
 	fromTuple4.from_tuple(tuple4);
 
-
 	float res = a.dot(b);
 	a.add(b);
 	a.scl(0.5);
 	float maxAbsElem = a.max_abs_elem();
+
+	a.normalize();
 
 	float la = a.length();
 	float laf = a.length_fast();
