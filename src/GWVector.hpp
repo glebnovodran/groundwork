@@ -31,6 +31,7 @@ public:
 	T length() const { return GWTuple::magnitude(*this); }
 
 	void normalize() { GWTuple::normalize(*this); }
+	void normalize(const GWVectorBase& v) { GWTuple::normalize(*this, v); }
 
 	T dot(const GWVectorBase& v) const { return GWTuple::inner(*this, v); };
 

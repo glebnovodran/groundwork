@@ -1,11 +1,16 @@
 /*
- * Groundwork project : test program
+ * Groundwork project : a test program
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
 #include <iostream>
 
 #include "groundwork.hpp"
+
+void test_basic() {
+	float rad = GWBase::radians(271.0f);
+	float deg = GWBase::degrees(rad);
+}
 
 void test_tuple() {
 	GWTuple3f tupleA = { 0.0f, 1.0f, 2.0f };
@@ -44,8 +49,21 @@ void test_vec() {
 	float laf = a.length_fast();
 }
 
+void test_quat() {
+	GWQuaternionF q;
+	q.identity();
+	q.set_radians((float)GWBase::pi, 0.0f, (float)(GWBase::pi*0.5f));
+
+	GWTuple4d tuple4 = { 1.0f, 0.0f, 1.0f, 0.5f };
+	GWQuaternionD p;
+	p.from_tuple(tuple4);
+	p.normalize();
+}
+
 int main(int argc, char* argv[]) {
+	test_basic();
 	test_tuple();
 	test_vec();
+	test_quat();
 	return 0;
 }

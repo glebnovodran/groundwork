@@ -7,4 +7,5 @@
 /data/*
 *.filters
 *.user
+*.bak
 todo.txt
