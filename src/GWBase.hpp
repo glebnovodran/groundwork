@@ -100,15 +100,26 @@ namespace GWTuple {
 		GWTuple::div(dst, dst, src);
 	}
 
-	template<typename TUPLE_T, typename TUPLE_SRC_T, typename SCALAR_T> inline void scl(TUPLE_T& dst, const TUPLE_SRC_T& src, const SCALAR_T& s) {
-		int n = TUPLE_T::ELEMS_NUM;
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename SCALAR_T> inline void scl(TUPLE_DST_T& dst, const TUPLE_SRC_T& src, const SCALAR_T& s) {
+		int n = TUPLE_DST_T::ELEMS_NUM;
 		for (int i = 0; i < n; ++i) {
-			dst.elems[i] = typename TUPLE_T::elem_t(src.elems[i] * s);
+			dst.elems[i] = typename TUPLE_DST_T::elem_t(src.elems[i] * s);
 		}
 	}
 
-	template<typename TUPLE_T, typename SCALAR_T> inline void scl(TUPLE_T& dst, const SCALAR_T& s) {
+	template<typename TUPLE_DST_T, typename SCALAR_T> inline void scl(TUPLE_DST_T& dst, const SCALAR_T& s) {
 		GWTuple::scl(dst, dst, s);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void neg(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+		int n = TUPLE_DST_T::ELEMS_NUM;
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = - src.elems[i];
+		}
+	}
+
+	template<typename TUPLE_DST_T> inline void neg(TUPLE_DST_T& dst) {
+		GWTuple::neg(dst, dst);
 	}
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t inner(const TUPLE_T& a, const TUPLE_T& b) {
@@ -178,19 +189,22 @@ namespace GWTuple {
 	}
 
 	// Mike Day "Vector length and normalization difficulties"
-	template<typename TUPLE_T> inline void normalize(TUPLE_T& dst) {
+	template<typename TUPLE_T> inline void normalize(TUPLE_T& dst, typename TUPLE_T::elem_t* pMag = nullptr) {
 		typename TUPLE_T::elem_t maxAbsElem = max_abs_elem(dst);
+		typename TUPLE_T::elem_t mag = 0;
 		if (maxAbsElem > 0) {
 			typename TUPLE_T::elem_t divisor = 1 / maxAbsElem;
 			scl(dst, divisor);
-			typename TUPLE_T::elem_t mag = magnitude_fast(dst);
+			mag = magnitude_fast(dst);
 			scl(dst, 1 / mag);
 		}
+
+		if (pMag) { *pMag = mag * maxAbsElem; }
 	}
 
-	template<typename TUPLE_T> inline void normalize(TUPLE_T& dst, TUPLE_T& src) {
+	template<typename TUPLE_T> inline void normalize(TUPLE_T& dst, const TUPLE_T& src, typename TUPLE_T::elem_t* pMag = nullptr) {
 		copy(dst, src);
-		normalize(dst);
+		normalize(dst, pMag);
 	}
 
 	template<typename TUPLE_T> inline void normalize_fast(TUPLE_T& v) {
@@ -199,7 +213,7 @@ namespace GWTuple {
 			scl(v, 1 / mag);
 		}
 	}
-	template<typename TUPLE_T> inline void normalize_fast(TUPLE_T& dst, TUPLE_T& src) {
+	template<typename TUPLE_T> inline void normalize_fast(TUPLE_T& dst, const TUPLE_T& src) {
 		copy(dst, src);
 		normalize_fast(dst);
 	}

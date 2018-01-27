@@ -37,6 +37,7 @@ void test_vec() {
 	GWVectorF fromTuple3(tuple3);
 	GWVectorF fromTuple4;
 	fromTuple4.from_tuple(tuple4);
+	fromTuple4.normalize(fromTuple3);
 
 	float res = a.dot(b);
 	a.add(b);
@@ -44,7 +45,7 @@ void test_vec() {
 	float maxAbsElem = a.max_abs_elem();
 
 	a.normalize();
-
+	a = -a;
 	float la = a.length();
 	float laf = a.length_fast();
 }
@@ -53,11 +54,20 @@ void test_quat() {
 	GWQuaternionF q;
 	q.identity();
 	q.set_radians((float)GWBase::pi, 0.0f, (float)(GWBase::pi*0.5f));
+	q.log();
 
 	GWTuple4d tuple4 = { 1.0f, 0.0f, 1.0f, 0.5f };
 	GWQuaternionD p;
 	p.from_tuple(tuple4);
 	p.normalize();
+	p.conjugate();
+
+	GWQuaternionF t(1.0f, 2.0f, 3.0f, 0.5f);
+	//GWQuaternionF t(1.0f, 0.0f, 0.0f, 0.0f);
+	GWVectorF encoded = t.expmap_encode();
+	q.expmap_decode(encoded);
+	q.normalize();
+	t.normalize();
 }
 
 int main(int argc, char* argv[]) {

@@ -18,7 +18,10 @@ public:
 	void mul(const GWVectorBase& v) { GWTuple::mul(*this, v); }
 	void div(const GWVectorBase& v) { GWTuple::div(*this, v); }
 	void div(const GWVectorBase& v0, const GWVectorBase& v1) { GWTuple::div(*this, v0, v1); }
+	void scl(const GWVectorBase& v, T s) { GWTuple::scl(*this, v, s); }
 	void scl(T s) { GWTuple::scl(*this, s); }
+	void neg(const GWVectorBase& v) { GWTuple::neg(*this, v); }
+	void neg() { GWTuple::neg(*this); }
 
 	T min_elem() const { return GWTuple::min_elem(*this); }
 	T max_elem() const { return GWTuple::max_elem(*this); }
@@ -30,8 +33,8 @@ public:
 	T length_fast() const { return GWTuple::magnitude_fast(*this); }
 	T length() const { return GWTuple::magnitude(*this); }
 
-	void normalize() { GWTuple::normalize(*this); }
-	void normalize(const GWVectorBase& v) { GWTuple::normalize(*this, v); }
+	void normalize(T* pMag = nullptr) { GWTuple::normalize(*this, pMag); }
+	void normalize(const GWVectorBase& v, T* pMag = nullptr) { GWTuple::normalize(*this, v, pMag); }
 
 	T dot(const GWVectorBase& v) const { return GWTuple::inner(*this, v); };
 
@@ -41,8 +44,14 @@ public:
 		T z = v0.x*v1.y - v0.y*v1.x;
 		GWTuple::set(*this, x, y, z);
 	}
-
 	void cross(const GWVectorBase& v) { cross(*this, v); }
+
+	GWVectorBase& operator += (const GWVectorBase& v) { add(v); return *this; }
+	GWVectorBase& operator -= (const GWVectorBase& v) { sub(v); return *this; }
+	GWVectorBase& operator *= (const GWVectorBase& v) { mul(v); return *this; }
+	GWVectorBase& operator /= (const GWVectorBase& v) { div(v); return *this; }
+	GWVectorBase& operator *= (float s) { scl(s); return *this; }
+	GWVectorBase& operator /= (float s) { scl(1.0f / s); return *this; }
 };
 
 namespace GWVector {
@@ -70,6 +79,12 @@ template<typename T> inline GWVectorBase<T> operator + (const GWVectorBase<T>& v
 template<typename T> inline GWVectorBase<T> operator - (const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
 	GWVectorBase<T> v = v0;
 	v.sub(v1);
+	return v;
+}
+
+template<typename T> inline GWVectorBase<T> operator - (const GWVectorBase<T>& v0) {
+	GWVectorBase<T> v = v0;
+	v.neg();
 	return v;
 }
 

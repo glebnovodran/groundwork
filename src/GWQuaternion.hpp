@@ -46,12 +46,23 @@ public:
 		set_radians(GWBase::radians(dx), GWBase::radians(dy), GWBase::radians(dz), order);
 	}
 
-	T magnitude() const { return GWTuple::magnitude_fast(mQ); }
-	void normalize() { return GWTuple::normalize_fast(mQ); }
-
-	void normalize(const GWQuaternionBase& q) {
+	T magnitude() const { return GWTuple::magnitude(mQ); }
+	void normalize() { return GWTuple::normalize(mQ); }
+		void normalize(const GWQuaternionBase& q) {
 		GWTuple::normalize_fast(mQ, q.mQ);
 	}
+
+	void conjugate(const GWQuaternionBase& q) {
+		set_vs(-q.V(), q.S());
+	}
+	void conjugate() { conjugate(*this); }
+
+	void exp(const GWQuaternionBase& q);
+	void exp() { exp(*this); }
+	void log(const GWQuaternionBase& q);
+	void log() { log(*this); }
+	GWVectorBase<T> expmap_encode() const;
+	void expmap_decode(const GWVectorBase<T>& v);
 
 	void mul(GWQuaternionBase<T>& q, GWQuaternionBase<T>& p) {
 		GWVectorBase<T> vq = q.V();
