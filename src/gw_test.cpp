@@ -68,6 +68,10 @@ void test_quat() {
 	q.expmap_decode(encoded);
 	q.normalize();
 	t.normalize();
+	GWQuaternionF q1(1.0f, 2.0f, 3.0f, 0.5f);
+	q1.normalize();
+	GWVectorF vec(1.0f, 1.0f, 0.0f);
+	vec = q1.apply(vec);
 }
 
 int main(int argc, char* argv[]) {

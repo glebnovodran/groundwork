@@ -57,6 +57,15 @@ public:
 	}
 	void conjugate() { conjugate(*this); }
 
+	void invert(const GWQuaternionBase& q) {
+		conjugate(q);
+		T mag = GWTuple::inner(q.mQ, q.mQ);
+		scl(T(1) / mag);
+	}
+	void invert() {
+		invert(*this);
+	}
+
 	void exp(const GWQuaternionBase& q);
 	void exp() { exp(*this); }
 	void log(const GWQuaternionBase& q);
@@ -64,7 +73,7 @@ public:
 	GWVectorBase<T> expmap_encode() const;
 	void expmap_decode(const GWVectorBase<T>& v);
 
-	void mul(GWQuaternionBase<T>& q, GWQuaternionBase<T>& p) {
+	void mul(GWQuaternionBase& q, GWQuaternionBase& p) {
 		GWVectorBase<T> vq = q.V();
 		GWVectorBase<T> vp = p.V();
 		T sq = q.S();
@@ -74,6 +83,13 @@ public:
 		set_vs(v, s);
 	}
 	void mul(GWQuaternionBase<T>& q) { mul(*this, q); }
+
+	GWVectorBase<T> apply(GWVectorBase<T>& v) {
+		GWVectorBase<T> qvec = V();
+		T s = S();
+		T d = qvec.dot(v);
+		return (d*qvec + (s*s)*v - s*GWVector::cross(v, qvec)) * T(2) - v;
+	}
 };
 
 namespace GWQuaternion {
