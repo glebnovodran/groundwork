@@ -25,11 +25,20 @@ enum class GWRotationOrder : uint8_t {
 	ZYX = 5
 };
 
+enum class GWTrackKind : uint8_t {
+	ROT = 0,
+	TRN = 1,
+	SCL = 2
+};
+
 namespace GWBase {
 	extern const long double pi;
 
 	template<typename T> inline T radians(T deg) { return (T)(deg * (pi / 180)); }
 	template<typename T> inline T degrees(T rad) { return (T)(rad * (180 / pi)); }
+
+	inline GWRotationOrder rord_from_float(float val) { return (GWRotationOrder)(int)val; }
+
 }
 
 namespace GWTuple {
@@ -223,18 +232,24 @@ template<typename T> struct GWTuple2 {
 	typedef T elem_t;
 	static const int ELEMS_NUM = 2;
 	union { struct { elem_t x, y; }; elem_t elems[ELEMS_NUM]; };
+	T operator [](size_t i) const { return elems[i]; }
+	T& operator [](size_t i) { return elems[i]; }
 };
 
 template<typename T> struct GWTuple3 {
 	typedef T elem_t;
 	static const int ELEMS_NUM = 3;
 	union { struct { elem_t x, y, z; }; elem_t elems[ELEMS_NUM]; };
+	T operator [](size_t i) const { return elems[i]; }
+	T& operator [](size_t i) { return elems[i]; }
 };
 
 template<typename T> struct GWTuple4 {
 	typedef T elem_t;
 	static const int ELEMS_NUM = 4;
 	union { struct { elem_t x, y, z, w; }; elem_t elems[ELEMS_NUM]; };
+	T operator [](size_t i) const { return elems[i]; }
+	T& operator [](size_t i) { return elems[i]; }
 };
 
 typedef GWTuple2<float> GWTuple2f;

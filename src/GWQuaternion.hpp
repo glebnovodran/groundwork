@@ -6,7 +6,7 @@ template<typename T> class GWQuaternionBase {
 protected:
 	GWTuple4<T> mQ;
 
-	void set_vs(const GWVectorBase<T>& v, T s) {
+	void set_vs(const GWVectorBase<T>& v, T s = 0) {
 		mQ.x = v.x;
 		mQ.y = v.y;
 		mQ.z = v.z;
@@ -16,7 +16,7 @@ public:
 	GWQuaternionBase<T>() = default;
 	GWQuaternionBase(const GWQuaternionBase& q) { from_tuple(q.mQ); }
 	GWQuaternionBase<T>(T x, T y, T z, T w) { GWTuple::set(mQ, x, y, z, w); }
-	GWQuaternionBase<T>(const GWVectorBase<T>& v, T s) { set_vs(v, s); }
+	GWQuaternionBase<T>(const GWVectorBase<T>& v, T s = 0) { set_vs(v, s); }
 
 	const GWVectorBase<T> V() const { return GWVectorBase<T>(mQ.x, mQ.y, mQ.z); }
 	T S() const { return mQ.w; };
@@ -52,10 +52,19 @@ public:
 		GWTuple::normalize_fast(mQ, q.mQ);
 	}
 
+	T dot(const GWQuaternionBase& q) const {
+		return GWTuple::inner(mQ, q.mQ);
+	}
+
 	void conjugate(const GWQuaternionBase& q) {
 		set_vs(-q.V(), q.S());
 	}
 	void conjugate() { conjugate(*this); }
+
+	void negate(const GWQuaternionBase& q) {
+		GWTuple::neg(mQ);
+	}
+	void negate() { negate(*this); }
 
 	void invert(const GWQuaternionBase& q) {
 		conjugate(q);
