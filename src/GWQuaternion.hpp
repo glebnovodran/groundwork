@@ -6,28 +6,25 @@ template<typename T> class GWQuaternionBase {
 protected:
 	GWTuple4<T> mQ;
 
-	void set_vs(const GWVectorBase<T>& v, T s = 0) {
-		mQ.x = v.x;
-		mQ.y = v.y;
-		mQ.z = v.z;
-		mQ.w = s;
-	}
 public:
-	GWQuaternionBase<T>() = default;
+	GWQuaternionBase() = default;
 	GWQuaternionBase(const GWQuaternionBase& q) { from_tuple(q.mQ); }
-	GWQuaternionBase<T>(T x, T y, T z, T w) { GWTuple::set(mQ, x, y, z, w); }
-	GWQuaternionBase<T>(const GWVectorBase<T>& v, T s = 0) { set_vs(v, s); }
+	GWQuaternionBase(T x, T y, T z, T w) { GWTuple::set(mQ, x, y, z, w); }
 
 	static const GWQuaternionBase<T> ZERO;
 	static const GWQuaternionBase<T> IDENTITY;
 
 	const GWVectorBase<T> V() const { return GWVectorBase<T>(mQ.x, mQ.y, mQ.z); }
 	T S() const { return mQ.w; };
+	void set_vs(const GWVectorBase<T>& v, T s = 0) {
+		mQ.x = v.x;
+		mQ.y = v.y;
+		mQ.z = v.z;
+		mQ.w = s;
+	}
 
 	void identity() {
-		//GWTuple::set(mQ, 0, 0, 0, 1);
-		//from_tuple(GWQuaternionBase<T>::IDENTITY.mQ);
-		*this = GWQuaternionBase<T>::IDENTITY;
+		*this = GWQuaternionBase::IDENTITY;
 	}
 
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(mQ, tuple); }
@@ -93,7 +90,7 @@ public:
 		GWVectorBase<T> v = sq*vq + sp*vq + GWVector::cross(vq, vp);
 		set_vs(v, s);
 	}
-	void mul(const GWQuaternionBase<T>& q) { mul(*this, q); }
+	void mul(const GWQuaternionBase& q) { mul(*this, q); }
 
 	void add(const GWQuaternionBase& q, const GWQuaternionBase& p) { GWTuple::add(*this, q, p); }
 	void add(const GWQuaternionBase& q) { GWTuple::add(*this, q); }
@@ -116,8 +113,8 @@ public:
 
 	// Geodesic distance on the unit sphere
 	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
-	T geodesic_dist(const GWQuaternionBase& q) const {
-		GWQuaternionBase<T> norm, qnorm;
+	T arc_distance(const GWQuaternionBase& q) const {
+		GWQuaternionBase norm, qnorm;
 		norm.normalize(*this);
 		qnorm.normalize(q);
 		return (T) (::acos(GWBase::saturate(::fabs(norm.dot(qnorm)))) / (GWBase::pi / 2));
@@ -137,8 +134,8 @@ namespace GWQuaternion {
 		return res;
 	}
 
-	template<typename T> inline T geodesic_dist(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
-		return q.geodesic_dist(p);
+	template<typename T> inline T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+		return q.arc_distance(p);
 	}
 }
 

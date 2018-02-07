@@ -26,7 +26,7 @@ template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWR
 		int iq2 = tbl[idx];
 		int iq1 = tbl[idx + 1];
 		int iq0 = tbl[idx + 2];
-		GWQuaternionBase<T> rq[3];
+		GWQuaternionBase rq[3];
 		rq[0].set_rx(rx);
 		rq[1].set_ry(ry);
 		rq[2].set_rz(rz);

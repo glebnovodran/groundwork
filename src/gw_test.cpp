@@ -71,13 +71,13 @@ void test_quat() {
 	t.normalize();
 	GWVectorF encoded = t.expmap_encode();
 	q.expmap_decode(encoded);
-	cout << "Geodesic distance with the decoded quaternion = " << t.geodesic_dist(q) << endl;
+	cout << "Geodesic distance with the decoded quaternion = " << t.arc_distance(q) << endl;
 	q.normalize();
 
 	GWVectorF encoded1 = t.expmap_encode();
 	GWQuaternionF q1(1.0f, 2.0f, 3.0f, 0.5f);
 	GWQuaternionF p1 = -q1;
-	float dist = GWQuaternion::geodesic_dist(q1, p1);
+	float dist = GWQuaternion::arc_distance(q1, p1);
 
 	GWVectorF vec(1.0f, 1.0f, 0.0f);
 	GWVectorF vec0 = q1.apply(vec);
