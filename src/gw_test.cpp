@@ -13,10 +13,13 @@ void test_basic() {
 }
 
 void test_tuple() {
+	using namespace std;
 	GWTuple3f tupleA = { 0.0f, 1.0f, 2.0f };
 	GWTuple3f tupleB = { 2.0f, 2.0f, 2.0f };
 	GWTuple4f tupleC = {};
 	GWTuple::div(tupleC, tupleA, tupleB);
+	cout << tupleC[0] << endl;
+	tupleC[3] = 1.0f;
 }
 
 void test_vec() {
@@ -51,6 +54,7 @@ void test_vec() {
 }
 
 void test_quat() {
+	using namespace std;
 	GWQuaternionF q;
 	q.identity();
 	q.set_radians((float)GWBase::pi, 0.0f, (float)(GWBase::pi*0.5f));
@@ -64,14 +68,22 @@ void test_quat() {
 
 	GWQuaternionF t(1.0f, 2.0f, 3.0f, 0.5f);
 	//GWQuaternionF t(1.0f, 0.0f, 0.0f, 0.0f);
+	t.normalize();
 	GWVectorF encoded = t.expmap_encode();
 	q.expmap_decode(encoded);
+	cout << "Geodesic distance with the decoded quaternion = " << t.geodesic_dist(q) << endl;
 	q.normalize();
-	t.normalize();
+
+	GWVectorF encoded1 = t.expmap_encode();
 	GWQuaternionF q1(1.0f, 2.0f, 3.0f, 0.5f);
-	q1.normalize();
+	GWQuaternionF p1 = -q1;
+	float dist = GWQuaternion::geodesic_dist(q1, p1);
+
 	GWVectorF vec(1.0f, 1.0f, 0.0f);
-	vec = q1.apply(vec);
+	GWVectorF vec0 = q1.apply(vec);
+	q1.normalize();
+	GWVectorF vec1 = q1.apply(vec);
+
 }
 
 int main(int argc, char* argv[]) {
@@ -79,5 +91,6 @@ int main(int argc, char* argv[]) {
 	test_tuple();
 	test_vec();
 	test_quat();
+
 	return 0;
 }

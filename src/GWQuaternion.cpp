@@ -6,6 +6,9 @@
 #include "GWVector.hpp"
 #include "GWQuaternion.hpp"
 
+template<typename T> const GWQuaternionBase<T> GWQuaternionBase<T>::ZERO(0, 0, 0, 0);
+template<typename T> const GWQuaternionBase<T> GWQuaternionBase<T>::IDENTITY(1, 0, 0, 0);
+
 template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWRotationOrder order) {
 	static uint8_t tbl[] = {
 		0, 1, 2,
@@ -50,6 +53,7 @@ template<typename T> void GWQuaternionBase<T>::exp(const GWQuaternionBase& q) {
 	set_vs(v, c*expS);
 }
 
+// should be normalized
 template<typename T> void GWQuaternionBase<T>::log(const GWQuaternionBase& q) {
 	T r = q.S();
 	GWVectorBase<T> v = q.V();

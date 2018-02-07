@@ -39,6 +39,9 @@ namespace GWBase {
 
 	inline GWRotationOrder rord_from_float(float val) { return (GWRotationOrder)(int)val; }
 
+	template<typename T> inline T clamp(T x, T lo, T hi) { return std::max(std::min(x, hi), lo); }
+	template<typename T> inline T saturate(T x) { return clamp<T>(x, T(0), T(1)); }
+
 }
 
 namespace GWTuple {

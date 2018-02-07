@@ -18,10 +18,17 @@ public:
 	GWQuaternionBase<T>(T x, T y, T z, T w) { GWTuple::set(mQ, x, y, z, w); }
 	GWQuaternionBase<T>(const GWVectorBase<T>& v, T s = 0) { set_vs(v, s); }
 
+	static const GWQuaternionBase<T> ZERO;
+	static const GWQuaternionBase<T> IDENTITY;
+
 	const GWVectorBase<T> V() const { return GWVectorBase<T>(mQ.x, mQ.y, mQ.z); }
 	T S() const { return mQ.w; };
 
-	void identity() { GWTuple::set(mQ, 0, 0, 0, 1); }
+	void identity() {
+		//GWTuple::set(mQ, 0, 0, 0, 1);
+		//from_tuple(GWQuaternionBase<T>::IDENTITY.mQ);
+		*this = GWQuaternionBase<T>::IDENTITY;
+	}
 
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(mQ, tuple); }
 	GWTuple4<T> get_tuple() const { return mQ; }
@@ -48,8 +55,8 @@ public:
 
 	T magnitude() const { return GWTuple::magnitude(mQ); }
 	void normalize() { return GWTuple::normalize(mQ); }
-		void normalize(const GWQuaternionBase& q) {
-		GWTuple::normalize_fast(mQ, q.mQ);
+	void normalize(const GWQuaternionBase& q) {
+		GWTuple::normalize(mQ, q.mQ);
 	}
 
 	T dot(const GWQuaternionBase& q) const {
@@ -61,17 +68,12 @@ public:
 	}
 	void conjugate() { conjugate(*this); }
 
-	void negate(const GWQuaternionBase& q) {
-		GWTuple::neg(mQ);
-	}
-	void negate() { negate(*this); }
-
-	void invert(const GWQuaternionBase& q) {
+	void inv(const GWQuaternionBase& q) {
 		conjugate(q);
 		T mag = GWTuple::inner(q.mQ, q.mQ);
 		scl(T(1) / mag);
 	}
-	void invert() {
+	void inv() {
 		invert(*this);
 	}
 
@@ -82,7 +84,7 @@ public:
 	GWVectorBase<T> expmap_encode() const;
 	void expmap_decode(const GWVectorBase<T>& v);
 
-	void mul(GWQuaternionBase& q, GWQuaternionBase& p) {
+	void mul(const GWQuaternionBase& q, const GWQuaternionBase& p) {
 		GWVectorBase<T> vq = q.V();
 		GWVectorBase<T> vp = p.V();
 		T sq = q.S();
@@ -91,27 +93,79 @@ public:
 		GWVectorBase<T> v = sq*vq + sp*vq + GWVector::cross(vq, vp);
 		set_vs(v, s);
 	}
-	void mul(GWQuaternionBase<T>& q) { mul(*this, q); }
+	void mul(const GWQuaternionBase<T>& q) { mul(*this, q); }
 
-	GWVectorBase<T> apply(GWVectorBase<T>& v) {
+	void add(const GWQuaternionBase& q, const GWQuaternionBase& p) { GWTuple::add(*this, q, p); }
+	void add(const GWQuaternionBase& q) { GWTuple::add(*this, q); }
+
+	void sub(const GWQuaternionBase& q, const GWQuaternionBase& p) { GWTuple::sub(*this, q, p); }
+	void sub(const GWQuaternionBase& q) { GWTuple::sub(*this, q); }
+
+	void neg(const GWQuaternionBase& q) {
+		GWTuple::neg(mQ);
+	}
+	void neg() { neg(*this); }
+
+
+	GWVectorBase<T> apply(const GWVectorBase<T>& v) const {
 		GWVectorBase<T> qvec = V();
 		T s = S();
 		T d = qvec.dot(v);
 		return (d*qvec + (s*s)*v - s*GWVector::cross(v, qvec)) * T(2) - v;
 	}
+
+	// Geodesic distance on the unit sphere
+	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
+	T geodesic_dist(const GWQuaternionBase& q) const {
+		GWQuaternionBase<T> norm, qnorm;
+		norm.normalize(*this);
+		qnorm.normalize(q);
+		return (T) (::acos(GWBase::saturate(::fabs(norm.dot(qnorm)))) / (GWBase::pi / 2));
+	}
 };
 
 namespace GWQuaternion {
-	template<typename T> inline GWQuaternionBase<T> mul(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+	template<typename T> inline GWQuaternionBase<T> exp(const GWQuaternionBase<T>& q) {
 		GWQuaternionBase<T> res;
-		res.mul(q, p);
+		res.exp(q);
 		return res;
+	}
+
+	template<typename T> inline GWQuaternionBase<T> log(const GWQuaternionBase<T>& q) {
+		GWQuaternionBase<T> res;
+		res.log(q);
+		return res;
+	}
+
+	template<typename T> inline T geodesic_dist(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+		return q.geodesic_dist(p);
 	}
 }
 
 template<typename T> inline GWQuaternionBase<T> operator * (const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
-	return GWQuaternion::mul(q, p);
+	GWQuaternionBase<T> res;
+	res.mul(q, p);
+	return res;
+}
+
+template<typename T> inline GWQuaternionBase<T> operator + (const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+	GWQuaternionBase<T> q0 = q;
+	q0.add(p);
+	return q0;
+}
+
+template<typename T> inline GWQuaternionBase<T> operator - (const GWQuaternionBase<T>& q) {
+	GWQuaternionBase<T> p = q;
+	p.neg();
+	return p;
+}
+
+template<typename T> inline GWQuaternionBase<T> operator - (const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+	GWQuaternionBase<T> q0 = q;
+	q0.sub(p);
+	return q0;
 }
 
 typedef GWQuaternionBase<float> GWQuaternionF;
 typedef GWQuaternionBase<double> GWQuaternionD;
+
