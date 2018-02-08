@@ -57,7 +57,7 @@ public:
 	}
 
 	T magnitude() const { return GWTuple::magnitude(mQ); }
-	void normalize() { return GWTuple::normalize(mQ); }
+	void normalize() { GWTuple::normalize(mQ); }
 	void normalize(const GWQuaternionBase& q) {
 		GWTuple::normalize(mQ, q.mQ);
 	}
