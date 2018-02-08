@@ -42,49 +42,15 @@ template<typename T> void GWQuaternionBase<T>::exp(const GWQuaternionBase& q) {
 	GWVectorBase<T> v;
 	T halfAng;
 	GWVectorBase<T> v1 = q.V();
-	T hang = v1.length();
-
 	v.normalize(q.V(), &halfAng);
+
 	T expS = ::exp(q.S());
 	T s = ::sin(halfAng);
 	T c = ::cos(halfAng);
 	v *= (s*expS);
-	v1.scl(s/hang);
+	v1.scl(s/halfAng);
 	set_vs(v, c*expS);
-}
-
-// should be normalized
-template<typename T> void GWQuaternionBase<T>::log(const GWQuaternionBase& q) {
-	T r = q.S();
-	GWVectorBase<T> v = q.V();
-	T halfAngle = ::acos(r);
-	if (0 == halfAngle) {
-		set_vs(v, 0);
-	} else {
-		T l = q.magnitude();
-		v.normalize();
-		v.scl(halfAngle);
-		set_vs(v, 0);
-	}
-}
-
-template<typename T> GWVectorBase<T> GWQuaternionBase<T>::expmap_encode() const {
-	GWQuaternionBase q(*this);
-	q.log();
-	return q.V();
-}
-
-template<typename T> void GWQuaternionBase<T>::expmap_decode(const GWVectorBase<T>& v) {
-	set_vs(v, 0);
-	exp();
 }
 
 template void GWQuaternionBase<float>::exp(const GWQuaternionBase<float>& q);
 template void GWQuaternionBase<double>::exp(const GWQuaternionBase<double>& q);
-template void GWQuaternionBase<float>::log(const GWQuaternionBase<float>& q);
-template void GWQuaternionBase<double>::log(const GWQuaternionBase<double>& q);
-
-template GWVectorBase<float> GWQuaternionBase<float>::expmap_encode() const;
-template GWVectorBase<double> GWQuaternionBase<double>::expmap_encode() const;
-template void GWQuaternionBase<float>::expmap_decode(const GWVectorBase<float>& v);
-template void GWQuaternionBase<double>::expmap_decode(const GWVectorBase<double>& v);

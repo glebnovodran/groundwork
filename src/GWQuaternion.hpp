@@ -2,6 +2,12 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
+template<typename T> class GWQuaternionBase;
+
+namespace GWQuaternion {
+	template<typename T> inline GWVectorBase<T> log_unit(const GWQuaternionBase<T>& q);
+}
+
 template<typename T> class GWQuaternionBase {
 protected:
 	GWTuple4<T> mQ;
@@ -76,10 +82,18 @@ public:
 
 	void exp(const GWQuaternionBase& q);
 	void exp() { exp(*this); }
-	void log(const GWQuaternionBase& q);
+
+	void log(const GWQuaternionBase& q) {
+		set_vs(GWQuaternion::log_unit(q), ::log(q.magnitude()));
+	}
 	void log() { log(*this); }
-	GWVectorBase<T> expmap_encode() const;
-	void expmap_decode(const GWVectorBase<T>& v);
+
+	GWVectorBase<T> expmap_encode() const { return GWQuaternion::log_unit(*this); }
+
+	void expmap_decode(const GWVectorBase<T>& v) {
+		set_vs(v, 0);
+		exp();
+	}
 
 	void mul(const GWQuaternionBase& q, const GWQuaternionBase& p) {
 		GWVectorBase<T> vq = q.V();
@@ -103,7 +117,6 @@ public:
 	}
 	void neg() { neg(*this); }
 
-
 	GWVectorBase<T> apply(const GWVectorBase<T>& v) const {
 		GWVectorBase<T> qvec = V();
 		T s = S();
@@ -119,9 +132,19 @@ public:
 		qnorm.normalize(q);
 		return (T) (::acos(GWBase::saturate(::fabs(norm.dot(qnorm)))) / (GWBase::pi / 2));
 	}
+
 };
 
 namespace GWQuaternion {
+	template<typename T> inline GWVectorBase<T> log_unit(const GWQuaternionBase<T>& q) {
+		GWVectorBase<T> v = q.V();
+		T vmag;
+		v.normalize(&vmag);
+		T h = vmag < T(0.1e-6) ? 1 : atan2(vmag, q.S());
+		v.scl(h);
+		return v;
+	}
+
 	template<typename T> inline GWQuaternionBase<T> exp(const GWQuaternionBase<T>& q) {
 		GWQuaternionBase<T> res;
 		res.exp(q);
@@ -132,6 +155,16 @@ namespace GWQuaternion {
 		GWQuaternionBase<T> res;
 		res.log(q);
 		return res;
+	}
+
+	template<typename T> inline GWVectorBase<T> expmap_encode(const GWQuaternionBase<T>& q) {
+		return q.expmap_encode();
+	}
+
+	template<typename T> inline GWQuaternionBase<T> expmap_decode(const GWVectorBase<T>& v) {
+		GWQuaternionBase<T> q;
+		q.expmap_decode(v);
+		return q;
 	}
 
 	template<typename T> inline T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
