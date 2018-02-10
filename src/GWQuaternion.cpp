@@ -38,19 +38,3 @@ template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWR
 template void GWQuaternionBase<float>::set_radians(float rx, float ry, float rz, GWRotationOrder order);
 template void GWQuaternionBase<double>::set_radians(double rx, double ry, double rz, GWRotationOrder order);
 
-template<typename T> void GWQuaternionBase<T>::exp(const GWQuaternionBase& q) {
-	GWVectorBase<T> v;
-	T halfAng;
-	GWVectorBase<T> v1 = q.V();
-	v.normalize(q.V(), &halfAng);
-
-	T expS = ::exp(q.S());
-	T s = ::sin(halfAng);
-	T c = ::cos(halfAng);
-	v *= (s*expS);
-	v1.scl(s/halfAng);
-	set_vs(v, c*expS);
-}
-
-template void GWQuaternionBase<float>::exp(const GWQuaternionBase<float>& q);
-template void GWQuaternionBase<double>::exp(const GWQuaternionBase<double>& q);

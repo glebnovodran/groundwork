@@ -4,8 +4,8 @@
 
 template<typename T> class GWQuaternionBase;
 
-namespace GWQuaternion {
-	template<typename T> inline GWVectorBase<T> log_unit(const GWQuaternionBase<T>& q);
+namespace GWUnitQuaternion {
+	template<typename T> inline GWVectorBase<T> log(const GWQuaternionBase<T>& q);
 }
 
 template<typename T> class GWQuaternionBase {
@@ -56,6 +56,16 @@ public:
 		set_radians(GWBase::radians(dx), GWBase::radians(dy), GWBase::radians(dz), order);
 	}
 
+	GWVectorBase<T> axis_x() const {
+		return GWVectorBase<T>(T(1) - T(2)*mQ.y*mQ.y - T(2)*mQ.z*mQ.z, T(2)*mQ.x*mQ.y + T(2)*mQ.w*mQ.z, T(2)*mQ.x*mQ.z - T(2)*mQ.w*mQ.y);
+	}
+	GWVectorBase<T> axis_y() const {
+		return GWVectorBase<T>(T(2)*mQ.x*mQ.y - T(2)*mQ.w*mQ.z, T(1) - T(2)*mQ.x*mQ.x + T(2)*mQ.z*mQ.z, T(2)*mQ.y*mQ.z + T(2)*mQ.w*mQ.x);
+	}
+	GWVectorBase<T> axis_z() const {
+		return GWVectorBase<T>(T(2)*mQ.x*mQ.z + T(2)*mQ.w*mQ.y, T(2)*mQ.y*mQ.z - T(2)*mQ.w*mQ.x, T(1) - T(2)*mQ.x*mQ.x - T(2)*mQ.y*mQ.y);
+	}
+
 	T magnitude() const { return GWTuple::magnitude(mQ); }
 	void normalize() { GWTuple::normalize(mQ); }
 	void normalize(const GWQuaternionBase& q) {
@@ -80,19 +90,41 @@ public:
 		invert(*this);
 	}
 
-	void exp(const GWQuaternionBase& q);
+	void exp_pure(const GWVectorBase<T>& v) {
+		GWVectorBase<T> vec;
+		T halfAng;
+		vec.normalize(v, &halfAng);
+		T s = ::sin(halfAng);
+		T c = ::cos(halfAng);
+		vec *= s;
+
+		set_vs(vec, c);
+	}
+	void exp_pure(const GWQuaternionBase& q) { exp_pure(q.V()); }
+	void exp_pure() { exp_pure(*this); }
+
+	void exp(const GWQuaternionBase& q) {
+		T expS = ::exp(q.S());
+		exp_pure(q);
+		GWTuple::scl(mQ, expS);
+	}
 	void exp() { exp(*this); }
 
 	void log(const GWQuaternionBase& q) {
-		set_vs(GWQuaternion::log_unit(q), ::log(q.magnitude()));
+		set_vs(GWUnitQuaternion::log(q), ::log(q.magnitude()));
 	}
 	void log() { log(*this); }
 
-	GWVectorBase<T> expmap_encode() const { return GWQuaternion::log_unit(*this); }
+	GWVectorBase<T> expmap_encode() const { return GWUnitQuaternion::log(*this); }
 
 	void expmap_decode(const GWVectorBase<T>& v) {
-		set_vs(v, 0);
-		exp();
+		exp_pure(v);
+	}
+
+	void pow(const GWQuaternionBase& q, T x) {
+		GWQuaternionBase lq;
+		lq.log(q);
+		exp(lq * GWQuaternionBase(0, 0, 0, x));
 	}
 
 	void mul(const GWQuaternionBase& q, const GWQuaternionBase& p) {
@@ -135,8 +167,8 @@ public:
 
 };
 
-namespace GWQuaternion {
-	template<typename T> inline GWVectorBase<T> log_unit(const GWQuaternionBase<T>& q) {
+namespace GWUnitQuaternion {
+	template<typename T> inline GWVectorBase<T> log(const GWQuaternionBase<T>& q) {
 		GWVectorBase<T> v = q.V();
 		T vmag;
 		v.normalize(&vmag);
@@ -144,6 +176,11 @@ namespace GWQuaternion {
 		v.scl(h);
 		return v;
 	}
+
+	template<typename T> GWVectorBase<T> get_radians(const GWQuaternionBase<T>& q, GWRotationOrder order = GWRotationOrder::XYZ);
+}
+
+namespace GWQuaternion {
 
 	template<typename T> inline GWQuaternionBase<T> exp(const GWQuaternionBase<T>& q) {
 		GWQuaternionBase<T> res;
