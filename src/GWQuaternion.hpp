@@ -124,8 +124,9 @@ public:
 	void pow(const GWQuaternionBase& q, T x) {
 		GWQuaternionBase lq;
 		lq.log(q);
-		exp_pure(lq.scl(x)); // equivalent to exp(lq * GWQuaternionBase(0, 0, 0, x));
+		exp(lq.scl(x)); // equivalent to exp(lq * GWQuaternionBase(0, 0, 0, x));
 	}
+	void pow(T x) { pow(*this, x); }
 
 	void mul(const GWQuaternionBase& q, const GWQuaternionBase& p) {
 		GWVectorBase<T> vq = q.V();
