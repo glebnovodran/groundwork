@@ -42,6 +42,17 @@ namespace GWBase {
 	template<typename T> inline T clamp(T x, T lo, T hi) { return std::max(std::min(x, hi), lo); }
 	template<typename T> inline T saturate(T x) { return clamp<T>(x, T(0), T(1)); }
 
+	template<typename T> inline T limit_pi(T rad) {
+		rad = ::fmod(rad, 2*pi);
+		if (::fabs(rad) > pi) {
+			if (rad < T(0)) {
+				rad = T(2)*pi + rad;
+			} else {
+				rad = rad - T(2)*pi;
+			}
+		}
+		return rad;
+	}
 }
 
 namespace GWTuple {
@@ -132,6 +143,17 @@ namespace GWTuple {
 
 	template<typename TUPLE_DST_T> inline void neg(TUPLE_DST_T& dst) {
 		GWTuple::neg(dst, dst);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void abs(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+		int n = TUPLE_DST_T::ELEMS_NUM;
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = ::fabs(src.elems[i]);
+		}
+	}
+
+	template<typename TUPLE_DST_T> inline void abs(TUPLE_DST_T& dst) {
+		GWTuple::abs(dst, dst);
 	}
 
 	template<typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline typename TUPLE_SRC0_T::elem_t inner(const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b) {

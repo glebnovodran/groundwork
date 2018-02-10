@@ -17,12 +17,15 @@ public:
 	void sub(const GWVectorBase& v) { GWTuple::sub(*this, v); }
 	void sub(const GWVectorBase& v0, const GWVectorBase& v1) { GWTuple::sub(*this, v0, v1); }
 	void mul(const GWVectorBase& v) { GWTuple::mul(*this, v); }
+	void mul(const GWVectorBase& v0, const GWVectorBase& v1) { GWTuple::mul(*this, v0, v1); }
 	void div(const GWVectorBase& v) { GWTuple::div(*this, v); }
 	void div(const GWVectorBase& v0, const GWVectorBase& v1) { GWTuple::div(*this, v0, v1); }
 	void scl(const GWVectorBase& v, T s) { GWTuple::scl(*this, v, s); }
 	void scl(T s) { GWTuple::scl(*this, s); }
 	void neg(const GWVectorBase& v) { GWTuple::neg(*this, v); }
 	void neg() { GWTuple::neg(*this); }
+	void abs(const GWVectorBase& v) { GWTuple::abs(*this, v); }
+	void abs() { GWTuple::abs(*this); }
 
 	T min_elem() const { return GWTuple::min_elem(*this); }
 	T max_elem() const { return GWTuple::max_elem(*this); }
@@ -72,44 +75,44 @@ namespace GWVector {
 }
 
 template<typename T> inline GWVectorBase<T> operator + (const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
-	GWVectorBase<T> v = v0;
-	v.add(v1);
+	GWVectorBase<T> v;
+	v.add(v0, v1);
 	return v;
 }
 
 template<typename T> inline GWVectorBase<T> operator - (const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
-	GWVectorBase<T> v = v0;
-	v.sub(v1);
+	GWVectorBase<T> v;
+	v.sub(v0, v1);
 	return v;
 }
 
 template<typename T> inline GWVectorBase<T> operator - (const GWVectorBase<T>& v0) {
-	GWVectorBase<T> v = v0;
-	v.neg();
+	GWVectorBase<T> v;
+	v.neg(v0);
 	return v;
 }
 
 template<typename T> inline GWVectorBase<T> operator * (const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
-	GWVectorBase<T> v = v0;
-	v.mul(v1);
+	GWVectorBase<T> v;
+	v.mul(v0, v1);
 	return v;
 }
 
 template<typename T> inline GWVectorBase<T> operator / (const GWVectorBase<T>& v0, const GWVectorBase<T>& v1) {
-	GWVectorBase<T> v = v0;
-	v.div(v1);
+	GWVectorBase<T> v;
+	v.div(v0, v1);
 	return v;
 }
 
 template<typename T> inline GWVectorBase<T> operator * (const GWVectorBase<T>& v0, T s) {
-	GWVectorBase<T> v = v0;
-	v.scl(s);
+	GWVectorBase<T> v;
+	v.scl(v0,s);
 	return v;
 }
 
 template<typename T> inline GWVectorBase<T> operator * (T s, const GWVectorBase<T>& v0) {
-	GWVectorBase<T> v = v0;
-	v.scl(s);
+	GWVectorBase<T> v;
+	v.scl(v0, s);
 	return v;
 }
 
