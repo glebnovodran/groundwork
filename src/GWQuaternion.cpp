@@ -6,9 +6,6 @@
 #include "GWVector.hpp"
 #include "GWQuaternion.hpp"
 
-template<typename T> const GWQuaternionBase<T> GWQuaternionBase<T>::ZERO(0, 0, 0, 0);
-template<typename T> const GWQuaternionBase<T> GWQuaternionBase<T>::IDENTITY(1, 0, 0, 0);
-
 template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWRotationOrder order) {
 	static uint8_t tbl[] = {
 		0, 1, 2,
@@ -20,7 +17,7 @@ template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWR
 	};
 	int idx = (int)order;
 	if (idx >= 6) {
-		identity();
+		set_identity();
 	} else {
 		idx *= 3;
 		int iq2 = tbl[idx];

@@ -56,7 +56,7 @@ void test_vec() {
 void test_quat() {
 	using namespace std;
 	GWQuaternionF q;
-	q.identity();
+	q.set_identity();
 	q.set_radians((float)GWBase::pi, 0.0f, (float)(GWBase::pi*0.5f));
 	q.log();
 
@@ -67,18 +67,16 @@ void test_quat() {
 	p.conjugate();
 
 	GWQuaternionF t(1.0f, 2.0f, 3.0f, 0.5f);
-	//GWQuaternionF t(1.0f, 0.0f, 0.0f, 0.0f);
 	t.normalize();
 	GWVectorF encoded = t.expmap_encode();
 	q.expmap_decode(encoded);
 	cout << "Geodesic distance with the decoded quaternion = " << t.arc_distance(q) << endl;
 	q.normalize();
 
-	GWVectorF encoded1 = t.expmap_encode();
 	GWQuaternionF q1(1.0f, 2.0f, 3.0f, 0.5f);
 	GWQuaternionF p1 = -q1;
 	float dist = GWQuaternion::arc_distance(q1, p1);
-
+	cout << "Geodesic distance between inverse quaternions = " << dist << endl;
 	GWVectorF vec(1.0f, 1.0f, 0.0f);
 	GWVectorF vec0 = q1.apply(vec);
 	q1.normalize();

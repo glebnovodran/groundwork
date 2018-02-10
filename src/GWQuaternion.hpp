@@ -17,9 +17,6 @@ public:
 	GWQuaternionBase(const GWQuaternionBase& q) { from_tuple(q.mQ); }
 	GWQuaternionBase(T x, T y, T z, T w) { GWTuple::set(mQ, x, y, z, w); }
 
-	static const GWQuaternionBase<T> ZERO;
-	static const GWQuaternionBase<T> IDENTITY;
-
 	const GWVectorBase<T> V() const { return GWVectorBase<T>(mQ.x, mQ.y, mQ.z); }
 	T S() const { return mQ.w; };
 	void set_vs(const GWVectorBase<T>& v, T s = 0) {
@@ -29,23 +26,24 @@ public:
 		mQ.w = s;
 	}
 
-	void identity() {
-		*this = GWQuaternionBase::IDENTITY;
-	}
-
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(mQ, tuple); }
 	GWTuple4<T> get_tuple() const { return mQ; }
+
+	void set_zero() {
+		GWTuple::fill(mQ, T(0));
+	}
+	void set_identity() {
+		GWTuple::set(mQ, T(0), T(0), T(0), T(1));
+	}
 
 	void set_rx(T rads) {
 		T h = rads / T(2);
 		GWTuple::set(mQ, ::sin(h), T(0), T(0), ::cos(h));
 	}
-
 	void set_ry(T rads) {
 		T h = rads / T(2);
 		GWTuple::set(mQ, T(0), ::sin(h), T(0), ::cos(h));
 	}
-
 	void set_rz(T rads) {
 		T h = rads / T(2);
 		GWTuple::set(mQ, T(0), T(0), ::sin(h), ::cos(h));
@@ -122,9 +120,13 @@ public:
 	}
 
 	void pow(const GWQuaternionBase& q, T x) {
-		GWQuaternionBase lq;
-		lq.log(q);
-		exp(lq.scl(x)); // equivalent to exp(lq * GWQuaternionBase(0, 0, 0, x));
+		if (q.magnitude() > T(1.0e-6f)) {
+			GWQuaternionBase lq;
+			lq.log(q);
+			exp(lq.scl(x)); // equivalent to exp(lq * GWQuaternionBase(0, 0, 0, x));
+		} else {
+			set_zero();
+		}
 	}
 	void pow(T x) { pow(*this, x); }
 
@@ -158,15 +160,12 @@ public:
 		return (d*qvec + (s*s)*v - s*GWVector::cross(v, qvec)) * T(2) - v;
 	}
 
-	// Geodesic distance on the unit sphere
-	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
 	T arc_distance(const GWQuaternionBase& q) const {
 		GWQuaternionBase norm, qnorm;
 		norm.normalize(*this);
 		qnorm.normalize(q);
-		return (T) (::acos(GWBase::saturate(::fabs(norm.dot(qnorm)))) / (GWBase::pi / 2));
+		return GWUnitQuaternion::arc_distance(norm, qnorm);
 	}
-
 };
 
 namespace GWUnitQuaternion {
@@ -180,6 +179,15 @@ namespace GWUnitQuaternion {
 	}
 
 	template<typename T> GWVectorBase<T> get_radians(const GWQuaternionBase<T>& q, GWRotationOrder order = GWRotationOrder::XYZ);
+
+	// Geodesic distance on the unit sphere
+	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
+	template<typename T>T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+		GWQuaternionBase<T> qnorm, pnorm;
+		qnorm.normalize(q);
+		pnorm.normalize(p);
+		return (T)(::acos(GWBase::saturate(::fabs(qnorm.dot(pnorm)))) / (GWBase::pi / 2));
+	}
 }
 
 namespace GWQuaternion {
