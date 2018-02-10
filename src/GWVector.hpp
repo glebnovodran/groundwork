@@ -54,8 +54,8 @@ public:
 	GWVectorBase& operator -= (const GWVectorBase& v) { sub(v); return *this; }
 	GWVectorBase& operator *= (const GWVectorBase& v) { mul(v); return *this; }
 	GWVectorBase& operator /= (const GWVectorBase& v) { div(v); return *this; }
-	GWVectorBase& operator *= (float s) { scl(s); return *this; }
-	GWVectorBase& operator /= (float s) { scl(1.0f / s); return *this; }
+	GWVectorBase& operator *= (T s) { scl(s); return *this; }
+	GWVectorBase& operator /= (T s) { scl(1.0f / s); return *this; }
 };
 
 namespace GWVector {
