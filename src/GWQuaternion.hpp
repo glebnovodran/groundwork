@@ -124,7 +124,7 @@ public:
 	void pow(const GWQuaternionBase& q, T x) {
 		GWQuaternionBase lq;
 		lq.log(q);
-		exp(lq * GWQuaternionBase(0, 0, 0, x));
+		exp_pure(lq.scl(x)); // equivalent to exp(lq * GWQuaternionBase(0, 0, 0, x));
 	}
 
 	void mul(const GWQuaternionBase& q, const GWQuaternionBase& p) {
@@ -144,10 +144,11 @@ public:
 	void sub(const GWQuaternionBase& q, const GWQuaternionBase& p) { GWTuple::sub(*this, q, p); }
 	void sub(const GWQuaternionBase& q) { GWTuple::sub(*this, q); }
 
-	void neg(const GWQuaternionBase& q) {
-		GWTuple::neg(mQ);
-	}
+	void neg(const GWQuaternionBase& q) { GWTuple::neg(mQ); }
 	void neg() { neg(*this); }
+
+	void scl(const GWQuaternionBase& q, T s) { GWTuple::scl(mQ, q.mQ, s); }
+	void scl(T s) { GWTuple::scl(mQ, s); }
 
 	GWVectorBase<T> apply(const GWVectorBase<T>& v) const {
 		GWVectorBase<T> qvec = V();
