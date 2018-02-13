@@ -251,7 +251,7 @@ namespace GWTuple {
 		copy(dst, src);
 		normalize_fast(dst);
 	}
-}
+} // GWTuple
 
 template<typename T> struct GWTuple2 {
 	typedef T elem_t;

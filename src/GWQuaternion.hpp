@@ -14,7 +14,7 @@ protected:
 
 public:
 	GWQuaternionBase() = default;
-	GWQuaternionBase(const GWQuaternionBase& q) { from_tuple(q.mQ); }
+	template<typename ARG_T> GWQuaternionBase(const GWQuaternionBase<ARG_T>& q) { from_tuple(q.get_tuple()); }
 	GWQuaternionBase(T x, T y, T z, T w) { GWTuple::set(mQ, x, y, z, w); }
 
 	const GWVectorBase<T> V() const { return GWVectorBase<T>(mQ.x, mQ.y, mQ.z); }
