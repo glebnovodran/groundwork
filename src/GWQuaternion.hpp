@@ -6,6 +6,7 @@ template<typename T> class GWQuaternionBase;
 
 namespace GWUnitQuaternion {
 	template<typename T> inline GWVectorBase<T> log(const GWQuaternionBase<T>& q);
+	template<typename T>T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p);
 }
 
 template<typename T> class GWQuaternionBase {
