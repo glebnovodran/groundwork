@@ -1,9 +1,6 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
-#include <cfloat>
-//#include <vector>
-//#include <map>
 
 class GWMotion {
 public:
@@ -18,10 +15,8 @@ public:
 		uint8_t srcMask;
 //		uint8_t stride;
 
-		TrackInfo() : kind(GWTrackKind::ROT), pFrmData(nullptr), dataMask(0), srcMask(0), numFrames(0) {
-			minVal.fill(FLT_MAX);
-			maxVal.fill(-FLT_MAX);
-		}
+		TrackInfo() : pFrmData(nullptr), minVal(0), maxVal(0), numFrames(0),
+			kind(GWTrackKind::ROT), dataMask(0), srcMask(0) {}
 
 		void reset() {
 			if (pFrmData != nullptr) { delete[] pFrmData; }
@@ -59,16 +54,15 @@ public:
 		TrackInfo* pSclTrk;
 		GWTransformOrder* pXOrd; // add sizes
 		GWRotationOrder* pROrd;
-		uint32_t xordLen;
-		uint32_t rordLen;
+		uint32_t numFrames;
 		GWTransformOrder defXOrd;
 		GWRotationOrder defROrd;
 
 		NodeInfo() : pRotTrk(nullptr), pTrnTrk(nullptr), pSclTrk(nullptr), pXOrd(nullptr), pROrd(nullptr),
-			xordLen(0), rordLen(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
+			numFrames(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
 
 		GWRotationOrder get_rord(uint32_t frameNo) const {
-			return pROrd == nullptr? GWRotationOrder::XYZ : pROrd[frameNo % rordLen];
+			return pROrd == nullptr? GWRotationOrder::XYZ : pROrd[frameNo % numFrames];
 		}
 		// get track
 	};
@@ -84,8 +78,8 @@ public:
 		friend class GWMotion;
 	};
 protected:
-	const NodeInfo* mpNodeInfo;
-	const TrackInfo* mpTrackInfo;
+	NodeInfo* mpNodeInfo;
+	TrackInfo* mpTrackInfo;
 
 public:
 	GWMotion() = default;
@@ -100,10 +94,6 @@ public:
 
 	// get node
 	// get track
-
-protected:
-//	TransformNode* add_node(const std::string& name);
-//	TrackInfo* add_track(TransformNode* pNode, GWTrackKind kind);
 };
 
 class MotGrpFunc {

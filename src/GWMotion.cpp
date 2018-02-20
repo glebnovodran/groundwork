@@ -6,7 +6,6 @@
 #include <assert.h>
 #include <TDMotion.hpp>
 #include "groundwork.hpp"
-//#include "GWMotion.hpp"
 
 static bool HAS_NAMES = true;
 static bool COLUMN_CHANS = false;
@@ -14,7 +13,7 @@ static bool COLUMN_CHANS = false;
 class CollectGrpFunc : public TDMotion::XformGrpFunc {
 protected:
 	const GWMotion* mpMot;
-	const TDMotion* mpTDMot; // TODO: remove ?
+	const TDMotion* mpTDMot;
 	uint32_t mNumTracks;
 public:
 	std::map<std::string, TDMotion::XformGrp> mGrpMap;
@@ -43,18 +42,6 @@ public:
 		return numTracks;
 	}
 };
-/*
-GWMotion::TransformNode* GWMotion::add_node(const std::string& name) {
-	TransformNode* pNode = mNodeMap[name];
-	if (pNode == nullptr) {
-		mNodes.emplace_back();
-		pNode = &mNodes.back();
-		pNode->pMot = this;
-		mNodeMap[name] = pNode;
-	}
-	return pNode;
-}
-*/
 
 uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp, GWTrackKind kind,
 	GWVectorF pOut[], GWVectorF& minVal, GWVectorF& maxVal, float defVal = 0.0f) {
@@ -78,8 +65,13 @@ uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp,
 			tuple[j] = tdchan[j] == nullptr ? 0.0f : tdchan[j]->get_val(i);
 		}
 		pOut[i].from_tuple(tuple);
-		GWTuple::max(maxVal, pOut[i], maxVal);
-		GWTuple::min(minVal, pOut[i], minVal);
+		if (i == 0) {
+			minVal = pOut[i];
+			maxVal = pOut[i];
+		} else {
+			GWTuple::max(maxVal, pOut[i], maxVal);
+			GWTuple::min(minVal, pOut[i], minVal);
+		}
 	}
 
 	return srcMask;
@@ -104,7 +96,6 @@ void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uin
 			}
 		}
 	}
-
 }
 
 bool GWMotion::load(const std::string & filePath) {
@@ -123,17 +114,17 @@ bool GWMotion::load(const std::string & filePath) {
 		size_t motLen = tdmot.length();
 		GWVectorF* pTmpVec = new GWVectorF[motLen];
 
-		NodeInfo* pNodeInfo = const_cast<NodeInfo*>(mpNodeInfo);
-		TrackInfo* pTrackInfo = const_cast<TrackInfo*>(mpTrackInfo); // !
+		NodeInfo* pNodeInfo = mpNodeInfo;
+		TrackInfo* pTrackInfo = mpTrackInfo;
 
 		for (const auto& entry : grpFunc.mGrpMap) {
 			cout << entry.first << endl;
 			TDMotion::XformGrp grp = (TDMotion::XformGrp)entry.second;
+			pNodeInfo->numFrames = motLen;
 			if (grp.has_rord()) {
 				const TDMotion::Channel* pROrdChan = tdmot.get_channel(entry.second.rOrd);
 				size_t num = pROrdChan->length();
 				pNodeInfo->pROrd = new GWRotationOrder[num];
-				pNodeInfo->rordLen = num;
 				for (size_t i = 0; i < pROrdChan->values.size(); ++i) {
 					float val = pROrdChan->values[i];
 					pNodeInfo->pROrd[i] = (GWRotationOrder)(uint8_t)val;
@@ -144,7 +135,6 @@ bool GWMotion::load(const std::string & filePath) {
 				const TDMotion::Channel* pXOrdChan = tdmot.get_channel(entry.second.xOrd);
 				size_t num = pXOrdChan->length();
 				pNodeInfo->pXOrd = new GWTransformOrder[num];
-				pNodeInfo->xordLen = num;
 				for (size_t i = 0; i < pXOrdChan->values.size(); ++i) {
 					float val = pXOrdChan->values[i];
 					pNodeInfo->pXOrd[i] = (GWTransformOrder)(uint8_t)val;
@@ -158,6 +148,7 @@ bool GWMotion::load(const std::string & filePath) {
 
 				pTrack->create_from_raw(pTmpVec, motLen, srcMask);
 				pTrack->srcMask = srcMask;
+				pNodeInfo->pTrnTrk = pTrack;
 			}
 
 			if (grp.has_scale()) {
@@ -167,6 +158,7 @@ bool GWMotion::load(const std::string & filePath) {
 
 				pTrack->create_from_raw(pTmpVec, motLen, srcMask);
 				pTrack->srcMask = srcMask;
+				pNodeInfo->pSclTrk = pTrack;
 			}
 
 			if (grp.has_rotation()) {
@@ -179,12 +171,19 @@ bool GWMotion::load(const std::string & filePath) {
 					q.set_radians(pTmpVec->x, pTmpVec->y, pTmpVec->z, pNodeInfo->get_rord(fno));
 					q.normalize();
 					pTmpVec[fno] = GWUnitQuaternion::log(q);
-					GWTuple::max(pTrack->maxVal, pTmpVec[fno], pTrack->maxVal);
-					GWTuple::min(pTrack->minVal, pTmpVec[fno], pTrack->minVal);
+
+					if (fno == 0) {
+						pTrack->minVal = pTmpVec[0];
+						pTrack->maxVal = pTmpVec[0];
+					} else {
+						GWTuple::max(pTrack->maxVal, pTmpVec[fno], pTrack->maxVal);
+						GWTuple::min(pTrack->minVal, pTmpVec[fno], pTrack->minVal);
+					}
 				}
 
 				pTrack->create_from_raw(pTmpVec, motLen, srcMask);
 				pTrack->srcMask = srcMask;
+				pNodeInfo->pRotTrk = pTrack;
 			}
 
 			++pNodeInfo;
