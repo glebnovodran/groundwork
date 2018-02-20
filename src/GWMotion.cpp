@@ -48,8 +48,6 @@ uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp,
 	const TDMotion::Channel* tdchan[3];
 	size_t motLen = tdmot.length();
 	uint8_t srcMask = 0;
-	minVal.fill(FLT_MAX);
-	maxVal.fill(-FLT_MAX);
 
 	const size_t* pChanIdx = &grp.idx[(uint8_t)kind * 3];
 	for (uint32_t i = 0; i < 3; ++i) {
