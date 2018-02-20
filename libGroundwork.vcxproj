@@ -19,15 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\TDMotion\src\TDMotion.cpp" />
     <ClCompile Include="src\GWBase.cpp" />
     <ClCompile Include="src\GWMatrix.cpp" />
+    <ClCompile Include="src\GWMotion.cpp" />
     <ClCompile Include="src\GWQuaternion.cpp" />
     <ClCompile Include="src\GWVector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\TDMotion\src\TDMotion.hpp" />
     <ClInclude Include="src\groundwork.hpp" />
     <ClInclude Include="src\GWBase.hpp" />
     <ClInclude Include="src\GWMatrix.hpp" />
+    <ClInclude Include="src\GWMotion.hpp" />
     <ClInclude Include="src\GWQuaternion.hpp" />
     <ClInclude Include="src\GWVector.hpp" />
   </ItemGroup>
@@ -106,6 +110,7 @@
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>../TDMotion/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -123,6 +128,7 @@
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>../TDMotion/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +152,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>../TDMotion/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,6 +177,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>../TDMotion/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

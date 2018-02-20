@@ -8,4 +8,5 @@
 *.filters
 *.user
 *.bak
+*.bak.*
 todo.txt

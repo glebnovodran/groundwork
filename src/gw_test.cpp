@@ -65,6 +65,7 @@ void test_quat() {
 	p.from_tuple(tuple4);
 	p.normalize();
 	p.conjugate();
+	GWQuaternionF qf(p);
 
 	GWQuaternionF t(1.0f, 2.0f, 3.0f, 0.5f);
 	t.normalize();
@@ -84,11 +85,17 @@ void test_quat() {
 
 }
 
+void test_motion() {
+	GWMotion mot;
+	mot.load("../data/row_names.txt");
+}
+
 int main(int argc, char* argv[]) {
 	test_basic();
 	test_tuple();
 	test_vec();
 	test_quat();
+	test_motion();
 
 	return 0;
 }
