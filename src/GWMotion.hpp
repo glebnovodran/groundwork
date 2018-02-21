@@ -21,13 +21,14 @@ public:
 			if (pFrmData != nullptr) { delete[] pFrmData; }
 		}
 
-		int get_stride() const {
-			int val = 0;
+		uint32_t get_stride() const {
+			uint32_t val = 0;
 			for (int i = 0; i < 3; ++i) {
 				if (dataMask & (1 << i)) { ++val; }
 			}
 			return val;
 		}
+		float* get_at(int32_t fno) const { return pFrmData + get_stride() * fno; }
 
 		void create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask);
 	};
@@ -72,7 +73,7 @@ public:
 			return (pROrd == nullptr) ? GWRotationOrder::XYZ : pROrd[frameNo % numFrames];
 		}
 
-		const TrackInfo* get_track_info(GWTrackKind kind) const;
+		const TrackInfo* get_track_info(GWTrackKind kind) const { return pTrk[(uint8_t)kind]; }
 	};
 
 	class Node {
@@ -102,7 +103,7 @@ public:
 	Node get_node(const char* name) const;
 	Node get_node_by_id(uint32_t id) const;
 
-	GWVectorF get_val(uint32_t nodeId, GWTrackKind trackKind, int fno) const;
+	GWVectorF get_val(uint32_t nodeId, GWTrackKind trackKind, int frameNo) const;
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;
 	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = false) const {
 		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));

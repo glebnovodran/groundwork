@@ -10,6 +10,57 @@
 static bool HAS_NAMES = true;
 static bool COLUMN_CHANS = false;
 
+void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
+	assert(pFrmData == nullptr);
+	GWVectorF dim = maxVal - minVal;
+	int numChan = 0;
+	for (int i = 0; i < 3; ++i) {
+		if (dim[i] != 0.0f) {
+			dataMask |= (1 << i);
+			++numChan;
+		}
+	}
+	pFrmData = new float[numChan * len];
+	float* pData = pFrmData;
+	for (int fno = 0; fno < len; ++fno) {
+		for (int i = 0; i < 3; ++i) {
+			if (dataMask & (1 << i)) {
+				*pData++ = pRawData[fno][i];
+			}
+		}
+	}
+	numFrames = len;
+}
+
+GWVectorF GWMotion::get_val(uint32_t nodeId, GWTrackKind trackKind, int frameNo) const {
+	GWVectorF val(0.0f);
+	if (trackKind == GWTrackKind::SCL) {
+		val.fill(1.0f);
+	}
+
+	if (nodeId < mNumNodes) {
+		const TrackInfo* pTrack = mpNodeInfo[nodeId].get_track_info(trackKind);
+		if (pTrack != nullptr) {
+			int32_t len = (int32_t)pTrack->numFrames;
+			int fno = frameNo % len;
+			fno = fno < 0 ? fno + len : fno;
+			float* pData = pTrack->get_at(fno);
+
+			uint32_t dataMask = pTrack->dataMask;
+			uint32_t srcMask = pTrack->srcMask;
+			for (int i = 0; i < 3; ++i) {
+				if (dataMask & (1 << i)) {
+					val[i] = *pData++;
+				} else if (srcMask & (1 << i)) {
+					val[i] = pTrack->minVal[i];
+				}
+			}
+		}
+	}
+
+	return val;
+}
+
 class CollectGrpFunc : public TDMotion::XformGrpFunc {
 protected:
 	const GWMotion* mpMot;
@@ -56,7 +107,7 @@ uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp,
 			tdchan[i] = tdmot.get_channel(pChanIdx[i]);
 		} else { tdchan[i] = nullptr; }
 	}
-	
+
 	for (uint32_t i = 0; i < motLen; ++i) {
 		GWTuple3f tuple;
 		for (uint32_t j = 0; j < 3; ++j) {
@@ -73,27 +124,6 @@ uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp,
 	}
 
 	return srcMask;
-}
-
-void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
-	assert(pFrmData == nullptr);
-	GWVectorF dim = maxVal - minVal;
-	int numChan = 0;
-	for (int i = 0; i < 3; ++i) {
-		if (dim[i] != 0.0f) {
-			dataMask |= (1 << i);
-			++numChan;
-		}
-	}
-	pFrmData = new float[numChan * len];
-	float* pData = pFrmData;
-	for (int fno = 0; fno < len; ++fno) {
-		for (int i = 0; i < 3; ++i) {
-			if (dataMask & (1 << i)) {
-				*pData++ = pRawData[fno][i];
-			}
-		}
-	}
 }
 
 bool GWMotion::load(const std::string & filePath) {
@@ -187,9 +217,10 @@ bool GWMotion::load(const std::string & filePath) {
 			++pNodeInfo;
 		}
 
+		mNumNodes = numNodes;
+		mNumTracks = numTracks;
 		delete[] pTmpVec;
 		return true;
 	}
 	return false;
 }
-
