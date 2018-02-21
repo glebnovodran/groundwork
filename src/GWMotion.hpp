@@ -83,6 +83,7 @@ public:
 		Node(const GWMotion* pMot, uint32_t nodeId = 0) : mpMot(pMot), mNodeId(nodeId) {}
 	public:
 		// eval_xform(float frame)
+		Track get_track(GWTrackKind kind);
 		friend class GWMotion;
 	};
 protected:
@@ -100,8 +101,6 @@ public:
 
 	Node get_node(const char* name) const;
 	Node get_node_by_id(uint32_t id) const;
-
-	Track get_track(const Node& node, int trackKind) const;
 
 	GWVectorF get_val(uint32_t nodeId, GWTrackKind trackKind, int fno) const;
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;
