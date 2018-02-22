@@ -28,7 +28,24 @@ public:
 			}
 			return val;
 		}
+
 		float* get_at(int32_t fno) const { return pFrmData + get_stride() * fno; }
+
+		GWVectorF get_vec_at(int32_t fno) const {
+			GWVectorF val(0.0f);
+			if (kind == GWTrackKind::SCL) {
+				val.fill(1.0f);
+			}
+			float* pData = get_at(fno);
+			for (int i = 0; i < 3; ++i) {
+				if (dataMask & (1 << i)) {
+					val[i] = *pData++;
+				} else if (srcMask & (1 << i)) {
+					val[i] = minVal[i];
+				}
+			}
+			return val;
+		};
 
 		void create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask);
 	};
@@ -103,11 +120,11 @@ public:
 	Node get_node(const char* name) const;
 	Node get_node_by_id(uint32_t id) const;
 
-	GWVectorF get_val(uint32_t nodeId, GWTrackKind trackKind, int frameNo) const;
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;
 	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = false) const {
 		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
 	}
 	// eval_xform(uint32_t nodeId, float frame);
-
+protected:
+	GWVectorF get_vec_at(const TrackInfo* pTrack);
 };

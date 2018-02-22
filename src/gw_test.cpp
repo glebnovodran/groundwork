@@ -86,8 +86,14 @@ void test_quat() {
 }
 
 void test_motion() {
+	using namespace std;
 	GWMotion mot;
-	mot.load("../data/row_names.txt");
+	if (mot.load("../data/row_names.txt")) {
+		for (int i = 0; i < 100; ++i) {
+			GWVectorF val = mot.eval(0, GWTrackKind::ROT, i + 0.5f);
+			cout << val.x << " " << val.y << " " << val.z << endl;
+		}
+	}
 }
 
 int main(int argc, char* argv[]) {

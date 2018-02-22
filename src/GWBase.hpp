@@ -41,6 +41,7 @@ namespace GWBase {
 
 	template<typename T> inline T clamp(T x, T lo, T hi) { return std::max(std::min(x, hi), lo); }
 	template<typename T> inline T saturate(T x) { return clamp<T>(x, T(0), T(1)); }
+	template<typename T> inline T lerp(T a, T b, T t) { return a + (b - a)*t; }
 
 	template<typename T> inline T limit_pi(T rad) {
 		rad = ::fmod(rad, 2*pi);
@@ -157,6 +158,28 @@ namespace GWTuple {
 
 	template<typename TUPLE_DST_T> inline void neg(TUPLE_DST_T& dst) {
 		GWTuple::neg(dst, dst);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T, typename T> inline void lerp(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = typename TUPLE_DST_T::elem_t( GWBase::lerp(a.elems[i], b.elems[i], t));
+		}
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename T> inline void lerp(TUPLE_DST_T& a, const TUPLE_SRC_T& b, T t) {
+		GWTuple::lerp(a, a, b, t);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T, typename T> inline void lerp_fma(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = typename TUPLE_DST_T::elem_t(::fma(b.elems[i] - a.elems[i], t, a.elems[i]));
+		}
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename T> inline void lerp_fma(TUPLE_DST_T& a, const TUPLE_SRC_T& b, T t) {
+		GWTuple::lerp_fma(a, a, b, t);
 	}
 
 	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void abs(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {

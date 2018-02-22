@@ -32,35 +32,6 @@ void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uin
 	numFrames = len;
 }
 
-GWVectorF GWMotion::get_val(uint32_t nodeId, GWTrackKind trackKind, int frameNo) const {
-	GWVectorF val(0.0f);
-	if (trackKind == GWTrackKind::SCL) {
-		val.fill(1.0f);
-	}
-
-	if (nodeId < mNumNodes) {
-		const TrackInfo* pTrack = mpNodeInfo[nodeId].get_track_info(trackKind);
-		if (pTrack != nullptr) {
-			int32_t len = (int32_t)pTrack->numFrames;
-			int fno = frameNo % len;
-			fno = fno < 0 ? fno + len : fno;
-			float* pData = pTrack->get_at(fno);
-
-			uint32_t dataMask = pTrack->dataMask;
-			uint32_t srcMask = pTrack->srcMask;
-			for (int i = 0; i < 3; ++i) {
-				if (dataMask & (1 << i)) {
-					val[i] = *pData++;
-				} else if (srcMask & (1 << i)) {
-					val[i] = pTrack->minVal[i];
-				}
-			}
-		}
-	}
-
-	return val;
-}
-
 class CollectGrpFunc : public TDMotion::XformGrpFunc {
 protected:
 	const GWMotion* mpMot;
@@ -196,7 +167,7 @@ bool GWMotion::load(const std::string & filePath) {
 
 				for (uint32_t fno = 0; fno < motLen; ++fno) {
 					GWQuaternionF q;
-					q.set_radians(pTmpVec->x, pTmpVec->y, pTmpVec->z, pNodeInfo->get_rord(fno));
+					q.set_radians(pTmpVec[fno].x, pTmpVec[fno].y, pTmpVec[fno].z, pNodeInfo->get_rord(fno));
 					q.normalize();
 					pTmpVec[fno] = GWUnitQuaternion::log(q);
 
@@ -224,3 +195,30 @@ bool GWMotion::load(const std::string & filePath) {
 	}
 	return false;
 }
+
+GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const {
+	GWVectorF val(0.0f);
+	if (trackKind == GWTrackKind::SCL) {
+		val.fill(1.0f);
+	}
+	if (nodeId < mNumNodes) {
+		const TrackInfo* pTrack = mpNodeInfo[nodeId].get_track_info(trackKind);
+		if (pTrack != nullptr) {
+			float len = (float)pTrack->numFrames;
+			float maxFrame = len - 1.0f;
+			float f = ::fmodf(frame, len);
+			f = f < 0 ? f + len : f;
+			float fstart = ::truncf(f);
+			float bias = f - fstart;
+			int32_t istart = (int32_t)fstart;
+			val = pTrack->get_vec_at(istart);
+			if (bias > 0.0f) {
+				int32_t iend = (istart == maxFrame) ? 0 : istart + 1;
+				GWVectorF valB = pTrack->get_vec_at(iend);
+				GWTuple::lerp(val, valB, bias);
+			}
+		}
+	}
+	return val;
+}
+
