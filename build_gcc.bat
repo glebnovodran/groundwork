@@ -1,1 +1,1 @@
-g++ -std=c++11 -g -O2 -I../TDMotion/src -I./src ../TDMotion/src/TDMotion.cpp ./src/GWBase.cpp ./src/GWVector.cpp ./src/GWQuaternion.cpp ./src/GWMotion.cpp ./src/gw_test.cpp
+g++ -std=c++11 -g -O2 -mavx2 -mfma -I../TDMotion/src -I./src ../TDMotion/src/TDMotion.cpp ./src/GWBase.cpp ./src/GWVector.cpp ./src/GWQuaternion.cpp ./src/GWMotion.cpp ./src/gw_test.cpp

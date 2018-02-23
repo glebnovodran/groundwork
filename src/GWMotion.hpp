@@ -53,14 +53,17 @@ public:
 	class Track {
 	private:
 		const GWMotion* mpMot;
-		uint32_t mTrackKind;
 		uint32_t mNodeId;
+		GWTrackKind mTrackKind;
 
-		Track(const GWMotion* pMot, uint32_t trackKind = 0, uint32_t nodeId = 0) : mpMot(pMot), mTrackKind(trackKind), mNodeId(nodeId) {}
+		Track(const GWMotion* pMot, GWTrackKind trackKind = GWTrackKind::ROT, uint32_t nodeId = 0) : mpMot(pMot), mTrackKind(trackKind), mNodeId(nodeId) {}
 	public:
-		GWVectorF get_val(int fno); // ==> mpMot->get_val(mNodeId, mTrackKind, fno)
-		GWVectorF eval(float frame);
-		GWQuaternionF eval_quat(float frame);
+		GWVectorF eval(float frame) const {
+			return mpMot->eval(mNodeId, mTrackKind, frame);
+		}
+		GWQuaternionF eval_quat(float frame, bool useSlerp = false) const {
+			return mpMot->eval_quat(mNodeId, frame, useSlerp);
+		}
 
 		friend class GWMotion;
 	};
@@ -113,13 +116,14 @@ protected:
 public:
 	GWMotion() = default;
 
-	// load data create node groups and tracks
 	bool load(const std::string& filePath);
-	bool reset();
+	bool unload();
 
 	Node get_node(const char* name) const;
 	Node get_node_by_id(uint32_t id) const;
 
+	//get_node_info
+	//get_track_info
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;
 	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = false) const {
 		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
