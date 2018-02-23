@@ -167,7 +167,7 @@ bool GWMotion::load(const std::string & filePath) {
 
 				for (uint32_t fno = 0; fno < motLen; ++fno) {
 					GWQuaternionF q;
-					q.set_radians(pTmpVec[fno].x, pTmpVec[fno].y, pTmpVec[fno].z, pNodeInfo->get_rord(fno));
+					q.set_degrees(pTmpVec[fno].x, pTmpVec[fno].y, pTmpVec[fno].z, pNodeInfo->get_rord(fno));
 					q.normalize();
 					pTmpVec[fno] = GWUnitQuaternion::log(q);
 
