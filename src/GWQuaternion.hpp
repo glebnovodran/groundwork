@@ -38,15 +38,15 @@ public:
 	}
 
 	void set_rx(T rads) {
-		T h = rads / T(2);
+		T h = rads * T(0.5f);
 		GWTuple::set(mQ, ::sin(h), T(0), T(0), ::cos(h));
 	}
 	void set_ry(T rads) {
-		T h = rads / T(2);
+		T h = rads * T(0.5f);
 		GWTuple::set(mQ, T(0), ::sin(h), T(0), ::cos(h));
 	}
 	void set_rz(T rads) {
-		T h = rads / T(2);
+		T h = rads * T(0.5f);
 		GWTuple::set(mQ, T(0), T(0), ::sin(h), ::cos(h));
 	}
 
@@ -137,7 +137,7 @@ public:
 		T sq = q.S();
 		T sp = p.S();
 		T s = sq*sp - vq.dot(vp);
-		GWVectorBase<T> v = sq*vq + sp*vq + GWVector::cross(vq, vp);
+		GWVectorBase<T> v = sq*vp + sp*vq + GWVector::cross(vq, vp);
 		set_vs(v, s);
 	}
 	void mul(const GWQuaternionBase& q) { mul(*this, q); }
