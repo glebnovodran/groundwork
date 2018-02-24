@@ -22,7 +22,7 @@ void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uin
 	}
 	pFrmData = new float[numChan * len];
 	float* pData = pFrmData;
-	for (int fno = 0; fno < len; ++fno) {
+	for (uint32_t fno = 0; fno < len; ++fno) {
 		for (int i = 0; i < 3; ++i) {
 			if (dataMask & (1 << i)) {
 				*pData++ = pRawData[fno][i];
@@ -201,6 +201,18 @@ bool GWMotion::load(const std::string & filePath) {
 		return true;
 	}
 	return false;
+}
+
+void GWMotion::unload() {
+	TrackInfo* pTrackInfo = mpTrackInfo;
+	for (uint32_t i = 0; i < mNumTracks; ++i) {
+		delete[] pTrackInfo->pFrmData;
+		++pTrackInfo;
+	}
+	delete[] mpTrackInfo;
+	mpTrackInfo = nullptr;
+	delete[] mpNodeInfo;
+	mpNodeInfo = nullptr;
 }
 
 GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const {

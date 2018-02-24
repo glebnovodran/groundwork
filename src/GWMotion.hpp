@@ -4,6 +4,7 @@
 
 class GWMotion {
 public:
+	static const uint32_t NONE = (uint32_t)-1;
 
 	struct TrackInfo {
 		float* pFrmData;
@@ -54,17 +55,19 @@ public:
 	private:
 		const GWMotion* mpMot;
 		uint32_t mNodeId;
-		GWTrackKind mTrackKind;
+		GWTrackKind mKind;
 
-		Track(const GWMotion* pMot, GWTrackKind trackKind = GWTrackKind::ROT, uint32_t nodeId = 0) : mpMot(pMot), mTrackKind(trackKind), mNodeId(nodeId) {}
+		Track(const GWMotion* pMot, uint32_t nodeId = 0, GWTrackKind trackKind = GWTrackKind::ROT) : mpMot(pMot), mNodeId(nodeId), mKind(trackKind) {}
 	public:
 		GWVectorF eval(float frame) const {
-			return mpMot->eval(mNodeId, mTrackKind, frame);
+			return mpMot->eval(mNodeId, mKind, frame);
 		}
 		GWQuaternionF eval_quat(float frame, bool useSlerp = false) const {
 			return mpMot->eval_quat(mNodeId, frame, useSlerp);
 		}
-
+		
+		bool is_invalid() const { (mNodeId == NONE) && (mpMot == nullptr); }
+		static const Track invalid() { return Track(nullptr, NONE); }
 		friend class GWMotion;
 	};
 
@@ -92,7 +95,7 @@ public:
 		GWRotationOrder get_rord(uint32_t frameNo) const {
 			return (pROrd == nullptr) ? GWRotationOrder::XYZ : pROrd[frameNo % numFrames];
 		}
-
+		bool has_track(GWTrackKind kind) const { return pTrk[(uint8_t)kind] != nullptr; }
 		const TrackInfo* get_track_info(GWTrackKind kind) const { return pTrk[(uint8_t)kind]; }
 	};
 
@@ -104,7 +107,16 @@ public:
 		Node(const GWMotion* pMot, uint32_t nodeId = 0) : mpMot(pMot), mNodeId(nodeId) {}
 	public:
 		// eval_xform(float frame)
-		Track get_track(GWTrackKind kind);
+		const NodeInfo* get_node_info() const {
+			return mpMot->get_node_info(mNodeId);
+		}
+		Track get_track(GWTrackKind kind) {
+			const NodeInfo* pNodeInfo = get_node_info();
+			return pNodeInfo->has_track(kind) ? Track(mpMot, mNodeId, kind) : Track::invalid();
+		}
+
+		bool is_invalid() const { (mNodeId == NONE) && (mpMot == nullptr); }
+
 		friend class GWMotion;
 	};
 protected:
@@ -117,18 +129,24 @@ public:
 	GWMotion() = default;
 
 	bool load(const std::string& filePath);
-	bool unload();
+	void unload();
 
 	Node get_node(const char* name) const;
 	Node get_node_by_id(uint32_t id) const;
 
-	//get_node_info
-	//get_track_info
+	NodeInfo* get_node_info(uint32_t id) const { return id < mNumNodes ? &mpNodeInfo[id] : nullptr; }
+	TrackInfo* get_track_info(uint32_t id) const { return id < mNumTracks ? &mpTrackInfo[id] : nullptr; }
+
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;
 	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = false) const {
 		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
 	}
 	// eval_xform(uint32_t nodeId, float frame);
+
+	bool dump_clip(std::ostream& os, bool quatRot = true, bool quatLog = false, bool rle = false) const;
+	void save_clip(const std::string& path, bool rle = false) const;
+
+	friend std::ostream& operator << (std::ostream& os, GWMotion& mot);
 protected:
 	GWVectorF get_vec_at(const TrackInfo* pTrack);
 };
