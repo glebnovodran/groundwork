@@ -17,7 +17,7 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 		/* ZYX */{ 2, 1, 0, 0 }
 	};
 
-	GWVectorBase<T> radians(T(0.0f));
+	GWVectorBase<T> radians(0);
 	GWTuple4<T> tuple = q.get_tuple();
 	GWTuple::abs(tuple);
 	int numAxis = 0;
@@ -54,7 +54,7 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 	};
 
 	radians[i0] = ::atan2(rotM[1][2], rotM[2][2]);
-	radians[i1] = ::atan2f(-rotM[0][2], ::sqrt(rotM[0][0] * rotM[0][0] + rotM[0][1] * rotM[0][1]));
+	radians[i1] = ::atan2(-rotM[0][2], ::sqrt(rotM[0][0] * rotM[0][0] + rotM[0][1] * rotM[0][1]));
 	float s = ::sin(radians[i0]);
 	float c = ::cos(radians[i0]);
 	radians[i2] = ::atan2(s*rotM[2][0] - c * rotM[1][0], c*rotM[1][1] - s * rotM[2][1]);
