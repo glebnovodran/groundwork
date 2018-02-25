@@ -13,7 +13,8 @@ enum class GWTransformOrder : uint8_t {
 	RST = 2,
 	RTS = 3,
 	TSR = 4,
-	TRS = 5
+	TRS = 5,
+	MAX = TRS
 };
 
 enum class GWRotationOrder : uint8_t {
@@ -22,7 +23,8 @@ enum class GWRotationOrder : uint8_t {
 	YXZ = 2,
 	YZX = 3,
 	ZXY = 4,
-	ZYX = 5
+	ZYX = 5,
+	MAX = ZYX
 };
 
 enum class GWTrackKind : uint8_t {
@@ -43,7 +45,7 @@ namespace GWBase {
 	template<typename T> inline T saturate(T x) { return clamp<T>(x, T(0), T(1)); }
 	template<typename T> inline T lerp(T a, T b, T t) { return a + (b - a)*t; }
 
-	template<typename T> inline T limit_pi(T rad) {
+	template<typename T> inline T mod_pi(T rad) {
 		rad = ::fmod(rad, 2*pi);
 		if (::fabs(rad) > pi) {
 			if (rad < T(0)) {
