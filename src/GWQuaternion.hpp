@@ -59,7 +59,7 @@ public:
 		return GWVectorBase<T>(T(1) - T(2)*mQ.y*mQ.y - T(2)*mQ.z*mQ.z, T(2)*mQ.x*mQ.y + T(2)*mQ.w*mQ.z, T(2)*mQ.x*mQ.z - T(2)*mQ.w*mQ.y);
 	}
 	GWVectorBase<T> axis_y() const {
-		return GWVectorBase<T>(T(2)*mQ.x*mQ.y - T(2)*mQ.w*mQ.z, T(1) - T(2)*mQ.x*mQ.x + T(2)*mQ.z*mQ.z, T(2)*mQ.y*mQ.z + T(2)*mQ.w*mQ.x);
+		return GWVectorBase<T>(T(2)*mQ.x*mQ.y - T(2)*mQ.w*mQ.z, T(1) - T(2)*mQ.x*mQ.x - T(2)*mQ.z*mQ.z, T(2)*mQ.y*mQ.z + T(2)*mQ.w*mQ.x);
 	}
 	GWVectorBase<T> axis_z() const {
 		return GWVectorBase<T>(T(2)*mQ.x*mQ.z + T(2)*mQ.w*mQ.y, T(2)*mQ.y*mQ.z - T(2)*mQ.w*mQ.x, T(1) - T(2)*mQ.x*mQ.x - T(2)*mQ.y*mQ.y);
@@ -180,6 +180,11 @@ namespace GWUnitQuaternion {
 	}
 
 	template<typename T> GWVectorBase<T> get_radians(const GWQuaternionBase<T>& q, GWRotationOrder order = GWRotationOrder::XYZ);
+	template<typename T> GWVectorBase<T> get_degrees(const GWQuaternionBase<T>& q, GWRotationOrder order = GWRotationOrder::XYZ) {
+		GWVectorBase<T> r = get_radians(q, order);
+		r.scl(T(180) / GWBase::pi);
+		return r;
+	}
 
 	// Geodesic distance on the unit sphere
 	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
