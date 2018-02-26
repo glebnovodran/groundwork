@@ -182,7 +182,7 @@ namespace GWUnitQuaternion {
 	template<typename T> GWVectorBase<T> get_radians(const GWQuaternionBase<T>& q, GWRotationOrder order = GWRotationOrder::XYZ);
 	template<typename T> GWVectorBase<T> get_degrees(const GWQuaternionBase<T>& q, GWRotationOrder order = GWRotationOrder::XYZ) {
 		GWVectorBase<T> r = get_radians(q, order);
-		r.scl(T(180) / GWBase::pi);
+		r.scl(T(180 / GWBase::pi));
 		return r;
 	}
 
@@ -192,7 +192,7 @@ namespace GWUnitQuaternion {
 		GWQuaternionBase<T> qnorm, pnorm;
 		qnorm.normalize(q);
 		pnorm.normalize(p);
-		return (T)(::acos(GWBase::saturate(::fabs(qnorm.dot(pnorm)))) / (GWBase::pi / 2));
+		return T((::acos(GWBase::saturate(::fabs(qnorm.dot(pnorm)))) / (GWBase::pi / 2)));
 	}
 }
 
