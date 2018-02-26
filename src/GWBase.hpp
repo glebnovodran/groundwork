@@ -46,12 +46,13 @@ namespace GWBase {
 	template<typename T> inline T lerp(T a, T b, T t) { return a + (b - a)*t; }
 
 	template<typename T> inline T mod_pi(T rad) {
-		rad = ::fmod(rad, 2*pi);
+		T twoPi = T(2 * pi);
+		rad = ::fmod(rad, twoPi);
 		if (::fabs(rad) > pi) {
 			if (rad < T(0)) {
-				rad = T(2)*pi + rad;
+				rad = twoPi + rad;
 			} else {
-				rad = rad - T(2)*pi;
+				rad = rad - twoPi;
 			}
 		}
 		return rad;
