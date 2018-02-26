@@ -29,6 +29,8 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 		}
 	}
 
+	if (numAxis == 0) { return radians; }
+
 	if (numAxis == 1) {
 		T w = GWBase::clamp(tuple.w, T(-1.0f), T(1.0f));
 		T r = ::acos(w) * 2.0f;
