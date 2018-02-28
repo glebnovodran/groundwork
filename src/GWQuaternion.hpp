@@ -37,6 +37,17 @@ public:
 		GWTuple::set(mQ, T(0), T(0), T(0), T(1));
 	}
 
+	static GWQuaternionBase get_zero() {
+		GWQuaternionBase q;
+		q.set_zero();
+		return q;
+	}
+	static GWQuaternionBase get_identity() {
+		GWQuaternionBase q;
+		q.set_identity();
+		return q;
+	}
+
 	void set_rx(T rads) {
 		T h = rads * T(0.5f);
 		GWTuple::set(mQ, ::sin(h), T(0), T(0), ::cos(h));

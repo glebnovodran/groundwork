@@ -232,7 +232,10 @@ void GWMotion::unload() {
 	delete[] mpNodeInfo;
 	mpNodeInfo = nullptr;
 	delete[] mpStrData;
-	mpStrData = 0;
+	mpStrData = nullptr;
+	mNumNodes = 0;
+	mNumTracks = 0;
+	mStrDataSz = 0;
 }
 
 GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const {
@@ -273,3 +276,4 @@ GWMotion::Node GWMotion::get_node(const char* name) {
 		return get_node_by_id(id);
 	}
 }
+

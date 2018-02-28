@@ -62,10 +62,10 @@ public:
 		Track(const GWMotion* pMot, uint32_t nodeId = 0, GWTrackKind trackKind = GWTrackKind::ROT) : mpMot(pMot), mNodeId(nodeId), mKind(trackKind) {}
 	public:
 		GWVectorF eval(float frame) const {
-			return mpMot->eval(mNodeId, mKind, frame);
+			return is_valid() ? mpMot->eval(mNodeId, mKind, frame) : GWVectorF(0.0f);;
 		}
 		GWQuaternionF eval_quat(float frame, bool useSlerp = false) const {
-			return mpMot->eval_quat(mNodeId, frame, useSlerp);
+			return is_valid() ? mpMot->eval_quat(mNodeId, frame, useSlerp) : GWQuaternionF::get_zero();
 		}
 		
 		bool is_valid() const { return (mNodeId != NONE) && (mpMot != nullptr); }
@@ -118,25 +118,32 @@ public:
 			return pNodeInfo && pNodeInfo->has_track(kind) ? Track(mpMot, mNodeId, kind) : Track::get_invalid();
 		}
 
+		GWVectorF eval(GWTrackKind trackKind, float frame) const {
+			return mpMot->eval(mNodeId, trackKind, frame);
+		}
+		GWQuaternionF eval_rot(float frame, bool useSlerp = false) const { return mpMot->eval_quat(mNodeId, frame, useSlerp); }
+		GWVectorF eval_trn(float frame) const { return eval(GWTrackKind::TRN, frame); }
+		GWVectorF eval_scl(float frame) const { return eval(GWTrackKind::SCL, frame); }
+
 		bool is_valid() const { return (mNodeId != NONE) && (mpMot != nullptr); }
 		static const Node get_invalid() { return Node(nullptr, NONE); }
 		friend class GWMotion;
 	};
-	struct CharCmp {
-		bool operator () (const char *a, const char *b) const {
-			return ::strcmp(a, b)<0;
-		}
-	};
+
 protected:
+	std::map<const char*, uint32_t, bool(*)(const char*, const char*)> mNodeMap;
 	NodeInfo* mpNodeInfo;
 	TrackInfo* mpTrackInfo;
+	char* mpStrData;
+
 	uint32_t mNumNodes;
 	uint32_t mNumTracks;
-	char* mpStrData;
 	uint32_t mStrDataSz;
-	std::map<const char*, uint32_t, CharCmp> mNodeMap;
+
 public:
-	GWMotion() = default;
+	GWMotion() : mNodeMap([](const char*a, const char*b) { return ::strcmp(a, b) < 0; }),
+		mpNodeInfo(nullptr), mpTrackInfo(nullptr), mpStrData(nullptr),
+		mNumNodes(0), mNumTracks(0), mStrDataSz(0) {}
 
 	bool load(const std::string& filePath);
 	void unload();
