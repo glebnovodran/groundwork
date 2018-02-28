@@ -1,6 +1,8 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
+#include <cstring>
+#include <map>
 
 class GWMotion {
 public:
@@ -66,8 +68,8 @@ public:
 			return mpMot->eval_quat(mNodeId, frame, useSlerp);
 		}
 		
-		bool is_invalid() const { (mNodeId == NONE) && (mpMot == nullptr); }
-		static const Track invalid() { return Track(nullptr, NONE); }
+		bool is_valid() const { return (mNodeId != NONE) && (mpMot != nullptr); }
+		static const Track get_invalid() { return Track(nullptr, NONE); }
 		friend class GWMotion;
 	};
 
@@ -82,12 +84,13 @@ public:
 		};
 		GWTransformOrder* pXOrd;
 		GWRotationOrder* pROrd;
+		char* pName;
 		uint32_t numFrames;
 		GWTransformOrder defXOrd;
 		GWRotationOrder defROrd;
 
 		NodeInfo() : pRotTrk(nullptr), pTrnTrk(nullptr), pSclTrk(nullptr), pXOrd(nullptr), pROrd(nullptr),
-			numFrames(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
+			pName(nullptr), numFrames(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
 
 		GWTransformOrder get_xord(uint32_t frameNo) const {
 			return (pXOrd == nullptr) ? GWTransformOrder::RST : pXOrd[frameNo % numFrames];
@@ -104,35 +107,44 @@ public:
 		const GWMotion* mpMot;
 		uint32_t mNodeId;
 
-		Node(const GWMotion* pMot, uint32_t nodeId = 0) : mpMot(pMot), mNodeId(nodeId) {}
+		Node(const GWMotion* pMot, uint32_t nodeId = NONE) : mpMot(pMot), mNodeId(nodeId) {}
 	public:
 		// eval_xform(float frame)
 		const NodeInfo* get_node_info() const {
-			return mpMot->get_node_info(mNodeId);
+			return is_valid() ? mpMot->get_node_info(mNodeId) : nullptr;
 		}
 		Track get_track(GWTrackKind kind) {
 			const NodeInfo* pNodeInfo = get_node_info();
-			return pNodeInfo->has_track(kind) ? Track(mpMot, mNodeId, kind) : Track::invalid();
+			return pNodeInfo && pNodeInfo->has_track(kind) ? Track(mpMot, mNodeId, kind) : Track::get_invalid();
 		}
 
-		bool is_invalid() const { (mNodeId == NONE) && (mpMot == nullptr); }
-
+		bool is_valid() const { return (mNodeId != NONE) && (mpMot != nullptr); }
+		static const Node get_invalid() { return Node(nullptr, NONE); }
 		friend class GWMotion;
+	};
+	struct CharCmp {
+		bool operator () (const char *a, const char *b) const {
+			return ::strcmp(a, b)<0;
+		}
 	};
 protected:
 	NodeInfo* mpNodeInfo;
 	TrackInfo* mpTrackInfo;
 	uint32_t mNumNodes;
 	uint32_t mNumTracks;
-
+	char* mpStrData;
+	uint32_t mStrDataSz;
+	std::map<const char*, uint32_t, CharCmp> mNodeMap;
 public:
 	GWMotion() = default;
 
 	bool load(const std::string& filePath);
 	void unload();
 
-	Node get_node(const char* name) const;
-	Node get_node_by_id(uint32_t id) const;
+	Node get_node(const char* name);
+	Node get_node_by_id(uint32_t id) const {
+		return id < mNumNodes ? Node(this, id) : Node::get_invalid();
+	}
 
 	NodeInfo* get_node_info(uint32_t id) const { return id < mNumNodes ? &mpNodeInfo[id] : nullptr; }
 	TrackInfo* get_track_info(uint32_t id) const { return id < mNumTracks ? &mpTrackInfo[id] : nullptr; }
@@ -147,6 +159,4 @@ public:
 	void save_clip(const std::string& path, bool rle = false) const;
 
 	friend std::ostream& operator << (std::ostream& os, GWMotion& mot);
-protected:
-	GWVectorF get_vec_at(const TrackInfo* pTrack);
 };

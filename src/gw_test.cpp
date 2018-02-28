@@ -4,7 +4,6 @@
  */
 
 #include <iostream>
-
 #include "groundwork.hpp"
 
 void test_basic() {
@@ -86,25 +85,41 @@ void test_quat() {
 	GWQuaternionF qq;
 	qq.set_degrees(-0.106412f, -8.22023f, -0.852421f);
 	qq.normalize();
-	qq.set_degrees(10.0f, 20.0f, 30.0f);
-	//qq.set_degrees(10.0f, 0.0f, 0.0f);
+
+	qq.set_radians(GWBase::pi / 4.0f, GWBase::pi / 8.0f, GWBase::pi / 4.0f);
+
 	qq.normalize();
+	GWVectorF radians = GWUnitQuaternion::get_radians(qq);
+	qq.set_degrees(10.0f, 20.0f, 30.0f);
+	GWVectorF degrees = GWUnitQuaternion::get_degrees(qq);
 }
 
 void test_motion() {
 	using namespace std;
 	GWMotion mot;
 	if (mot.load("../data/row_names.txt")) {
+		GWMotion::Node node = mot.get_node("/obj/j_Head");
+		GWMotion::Track rotTrk = node.get_track(GWTrackKind::ROT);
+		GWQuaternionF q = rotTrk.eval_quat(0.5f);
+		GWVectorF deg = GWUnitQuaternion::get_degrees(q);
+		uint32_t badId = 7777;
+		node = mot.get_node_by_id(badId);
+		rotTrk = node.get_track(GWTrackKind::ROT);
+		if (rotTrk.is_valid()) { q = rotTrk.eval_quat(10.0f); }
+
 		for (int i = 0; i < 100; ++i) {
 			GWVectorF val = mot.eval(0, GWTrackKind::ROT, i + 0.5f);
 			GWQuaternionF q = GWQuaternion::expmap_decode(val);
 			q.normalize();
 			cout << q.V().x << " " << q.V().y << " " << q.V().z << " " << q.S() <<endl;
 		}
+
+		node = mot.get_node("====");
 	}
 }
 
 int main(int argc, char* argv[]) {
+
 	test_basic();
 	test_tuple();
 	test_vec();

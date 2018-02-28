@@ -2,7 +2,6 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 #include <iostream>
-#include <map>
 #include <assert.h>
 #include <TDMotion.hpp>
 #include "groundwork.hpp"
@@ -63,6 +62,13 @@ public:
 		if (grpInfo.has_scale()) { ++numTracks; }
 		return numTracks;
 	}
+	uint32_t calc_str_size() const {
+		uint32_t size = 0;
+		for (const auto& pair: mGrpMap) {
+			size += pair.first.length();
+		}
+		return size;
+	}
 };
 
 uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp, GWTrackKind kind,
@@ -115,11 +121,22 @@ bool GWMotion::load(const std::string & filePath) {
 
 		NodeInfo* pNodeInfo = mpNodeInfo;
 		TrackInfo* pTrackInfo = mpTrackInfo;
-
+		mStrDataSz = grpFunc.calc_str_size() + numNodes;
+		mpStrData = new char[mStrDataSz];
+		char* pChar = mpStrData;
+		uint32_t idx = 0;
 		for (const auto& entry : grpFunc.mGrpMap) {
 			cout << entry.first << endl;
 			TDMotion::XformGrp grp = (TDMotion::XformGrp)entry.second;
 			pNodeInfo->numFrames = motLen;
+			pNodeInfo->pName = pChar;
+
+			uint32_t sz = entry.first.length();
+			entry.first.copy(pChar, sz);
+			pChar += sz;
+			*pChar = '\x0';
+			++pChar;
+
 			if (grp.has_rord()) {
 				const TDMotion::Channel* pROrdChan = tdmot.get_channel(entry.second.rOrd);
 				size_t num = pROrdChan->length();
@@ -191,8 +208,9 @@ bool GWMotion::load(const std::string & filePath) {
 				pTrack->srcMask = srcMask;
 				pNodeInfo->pRotTrk = pTrack;
 			}
-
+			mNodeMap[pNodeInfo->pName] = idx;
 			++pNodeInfo;
+			++idx;
 		}
 
 		mNumNodes = numNodes;
@@ -213,6 +231,8 @@ void GWMotion::unload() {
 	mpTrackInfo = nullptr;
 	delete[] mpNodeInfo;
 	mpNodeInfo = nullptr;
+	delete[] mpStrData;
+	mpStrData = 0;
 }
 
 GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const {
@@ -241,3 +261,15 @@ GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) co
 	return val;
 }
 
+GWMotion::Node GWMotion::get_node(const char* name) {
+	char* pName = const_cast<char*>(name);
+	const auto it = mNodeMap.find(name);
+	GWMotion::Node node(nullptr);
+	uint32_t id;
+	if (it == mNodeMap.cend()) {
+		return GWMotion::Node::get_invalid();
+	} else {
+		id = it->second;
+		return get_node_by_id(id);
+	}
+}
