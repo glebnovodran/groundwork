@@ -49,11 +49,7 @@ namespace GWBase {
 		T twoPi = T(2 * pi);
 		rad = ::fmod(rad, twoPi);
 		if (::fabs(rad) > pi) {
-			if (rad < T(0)) {
-				rad = twoPi + rad;
-			} else {
-				rad = rad - twoPi;
-			}
+			rad = rad < T(0) ? twoPi + rad : rad - twoPi;
 		}
 		return rad;
 	}
