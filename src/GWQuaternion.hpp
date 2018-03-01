@@ -200,11 +200,45 @@ namespace GWUnitQuaternion {
 	// Geodesic distance on the unit sphere
 	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
 	template<typename T>T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
-		GWQuaternionBase<T> qnorm, pnorm;
-		qnorm.normalize(q);
-		pnorm.normalize(p);
-		return T((::acos(GWBase::saturate(::fabs(qnorm.dot(pnorm)))) / (GWBase::pi / 2)));
+		return T((::acos(GWBase::saturate(::fabs(q.dot(p)))) / (GWBase::pi / 2)));
 	}
+
+	template<typename T> GWQuaternionBase<T> slerp(const GWQuaternionBase<T>& qa, const GWQuaternionBase<T>& qb, T t);
+/*
+	{
+		GWQuaternionBase<T> qres;
+		GWTuple4<T> res;
+		T c = qa.dot(qb);
+		GWTuple4<T> a = qa.get_tuple();
+		GWTuple4<T> b = qb.get_tuple();
+		T theta, s, invS;
+		T af;
+		T bf = T(1);
+
+		if (c < 0) {
+			c = -c;
+			bf = -bf;
+		}
+
+		if (::fabs(c) <= (T(1) - T(1e-5f))) {
+			GWBase::clamp(c, T(-1), T(1));
+			theta = ::acos(c);
+			s = ::sin(theta);
+			invS = T(1) / s;
+			af = ::sin(((1) - t)*theta) * invS;
+			bf *= ::sin(t*theta) * invS;
+		} else {
+			af = T(1) - t;
+			bf *= t;
+		}
+
+		for (int i = 0; i < 4; ++i) {
+			res[i] = af * a[i] + bf * b[i];
+		}
+		qres.from_tuple(res);
+		return qres;
+	}
+*/
 }
 
 namespace GWQuaternion {

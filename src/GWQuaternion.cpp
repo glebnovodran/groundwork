@@ -57,8 +57,8 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 
 	radians[i0] = ::atan2(rotM[1][2], rotM[2][2]);
 	radians[i1] = ::atan2(-rotM[0][2], ::sqrt(rotM[0][0] * rotM[0][0] + rotM[0][1] * rotM[0][1]));
-	float s = ::sin(radians[i0]);
-	float c = ::cos(radians[i0]);
+	T s = ::sin(radians[i0]);
+	T c = ::cos(radians[i0]);
 	radians[i2] = ::atan2(s*rotM[2][0] - c * rotM[1][0], c*rotM[1][1] - s * rotM[2][1]);
 
 	if (rotTbl[(uint32_t)order].positive == 0) {
@@ -73,6 +73,44 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 }
 
 template GWVectorBase<float> GWUnitQuaternion::get_radians(const GWQuaternionBase<float>& q, GWRotationOrder order);
+template GWVectorBase<double> GWUnitQuaternion::get_radians(const GWQuaternionBase<double>& q, GWRotationOrder order);
+
+template<typename T> GWQuaternionBase<T> GWUnitQuaternion::slerp(const GWQuaternionBase<T>& qa, const GWQuaternionBase<T>& qb, T t) {
+	GWQuaternionBase<T> qres;
+	GWTuple4<T> res;
+	T c = qa.dot(qb);
+	GWTuple4<T> a = qa.get_tuple();
+	GWTuple4<T> b = qb.get_tuple();
+	T theta, s, invS;
+	T af;
+	T bf = T(1);
+
+	if (c < 0) {
+		c = -c;
+		bf = -bf;
+	}
+
+	if (::fabs(c) <= (T(1) - T(1e-5f))) {
+		GWBase::clamp(c, T(-1), T(1));
+		theta = ::acos(c);
+		s = ::sin(theta);
+		invS = T(1) / s;
+		af = ::sin(((1) - t)*theta) * invS;
+		bf *= ::sin(t*theta) * invS;
+	} else {
+		af = T(1) - t;
+		bf *= t;
+	}
+
+	for (int i = 0; i < 4; ++i) {
+		res[i] = af * a[i] + bf * b[i];
+	}
+	qres.from_tuple(res);
+	return qres;
+}
+
+template GWQuaternionBase<float> GWUnitQuaternion::slerp(const GWQuaternionBase<float>& qa, const GWQuaternionBase<float>& qb, float t);
+template GWQuaternionBase<double> GWUnitQuaternion::slerp(const GWQuaternionBase<double>& qa, const GWQuaternionBase<double>& qb, double t);
 
 template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWRotationOrder order) {
 	static uint8_t tbl[] = {
