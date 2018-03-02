@@ -323,7 +323,7 @@ void dump_rot_track_to_clip(std::ostream & os, const GWMotion::Track& track, GWM
 				switch (dumpKind) {
 				case GWMotion::RotDumpKind::DEG: {
 						GWQuaternionF q = GWQuaternion::expmap_decode(vec);
-						vec = GWUnitQuaternion::get_radians(q);
+						vec = GWUnitQuaternion::get_degrees(q);
 						val = vec[i];
 					}
 					break;
