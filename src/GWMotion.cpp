@@ -2,12 +2,13 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 #include <iostream>
+#include <fstream>
 #include <assert.h>
 #include <TDMotion.hpp>
 #include "groundwork.hpp"
 
-static bool HAS_NAMES = true;
-static bool COLUMN_CHANS = false;
+static const bool HAS_NAMES = true;
+static const bool COLUMN_CHANS = false;
 
 void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
 	assert(pFrmData == nullptr);
@@ -264,7 +265,7 @@ GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) co
 	return val;
 }
 
-GWMotion::Node GWMotion::get_node(const char* name) {
+GWMotion::Node GWMotion::get_node(const char* name) const {
 	char* pName = const_cast<char*>(name);
 	const auto it = mNodeMap.find(name);
 	GWMotion::Node node(nullptr);
@@ -275,5 +276,131 @@ GWMotion::Node GWMotion::get_node(const char* name) {
 		id = it->second;
 		return get_node_by_id(id);
 	}
+}
+
+void dump_track_to_clip(std::ostream & os, const GWMotion::Track& track) {
+	using namespace std;
+
+	uint32_t numFrames = track.num_frames();
+	const GWMotion::TrackInfo* pInfo = track.get_track_info();
+	uint32_t srcMask = pInfo->srcMask;
+	const char* nodeName = track.node_name();
+
+	for (uint32_t i = 0; i < 3; ++i) {
+		if (srcMask & (1 << i)) {
+			os << "   {" << endl;
+			os << "      name = " << nodeName << ":" << "rts"[(uint32_t)track.kind()] << "xyz"[i] << endl;
+			os << "      data = ";
+			for (uint32_t fno = 0; fno < numFrames; ++fno) {
+				float val = track.eval(fno)[i];
+				os << " " << val;
+			}
+			os << endl;
+			os << "   }" << endl;
+		}
+	}
+}
+
+void dump_rot_track_to_clip(std::ostream & os, const GWMotion::Track& track, GWMotion::RotDumpKind dumpKind) {
+	using namespace std;
+
+	uint32_t numFrames = track.num_frames();
+	const GWMotion::TrackInfo* pInfo = track.get_track_info();
+	uint32_t mask = pInfo->srcMask;
+	const char* nodeName = track.node_name();
+	uint32_t maxComp = (dumpKind == GWMotion::RotDumpKind::QUAT) ? 4 : 3;
+	if ((dumpKind == GWMotion::RotDumpKind::QUAT) || (dumpKind == GWMotion::RotDumpKind::LOG)) {
+		mask = (1 << maxComp) - 1; // dump all components
+	}
+	for (uint32_t i = 0; i < maxComp; ++i) {
+		if (mask & (1 << i)) {
+			os << "   {" << endl;
+			os << "      name = " << nodeName << ":" << "q" << "xyzw"[i] << endl;
+			os << "      data = ";
+			for (uint32_t fno = 0; fno < numFrames; ++fno) {
+				GWVectorF vec = track.eval(fno);
+				float val;
+				switch (dumpKind) {
+				case GWMotion::RotDumpKind::DEG: {
+						GWQuaternionF q = GWQuaternion::expmap_decode(vec);
+						vec = GWUnitQuaternion::get_radians(q);
+						val = vec[i];
+					}
+					break;
+				case GWMotion::RotDumpKind::QUAT: {
+						GWQuaternionF q = GWQuaternion::expmap_decode(vec);
+						val = q.get_tuple()[i];
+					}
+					break;
+				case GWMotion::RotDumpKind::LOG:
+					val = vec[i];
+					break;
+				}
+				os << " " << val;
+			}
+			os << endl;
+			os << "   }" << endl;
+		}
+	}
+}
+
+bool GWMotion::dump_clip(std::ostream & os, RotDumpKind rotDumpKind, bool rle) const {
+	using namespace std;
+	// TODO: support for rord, xord
+	if (!os.good()) { return false; }
+	uint32_t numTracks = 0;
+	for (uint32_t id = 0; id < mNumNodes; ++id) {
+		Node node = get_node_by_id(id);
+		Track track = node.get_track(GWTrackKind::ROT);
+		if (track.is_valid()) {
+			switch (rotDumpKind) {
+				case GWMotion::RotDumpKind::DEG:
+					numTracks += track.num_src_chan();
+					break;
+				case GWMotion::RotDumpKind::QUAT:
+					numTracks += 4;
+					break;
+				case GWMotion::RotDumpKind::LOG:
+					numTracks += 3;
+					break;
+			}
+		}
+		track = node.get_track(GWTrackKind::TRN);
+		if (track.is_valid()) { numTracks += track.num_src_chan(); }
+		track = node.get_track(GWTrackKind::SCL);
+		if (track.is_valid()) { numTracks += track.num_src_chan(); }
+	}
+
+	os << "{" << endl;
+	os << "\trate = 60" << endl;
+	os << "\tstart = -1" << endl;
+	os << "\ttracklength = " << mpTrackInfo[0].numFrames << endl;
+	os << "\ttracks = " << numTracks << endl;
+
+	for (uint32_t id = 0; id < mNumNodes; ++id) {
+		Node node = get_node_by_id(id);
+		const char* nodeName = node.name();
+		Track track = node.get_track(GWTrackKind::ROT);
+		if (track.is_valid()) {
+			dump_rot_track_to_clip(os, track, rotDumpKind);
+		}
+		track = node.get_track(GWTrackKind::TRN);
+		if (track.is_valid()) {
+			dump_track_to_clip(os, track);
+		}
+		track = node.get_track(GWTrackKind::SCL);
+		if (track.is_valid()) {
+			dump_track_to_clip(os, track);
+		}
+	}
+	os << "}" << endl;
+	return true;
+}
+
+void GWMotion::save_clip(const std::string & path, RotDumpKind rotDump, bool rle) const {
+	using namespace std;
+	ofstream os(path);
+	dump_clip(os, rotDump, rle);
+	os.close();
 }
 

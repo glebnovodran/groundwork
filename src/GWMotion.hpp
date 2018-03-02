@@ -70,6 +70,38 @@ public:
 		
 		bool is_valid() const { return (mNodeId != NONE) && (mpMot != nullptr); }
 		static const Track get_invalid() { return Track(nullptr, NONE); }
+
+		uint32_t num_frames() const {
+			return is_valid() ? mpMot->num_frames() : 0;
+		}
+
+		const TrackInfo* get_track_info() const {
+			return is_valid() ? mpMot->get_track_info(mNodeId, mKind) : nullptr;
+		}
+
+		GWTrackKind kind() const { return mKind; }
+
+		uint32_t src_mask() const {
+			uint32_t mask = 0;
+			if (mpMot != nullptr) {
+				const TrackInfo* pInfo = get_track_info();
+				mask = pInfo->srcMask;
+			}
+			return mask;
+		}
+		uint32_t num_src_chan() const {
+			uint32_t mask = src_mask();
+			uint32_t num = 0;
+			for (uint32_t i = 0; i < 3; ++i) {
+				if (mask & (1 << i)) { ++num; }
+			}
+			return num;
+		}
+
+		const char* node_name() const {
+			return mpMot == nullptr ? "" : mpMot->get_node_name(mNodeId);
+		}
+
 		friend class GWMotion;
 	};
 
@@ -113,6 +145,11 @@ public:
 		const NodeInfo* get_node_info() const {
 			return is_valid() ? mpMot->get_node_info(mNodeId) : nullptr;
 		}
+
+		const char* name() const {
+			return mpMot == nullptr ? "" : mpMot->get_node_name(mNodeId);
+		}
+
 		Track get_track(GWTrackKind kind) {
 			const NodeInfo* pNodeInfo = get_node_info();
 			return pNodeInfo && pNodeInfo->has_track(kind) ? Track(mpMot, mNodeId, kind) : Track::get_invalid();
@@ -130,6 +167,11 @@ public:
 		friend class GWMotion;
 	};
 
+	enum RotDumpKind {
+		DEG = 0,
+		QUAT = 1,
+		LOG = 2
+	};
 protected:
 	std::map<const char*, uint32_t, bool(*)(const char*, const char*)> mNodeMap;
 	NodeInfo* mpNodeInfo;
@@ -148,22 +190,39 @@ public:
 	bool load(const std::string& filePath);
 	void unload();
 
-	Node get_node(const char* name);
+	Node get_node(const char* name) const;
 	Node get_node_by_id(uint32_t id) const {
 		return id < mNumNodes ? Node(this, id) : Node::get_invalid();
 	}
+	const NodeInfo* get_node_info(uint32_t id) const { return id < mNumNodes ? &mpNodeInfo[id] : nullptr; }
+	const TrackInfo* get_track_info(uint32_t trackId) const { return trackId < mNumTracks ? &mpTrackInfo[trackId] : nullptr; }
+	const TrackInfo* get_track_info(uint32_t nodeId, GWTrackKind kind) const {
+		const NodeInfo* pNodeInfo = get_node_info(nodeId);
+		const TrackInfo* pInfo = pNodeInfo == nullptr ? nullptr : pNodeInfo->get_track_info(kind);
+		return pInfo;
+	}
 
-	NodeInfo* get_node_info(uint32_t id) const { return id < mNumNodes ? &mpNodeInfo[id] : nullptr; }
-	TrackInfo* get_track_info(uint32_t id) const { return id < mNumTracks ? &mpTrackInfo[id] : nullptr; }
+	const char* get_node_name(uint32_t nodeId) const {
+		const NodeInfo* pInfo = get_node_info(nodeId);
+		return pInfo == nullptr ? "" : pInfo->pName;
+	}
+
+	// all tracks have the same length
+	uint32_t num_frames() const {
+		return mpTrackInfo == nullptr ? 0 : mpTrackInfo[0].numFrames;
+	}
 
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;
-	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = false) const {
+	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = true) const {
 		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
 	}
 	// eval_xform(uint32_t nodeId, float frame);
 
-	bool dump_clip(std::ostream& os, bool quatRot = true, bool quatLog = false, bool rle = false) const;
-	void save_clip(const std::string& path, bool rle = false) const;
+	bool dump_clip(std::ostream& os, RotDumpKind rotDump = RotDumpKind::QUAT, bool rle = false) const;
+	void save_clip(const std::string& path, RotDumpKind rotDump = RotDumpKind::QUAT, bool rle = false) const;
 
-	friend std::ostream& operator << (std::ostream& os, GWMotion& mot);
+	friend std::ostream& operator << (std::ostream& os, GWMotion& mot) {
+		mot.dump_clip(os);
+		return os;
+	}
 };

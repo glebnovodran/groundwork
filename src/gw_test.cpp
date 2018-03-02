@@ -92,12 +92,19 @@ void test_quat() {
 	GWVectorF radians = GWUnitQuaternion::get_radians(qq);
 	qq.set_degrees(10.0f, 20.0f, 30.0f);
 	GWVectorF degrees = GWUnitQuaternion::get_degrees(qq);
+
+	GWQuaternionF qx;
+	GWQuaternionF qy;
+	qx.set_degrees(30.0f, 30.0f, 0.0f);
+	qy.set_degrees(60.0f, 60.0f, 0.0f);
+
+	qq = GWUnitQuaternion::slerp(qx, qy, 0.5f);
 }
 
 void test_motion() {
 	using namespace std;
 	GWMotion mot;
-	if (mot.load("../data/row_names.txt")) {
+	if (mot.load("../data/walk_rn.txt")) {
 		GWMotion::Node node = mot.get_node("/obj/j_Head");
 		GWMotion::Track rotTrk = node.get_track(GWTrackKind::ROT);
 		GWQuaternionF q = rotTrk.eval_quat(0.5f);
@@ -115,6 +122,8 @@ void test_motion() {
 		}
 
 		node = mot.get_node("====");
+		mot.save_clip("../data/dump.clip");
+		mot.unload();
 	}
 }
 
