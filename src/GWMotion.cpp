@@ -308,9 +308,6 @@ void dump_rot_track_to_clip(std::ostream & os, const GWMotion::Track& track, GWM
 	const GWMotion::TrackInfo* pInfo = track.get_track_info();
 	uint32_t mask = pInfo->srcMask;
 	const char* nodeName = track.node_name();
-	if (::strcmp(nodeName, "/obj/ANIM/j_Elbow_L") == 0) {
-		int dummy = 0;
-	}
 	uint32_t maxComp = (dumpKind == GWMotion::RotDumpKind::QUAT) ? 4 : 3;
 	
 	char prefix;
