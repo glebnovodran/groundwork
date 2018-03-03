@@ -19,11 +19,10 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 
 	GWVectorBase<T> radians(0);
 	GWTuple4<T> tuple = q.get_tuple();
-	GWTuple::abs(tuple);
 	int numAxis = 0;
 	int idx = -1;
 	for (int i = 0; i < 3; ++i) {
-		if (tuple[i] > 1.0e-5f) {
+		if (::fabs(tuple[i]) > 1.0e-6f) {
 			++numAxis;
 			idx = i;
 		}
@@ -32,8 +31,9 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 	if (numAxis == 0) { return radians; }
 
 	if (numAxis == 1) {
-		T w = GWBase::clamp(tuple.w, T(-1.0f), T(1.0f));
+		T w = GWBase::clamp(tuple.w, T(-1), T(1));
 		T r = ::acos(w) * 2.0f;
+		r = tuple[idx] < 0 ? -r : r;
 		r = GWBase::mod_pi(r);
 		radians[idx] = r;
 		return radians;
