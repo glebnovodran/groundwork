@@ -308,14 +308,21 @@ void dump_rot_track_to_clip(std::ostream & os, const GWMotion::Track& track, GWM
 	const GWMotion::TrackInfo* pInfo = track.get_track_info();
 	uint32_t mask = pInfo->srcMask;
 	const char* nodeName = track.node_name();
+	if (::strcmp(nodeName, "/obj/ANIM/j_Elbow_L") == 0) {
+		int dummy = 0;
+	}
 	uint32_t maxComp = (dumpKind == GWMotion::RotDumpKind::QUAT) ? 4 : 3;
+	
+	char prefix;
 	if ((dumpKind == GWMotion::RotDumpKind::QUAT) || (dumpKind == GWMotion::RotDumpKind::LOG)) {
 		mask = (1 << maxComp) - 1; // dump all components
-	}
+		prefix = 'q';
+	} else { prefix = 'r'; }
+
 	for (uint32_t i = 0; i < maxComp; ++i) {
 		if (mask & (1 << i)) {
 			os << "   {" << endl;
-			os << "      name = " << nodeName << ":" << "q" << "xyzw"[i] << endl;
+			os << "      name = " << nodeName << ":" << prefix << "xyzw"[i] << endl;
 			os << "      data = ";
 			for (uint32_t fno = 0; fno < numFrames; ++fno) {
 				GWVectorF vec = track.eval(fno);
@@ -397,10 +404,10 @@ bool GWMotion::dump_clip(std::ostream & os, RotDumpKind rotDumpKind, bool rle) c
 	return true;
 }
 
-void GWMotion::save_clip(const std::string & path, RotDumpKind rotDump, bool rle) const {
+void GWMotion::save_clip(const std::string & path, RotDumpKind rotDumpKind, bool rle) const {
 	using namespace std;
 	ofstream os(path);
-	dump_clip(os, rotDump, rle);
+	dump_clip(os, rotDumpKind, rle);
 	os.close();
 }
 

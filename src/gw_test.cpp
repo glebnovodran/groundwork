@@ -122,7 +122,7 @@ void test_motion() {
 		}
 
 		node = mot.get_node("====");
-		mot.save_clip("../data/dump.clip");
+		mot.save_clip("../data/dump.clip", GWMotion::RotDumpKind::DEG);
 		mot.unload();
 	}
 }

@@ -218,8 +218,8 @@ public:
 	}
 	// eval_xform(uint32_t nodeId, float frame);
 
-	bool dump_clip(std::ostream& os, RotDumpKind rotDump = RotDumpKind::QUAT, bool rle = false) const;
-	void save_clip(const std::string& path, RotDumpKind rotDump = RotDumpKind::QUAT, bool rle = false) const;
+	bool dump_clip(std::ostream& os, RotDumpKind rotDumpKind = RotDumpKind::QUAT, bool rle = false) const;
+	void save_clip(const std::string& path, RotDumpKind rotDumpKind = RotDumpKind::QUAT, bool rle = false) const;
 
 	friend std::ostream& operator << (std::ostream& os, GWMotion& mot) {
 		mot.dump_clip(os);
