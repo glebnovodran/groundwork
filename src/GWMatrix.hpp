@@ -23,4 +23,13 @@ namespace GWMatrix {
 		}
 	}
 
+	template<typename DST_T, typename SRC1_T, typename SRC2_T>
+	inline void mul_vm(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int n) {
+		mul_mm(pDst, pVec, pMtx, 1, n, n);
+	}
+
+	template<typename DST_T, typename SRC1_T, typename SRC2_T>
+	inline void mul_mv(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int n) {
+		mul_mm(pDst, pVec, pMtx, n, n, 1);
+	}
 } // namespace

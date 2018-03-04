@@ -12,7 +12,7 @@ public:
 		GWTuple4<T> vec;
 		GWTuple::copy(vec, v);
 		vec[3] = 0;
-		GWMatrix::mul_mm(res.elems, vec.elems, &m[0][0], 1, 4, 4);
+		GWMatrix::mul_vm(res.elems, vec.elems, &m[0][0], 4);
 		return GWVectorBase<T>(res);
 	}
 
@@ -21,7 +21,7 @@ public:
 		GWTuple4<T> vec;
 		GWTuple::copy(vec, v);
 		vec[3] = 1;
-		GWMatrix::mul_mm(res.elems, vec.elems, &m[0][0], 1, 4, 4);
+		GWMatrix::mul_vm(res.elems, vec.elems, &m[0][0], 4);
 		return GWVectorBase<T>(res);
 	}
 };
