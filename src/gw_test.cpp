@@ -52,6 +52,18 @@ void test_vec() {
 	float laf = a.length_fast();
 }
 
+void test_mtx() {
+	GWTransformF xform = {
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		1, 1, 1, 1
+	};
+	GWVectorF v(1.0f, 1.0f, 1.0f);
+	GWVectorF res = xform.apply_vec(v);
+	res = xform.apply_pnt(v);
+}
+
 void test_quat() {
 	using namespace std;
 	GWQuaternionF q;
@@ -59,7 +71,7 @@ void test_quat() {
 	q.set_radians((float)GWBase::pi, 0.0f, (float)(GWBase::pi*0.5f));
 	q.log();
 
-	GWTuple4d tuple4 = { 1.0f, 0.0f, 1.0f, 0.5f };
+	GWTuple4d tuple4 = { 1.0, 0.0, 1.0, 0.5 };
 	GWQuaternionD p;
 	p.from_tuple(tuple4);
 	p.normalize();
@@ -99,6 +111,12 @@ void test_quat() {
 	qy.set_degrees(60.0f, 60.0f, 0.0f);
 
 	qq = GWUnitQuaternion::slerp(qx, qy, 0.5f);
+	qq.log();
+	GWQuaternionF q3(0.0f, 0.0f, 0.0f, 0.5f);
+	GWQuaternionF q2(qq);
+	q2.mul(q3);
+	qq.scl(0.5f);
+
 }
 
 void test_motion() {
@@ -132,6 +150,7 @@ int main(int argc, char* argv[]) {
 	test_basic();
 	test_tuple();
 	test_vec();
+	test_mtx();
 	test_quat();
 	test_motion();
 

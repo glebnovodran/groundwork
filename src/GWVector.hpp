@@ -6,6 +6,7 @@ template<typename T> class GWVectorBase :public GWTuple3<T> {
 public:
 	GWVectorBase() = default;
 	GWVectorBase(const GWTuple3<T>& tuple) { from_tuple(tuple); }
+	GWVectorBase(const GWTuple4<T>& tuple4) { from_tuple(tuple4); }
 	template<typename FILL_T> GWVectorBase(FILL_T s) { GWTuple::fill(*this, s); }
 	template<typename X_T, typename Y_T, typename Z_T> GWVectorBase(X_T x, Y_T y, Z_T z) { GWTuple::set(*this, x, y, z); }
 

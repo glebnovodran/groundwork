@@ -24,6 +24,7 @@
     <ClCompile Include="src\GWMatrix.cpp" />
     <ClCompile Include="src\GWMotion.cpp" />
     <ClCompile Include="src\GWQuaternion.cpp" />
+    <ClCompile Include="src\GWTransform.cpp" />
     <ClCompile Include="src\GWVector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +34,7 @@
     <ClInclude Include="src\GWMatrix.hpp" />
     <ClInclude Include="src\GWMotion.hpp" />
     <ClInclude Include="src\GWQuaternion.hpp" />
+    <ClInclude Include="src\GWTransform.hpp" />
     <ClInclude Include="src\GWVector.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

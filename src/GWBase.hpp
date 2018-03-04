@@ -201,6 +201,15 @@ namespace GWTuple {
 		return d;
 	}
 
+	template<typename TUPLE_T> inline typename TUPLE_T::elem_t sum(const TUPLE_T& v) {
+		int n = TUPLE_T::ELEMS_NUM;
+		typename TUPLE_T::elem_t s = TUPLE_T::elem_t(0);
+		for (int i = 1; i < n; ++i) {
+			s += v.elems[i];
+		}
+		return s;
+	}
+
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t min_elem(const TUPLE_T& v) {
 		int n = TUPLE_T::ELEMS_NUM;
 		typename TUPLE_T::elem_t min = v.elems[0];
@@ -309,6 +318,9 @@ template<typename T> struct GWTuple4 {
 	typedef T elem_t;
 	static const int ELEMS_NUM = 4;
 	union { struct { elem_t x, y, z, w; }; elem_t elems[ELEMS_NUM]; };
+
+	//GWTuple4() : x(0), y(0), z(0), w(0) {};
+	//GWTuple4(GWTuple3<T> tuple) : x(tuple.x), y(tuple.y), z(tuple.z), w(0) {}
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
 };
