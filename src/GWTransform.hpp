@@ -6,8 +6,14 @@ template<typename T> class GWTransform {
 public:
 	T m[4][4];
 
-	GWTransform() = default;
-	GWVectorBase<T> apply_vec(GWVectorBase<T> v) const {
+	void set_row(uint32_t idx, const GWVectorBase<T>& v, T pad = 0) {
+		for (int i = 0; i < 3; ++i) {
+			m[idx][i] = v[i];
+		}
+		m[idx][3] = pad;
+	}
+
+	GWVectorBase<T> calc_vec(const GWVectorBase<T>& v) const {
 		GWTuple4<T> res;
 		GWTuple4<T> vec;
 		GWTuple::copy(vec, v);
@@ -16,7 +22,7 @@ public:
 		return GWVectorBase<T>(res);
 	}
 
-	GWVectorBase<T> apply_pnt(GWVectorBase<T> v) const {
+	GWVectorBase<T> calc_pnt(const GWVectorBase<T>& v) const {
 		GWTuple4<T> res;
 		GWTuple4<T> vec;
 		GWTuple::copy(vec, v);

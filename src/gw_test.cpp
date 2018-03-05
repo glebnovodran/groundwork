@@ -60,8 +60,12 @@ void test_mtx() {
 		1, 1, 1, 1
 	};
 	GWVectorF v(1.0f, 1.0f, 1.0f);
-	GWVectorF res = xform.apply_vec(v);
-	res = xform.apply_pnt(v);
+	GWVectorF res = xform.calc_vec(v);
+	res = xform.calc_pnt(v);
+	GWVectorF vec;
+	GWTransformF xf;
+	GWQuaternionF q;
+	GWTuple3f tuple;
 }
 
 void test_quat() {
@@ -117,6 +121,11 @@ void test_quat() {
 	q2.mul(q3);
 	qq.scl(0.5f);
 
+	q.set_degrees(45, 30, 15);
+	GWTransformF xform = q.get_transform();
+	GWVectorF v(1.0f, 0.0f, 0.0f);
+	GWVectorF v1 = q.apply(v);
+	GWVectorF v2 = xform.calc_vec(v);
 }
 
 void test_motion() {
