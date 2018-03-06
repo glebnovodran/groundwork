@@ -62,10 +62,6 @@ void test_mtx() {
 	GWVectorF v(1.0f, 1.0f, 1.0f);
 	GWVectorF res = xform.calc_vec(v);
 	res = xform.calc_pnt(v);
-	GWVectorF vec;
-	GWTransformF xf;
-	GWQuaternionF q;
-	GWTuple3f tuple;
 }
 
 void test_quat() {
