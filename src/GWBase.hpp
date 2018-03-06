@@ -303,8 +303,6 @@ template<typename T> struct GWTuple2 {
 	static const int ELEMS_NUM = 2;
 	union { struct { elem_t x, y; }; elem_t elems[ELEMS_NUM]; };
 
-	GWTuple2() : x(0), y(0) {};
-	GWTuple2(T x0, T y0) : x(x0), y(y0) {}
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
 };
@@ -314,8 +312,6 @@ template<typename T> struct GWTuple3 {
 	static const int ELEMS_NUM = 3;
 	union { struct { elem_t x, y, z; }; elem_t elems[ELEMS_NUM]; };
 
-	GWTuple3() : x(0), y(0), z(0) {};
-	GWTuple3(T x0, T y0, T z0) : x(x0), y(y0), z(z0) {}
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
 };
@@ -325,8 +321,6 @@ template<typename T> struct GWTuple4 {
 	static const int ELEMS_NUM = 4;
 	union { struct { elem_t x, y, z, w; }; elem_t elems[ELEMS_NUM]; };
 
-	GWTuple4() : x(0), y(0), z(0), w(0) {};
-	GWTuple4(T x0, T y0, T z0, T w0) : x(x0), y(y0), z(z0), w(w0) {}
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
 };
