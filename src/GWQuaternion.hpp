@@ -66,13 +66,13 @@ public:
 		set_radians(GWBase::radians(dx), GWBase::radians(dy), GWBase::radians(dz), order);
 	}
 
-	GWVectorBase<T> axis_x() const {
+	GWVectorBase<T> calc_axis_x() const {
 		return GWVectorBase<T>(T(1) - T(2)*mQ.y*mQ.y - T(2)*mQ.z*mQ.z, T(2)*mQ.x*mQ.y + T(2)*mQ.w*mQ.z, T(2)*mQ.x*mQ.z - T(2)*mQ.w*mQ.y);
 	}
-	GWVectorBase<T> axis_y() const {
+	GWVectorBase<T> calc_axis_y() const {
 		return GWVectorBase<T>(T(2)*mQ.x*mQ.y - T(2)*mQ.w*mQ.z, T(1) - T(2)*mQ.x*mQ.x - T(2)*mQ.z*mQ.z, T(2)*mQ.y*mQ.z + T(2)*mQ.w*mQ.x);
 	}
-	GWVectorBase<T> axis_z() const {
+	GWVectorBase<T> calc_axis_z() const {
 		return GWVectorBase<T>(T(2)*mQ.x*mQ.z + T(2)*mQ.w*mQ.y, T(2)*mQ.y*mQ.z - T(2)*mQ.w*mQ.x, T(1) - T(2)*mQ.x*mQ.x - T(2)*mQ.y*mQ.y);
 	}
 
@@ -82,9 +82,9 @@ public:
 		return xform;
 	}
 	void get_transform(GWTransform<T>& xform) const {
-		xform.set_row(0, axis_x());
-		xform.set_row(1, axis_y());
-		xform.set_row(2, axis_z());
+		xform.set_row(0, calc_axis_x());
+		xform.set_row(1, calc_axis_y());
+		xform.set_row(2, calc_axis_z());
 		xform.set_row(3, GWVectorBase<T>(0), T(1));
 	}
 

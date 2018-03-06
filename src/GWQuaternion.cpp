@@ -47,9 +47,9 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 	uint32_t i2 = rotTbl[(uint32_t)order].idx2;
 
 	GWVectorBase<T> m[3];
-	m[0] = q.axis_x();
-	m[1] = q.axis_y();
-	m[2] = q.axis_z();
+	m[0] = q.calc_axis_x();
+	m[1] = q.calc_axis_y();
+	m[2] = q.calc_axis_z();
 
 	GWVectorBase<T> rotM[3] = {
 		{ m[i0][i0], m[i0][i1], m[i0][i2] },
