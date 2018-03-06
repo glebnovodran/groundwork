@@ -19,6 +19,8 @@ void test_tuple() {
 	GWTuple::div(tupleC, tupleA, tupleB);
 	cout << tupleC[0] << endl;
 	tupleC[3] = 1.0f;
+
+	GWTuple::copy(tupleC, tupleB, 1.0f);
 }
 
 void test_vec() {

@@ -65,90 +65,118 @@ namespace GWTuple {
 		}
 	}
 
-	template<typename TUPLE_T, typename VAL_T> inline void fill(TUPLE_T& dst, VAL_T val) {
+	template<typename TUPLE_T, typename VAL_T>
+	inline void fill(TUPLE_T& dst, VAL_T val) {
 		const int n = TUPLE_T::ELEMS_NUM;
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_T::elem_t(val);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void copy(TUPLE_DST_T& dst, TUPLE_SRC_T src) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void copy(TUPLE_DST_T& dst, TUPLE_SRC_T src) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t(src.elems[i]);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline void max(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void copy(TUPLE_DST_T& dst, TUPLE_SRC_T src, typename TUPLE_DST_T::elem_t padVal) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		const int padN = std::max(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		int i;
+		for (i = 0; i < n; ++i) {
+			dst.elems[i] = typename TUPLE_DST_T::elem_t(src.elems[i]);
+		}
+		for (; i < padN; ++i) {
+			dst.elems[i] = padVal;
+		}
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
+	inline void max(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = std::max(src0.elems[i], src1.elems[i]);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline void min(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
+	inline void min(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = std::min(src0.elems[i], src1.elems[i]);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline void add(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
+	inline void add(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t(src0.elems[i] + src1.elems[i]);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void add(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void add(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		GWTuple::add(dst, dst, src);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline void sub(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
+	inline void sub(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t(src0.elems[i] - src1.elems[i]);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void sub(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void sub(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		GWTuple::sub(dst, dst, src);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline void mul(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
+	inline void mul(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t(src0.elems[i] * src1.elems[i]);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void mul(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void mul(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		GWTuple::mul(dst, dst, src);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline void div(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
+	inline void div(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t(src0.elems[i] / src1.elems[i]);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void div(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void div(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		GWTuple::div(dst, dst, src);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename SCALAR_T> inline void scl(TUPLE_DST_T& dst, const TUPLE_SRC_T& src, const SCALAR_T& s) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename SCALAR_T>
+	inline void scl(TUPLE_DST_T& dst, const TUPLE_SRC_T& src, const SCALAR_T& s) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t(src.elems[i] * s);
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename SCALAR_T> inline void scl(TUPLE_DST_T& dst, const SCALAR_T& s) {
+	template<typename TUPLE_DST_T, typename SCALAR_T>
+	inline void scl(TUPLE_DST_T& dst, const SCALAR_T& s) {
 		GWTuple::scl(dst, dst, s);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void neg(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void neg(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = - src.elems[i];
@@ -159,29 +187,34 @@ namespace GWTuple {
 		GWTuple::neg(dst, dst);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T, typename T> inline void lerp(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T, typename T>
+	inline void lerp(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t( GWBase::lerp(a.elems[i], b.elems[i], t));
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename T> inline void lerp(TUPLE_DST_T& a, const TUPLE_SRC_T& b, T t) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename T>
+	inline void lerp(TUPLE_DST_T& a, const TUPLE_SRC_T& b, T t) {
 		GWTuple::lerp(a, a, b, t);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T, typename T> inline void lerp_fma(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T, typename T>
+	inline void lerp_fma(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = typename TUPLE_DST_T::elem_t(::fma(b.elems[i] - a.elems[i], t, a.elems[i]));
 		}
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename T> inline void lerp_fma(TUPLE_DST_T& a, const TUPLE_SRC_T& b, T t) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename T>
+	inline void lerp_fma(TUPLE_DST_T& a, const TUPLE_SRC_T& b, T t) {
 		GWTuple::lerp_fma(a, a, b, t);
 	}
 
-	template<typename TUPLE_DST_T, typename TUPLE_SRC_T> inline void abs(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void abs(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
 		for (int i = 0; i < n; ++i) {
 			dst.elems[i] = ::fabs(src.elems[i]);
@@ -192,7 +225,8 @@ namespace GWTuple {
 		GWTuple::abs(dst, dst);
 	}
 
-	template<typename TUPLE_SRC0_T, typename TUPLE_SRC1_T> inline typename TUPLE_SRC0_T::elem_t inner(const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b) {
+	template<typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
+	inline typename TUPLE_SRC0_T::elem_t inner(const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b) {
 		int n = std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM);
 		typename TUPLE_SRC0_T::elem_t d = 0;
 		for (int i = 0; i < n; ++i) {
