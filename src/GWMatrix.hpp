@@ -32,6 +32,6 @@ namespace GWMatrix {
 	// Mx1 = MxN * Nx1
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
 	inline void mul_mv(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int M, int N) {
-		mul_mm(pDst, pVec, pMtx, M, N, 1);
+		mul_mm(pDst, pMtx, pVec, M, N, 1);
 	}
 } // namespace
