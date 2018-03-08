@@ -134,6 +134,8 @@ void test_motion() {
 		GWMotion::Track rotTrk = node.get_track(GWTrackKind::ROT);
 		GWQuaternionF q = rotTrk.eval_quat(0.5f);
 		GWVectorF deg = GWUnitQuaternion::get_degrees(q);
+		GWTransformF xform;
+		node.eval_xform(xform, 1.0f);
 		uint32_t badId = 7777;
 		node = mot.get_node_by_id(badId);
 		rotTrk = node.get_track(GWTrackKind::ROT);

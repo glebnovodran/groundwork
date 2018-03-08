@@ -407,4 +407,3 @@ void GWMotion::save_clip(const std::string & path, RotDumpKind rotDumpKind, bool
 	dump_clip(os, rotDumpKind, rle);
 	os.close();
 }
-

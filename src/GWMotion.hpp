@@ -141,7 +141,6 @@ public:
 
 		Node(const GWMotion* pMot, uint32_t nodeId = NONE) : mpMot(pMot), mNodeId(nodeId) {}
 	public:
-		// eval_xform(float frame)
 		const NodeInfo* get_node_info() const {
 			return is_valid() ? mpMot->get_node_info(mNodeId) : nullptr;
 		}
@@ -161,6 +160,10 @@ public:
 		GWQuaternionF eval_rot(float frame, bool useSlerp = false) const { return mpMot->eval_quat(mNodeId, frame, useSlerp); }
 		GWVectorF eval_trn(float frame) const { return eval(GWTrackKind::TRN, frame); }
 		GWVectorF eval_scl(float frame) const { return eval(GWTrackKind::SCL, frame); }
+
+		void eval_xform(GWTransformF& xform, float frame, GWTransformOrder order = GWTransformOrder::SRT) const {
+			mpMot->eval_xform(xform, mNodeId, frame, order);
+		}
 
 		bool is_valid() const { return (mNodeId != NONE) && (mpMot != nullptr); }
 		static const Node get_invalid() { return Node(nullptr, NONE); }
@@ -216,7 +219,13 @@ public:
 	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = true) const {
 		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
 	}
-	// eval_xform(uint32_t nodeId, float frame);
+
+	void eval_xform(GWTransformF& xform, uint32_t nodeId, float frame, GWTransformOrder order = GWTransformOrder::SRT) const {
+		GWQuaternionF qrot = eval_quat(nodeId, frame);
+		GWVectorF trn = eval(nodeId, GWTrackKind::TRN, frame);
+		GWVectorF scl = eval(nodeId, GWTrackKind::SCL, frame);
+		xform.make_transform(qrot, trn, scl, order);
+	}
 
 	bool dump_clip(std::ostream& os, RotDumpKind rotDumpKind = RotDumpKind::QUAT, bool rle = false) const;
 	void save_clip(const std::string& path, RotDumpKind rotDumpKind = RotDumpKind::QUAT, bool rle = false) const;
