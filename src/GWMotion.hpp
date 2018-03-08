@@ -193,10 +193,20 @@ public:
 	bool load(const std::string& filePath);
 	void unload();
 
-	Node get_node(const char* name) const;
+	uint32_t find_node_id(const char* name) const {
+		char* pName = const_cast<char*>(name);
+		const auto it = mNodeMap.find(name);
+		GWMotion::Node node(nullptr);
+		return it == mNodeMap.cend() ? NONE : it->second;
+	}
+	Node get_node(const char* name) const {
+		uint32_t id = find_node_id(name);
+		return id == NONE ? Node::get_invalid() : Node(this, id);
+	}
 	Node get_node_by_id(uint32_t id) const {
 		return id < mNumNodes ? Node(this, id) : Node::get_invalid();
 	}
+
 	const NodeInfo* get_node_info(uint32_t id) const { return id < mNumNodes ? &mpNodeInfo[id] : nullptr; }
 	const TrackInfo* get_track_info(uint32_t trackId) const { return trackId < mNumTracks ? &mpTrackInfo[trackId] : nullptr; }
 	const TrackInfo* get_track_info(uint32_t nodeId, GWTrackKind kind) const {
