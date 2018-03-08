@@ -39,3 +39,20 @@ template<typename T> void GWTransform<T>::make_transform(const GWQuaternionBase<
 
 template void GWTransform<float>::make_transform(const GWQuaternionBase<float>& rot, const GWVectorBase<float>& trn, const GWVectorBase<float>& scl, GWTransformOrder order);
 template void GWTransform<double>::make_transform(const GWQuaternionBase<double>& rot, const GWVectorBase<double>& trn, const GWVectorBase<double>& scl, GWTransformOrder order);
+
+template<typename T> void GWTransform<T>::make_projection(T fovY, T aspect, T znear, T zfar) {
+	T angle = T(0.5f) * fovY;
+	T s = ::sin(angle);
+	T c = ::cos(angle);
+	T cot = c / s;
+	T sclCoeff = zfar / (zfar - znear);
+	set_zero();
+	m[0][0] = cot / aspect;
+	m[1][1] = cot;
+	m[2][2] = -sclCoeff;
+	m[3][2] = -sclCoeff * znear;
+	m[2][3] = T(-1);
+}
+
+template void GWTransform<float>::make_projection(float fovY, float aspect, float znear, float zfar);
+template void GWTransform<double>::make_projection(double fovY, double aspect, double znear, double zfar);

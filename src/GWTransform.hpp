@@ -10,14 +10,10 @@ public:
 
 	void set_zero() {
 		T* pData = &m[0][0];
-		for (int i = 0; i < 16; ++i) {
-			pData[i] = 0.0f;
-		}
+		for (int i = 0; i < 16; ++i) { pData[i] = T(0); }
 	}
 
-	void set_identity() {
-		make_scaling(1, 1, 1);
-	}
+	void set_identity() { make_scaling(1, 1, 1); }
 
 	void set_row(uint32_t idx, const GWVectorBase<T>& v, T pad = 0) {
 		for (int i = 0; i < 3; ++i) {
@@ -38,17 +34,15 @@ public:
 	}
 
 	void make_translation(T tx, T ty, T tz) {
-		set_zero();
+		set_identity();
 		set_translation(tx, ty, tz);
 	}
 
 	void make_translation(const GWVectorBase<T>& trn) {
-		T* pData = &m[0][0];
 		make_translation(trn.x, trn.y, trn.z);
 	}
 
 	void make_scaling(T sx, T sy, T sz) {
-		T* pData = &m[0][0];
 		set_zero();
 		m[0][0] = sx;
 		m[1][1] = sy;
@@ -57,11 +51,12 @@ public:
 	}
 
 	void make_scaling(const GWVectorBase<T>& scl) {
-		T* pData = &m[0][0];
 		make_scaling(scl.x, scl.y, scl.z);
 	}
 
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT);
+
+	void make_projection(T fovY, T aspect, T znear, T zfar);
 
 	void mul(const GWTransform& m0, const GWTransform& m1) {
 		GWTransform res;
@@ -71,10 +66,10 @@ public:
 	void mul(const GWTransform& m) { mul(*this, m); }
 
 	void invert(const GWTransform& m);
-	void invert();
+	void invert() { invert(*this); }
 
 	void transpose(const GWTransform& m);
-	void transpose();
+	void transpose() { transpose(*this); }
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T>& v) const {
 		GWTuple4<T> res;
