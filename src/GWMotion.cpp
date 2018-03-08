@@ -264,20 +264,7 @@ GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) co
 	}
 	return val;
 }
-/*
-GWMotion::Node GWMotion::get_node(const char* name) const {
-	char* pName = const_cast<char*>(name);
-	const auto it = mNodeMap.find(name);
-	GWMotion::Node node(nullptr);
-	uint32_t id;
-	if (it == mNodeMap.cend()) {
-		return GWMotion::Node::get_invalid();
-	} else {
-		id = it->second;
-		return get_node_by_id(id);
-	}
-}
-*/
+
 void dump_track_to_clip(std::ostream & os, const GWMotion::Track& track) {
 	using namespace std;
 
