@@ -30,7 +30,8 @@ enum class GWRotationOrder : uint8_t {
 enum class GWTrackKind : uint8_t {
 	ROT = 0,
 	TRN = 1,
-	SCL = 2
+	SCL = 2,
+	MAX = SCL
 };
 
 namespace GWBase {
@@ -39,8 +40,27 @@ namespace GWBase {
 	template<typename T> inline T radians(T deg) { return (T)(deg * (pi / 180)); }
 	template<typename T> inline T degrees(T rad) { return (T)(rad * (180 / pi)); }
 
-	GWRotationOrder rord_from_float(float val);
-	GWTransformOrder xord_from_float(float val);
+	inline GWRotationOrder rord_from_int(int ival) {
+		return ival > (int)GWRotationOrder::MAX ? GWRotationOrder::XYZ : GWRotationOrder(ival);
+	}
+
+	inline GWTransformOrder xord_from_int(int ival) {
+		return ival > (int)GWTransformOrder::MAX ? GWTransformOrder::SRT : GWTransformOrder(ival);
+	}
+
+	inline GWRotationOrder rord_from_float(float val) {
+		int ival = (int)val;
+		return rord_from_int(ival);
+	}
+	inline GWTransformOrder xord_from_float(float val) {
+		int ival = (int)val;
+		return xord_from_int(ival);
+	}
+
+	inline GWTrackKind validate_track_kind(GWTrackKind kind) {
+		return kind < GWTrackKind::MAX ? kind : GWTrackKind::ROT;
+	}
+
 	template<typename T> inline T clamp(T x, T lo, T hi) { return std::max(std::min(x, hi), lo); }
 	template<typename T> inline T saturate(T x) { return clamp<T>(x, T(0), T(1)); }
 	template<typename T> inline T lerp(T a, T b, T t) { return a + (b - a)*t; }

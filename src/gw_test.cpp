@@ -9,6 +9,7 @@
 void test_basic() {
 	float rad = GWBase::radians(271.0f);
 	float deg = GWBase::degrees(rad);
+	GWRotationOrder rord = GWBase::rord_from_float(75.0f);
 }
 
 void test_tuple() {
@@ -130,18 +131,18 @@ void test_motion() {
 	using namespace std;
 	GWMotion mot;
 	if (mot.load("../data/walk_rn.txt")) {
-		GWMotion::Node node = mot.get_node("/obj/j_Head");
+		GWMotion::Node node = mot.get_node("/obj/ANIM/j_Ankle_L");
 		GWMotion::Track rotTrk = node.get_track(GWTrackKind::ROT);
 		GWQuaternionF q = rotTrk.eval_quat(0.5f);
 		GWVectorF deg = GWUnitQuaternion::get_degrees(q);
 		GWTransformF xform;
-		node.eval_xform(xform, 1.0f);
+		node.eval_xform(xform, 74.5f);
+		node.eval_xform(xform, -0.5f);
 		uint32_t badId = 7777;
 		node = mot.get_node_by_id(badId);
 		rotTrk = node.get_track(GWTrackKind::ROT);
 		if (rotTrk.is_valid()) { q = rotTrk.eval_quat(10.0f); }
-
-		for (int i = 0; i < 100; ++i) {
+		for (int i = -10; i < 100; ++i) {
 			GWVectorF val = mot.eval(0, GWTrackKind::ROT, i + 0.5f);
 			GWQuaternionF q = GWQuaternion::expmap_decode(val);
 			q.normalize();

@@ -239,6 +239,16 @@ void GWMotion::unload() {
 	mStrDataSz = 0;
 }
 
+GWTransformOrder GWMotion::eval_xord(uint32_t nodeId, float frame) const {
+	const NodeInfo* pInfo = get_node_info(nodeId);
+	if (pInfo == nullptr) { return GWTransformOrder::SRT; }
+	int fno = ::floorf(frame);
+	int maxFrame = pInfo->numFrames - 1;
+	fno = fno % int32_t(pInfo->numFrames);
+	fno += pInfo->numFrames;
+	return pInfo->get_xord(fno);
+}
+
 GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const {
 	GWVectorF val(0.0f);
 	if (trackKind == GWTrackKind::SCL) {

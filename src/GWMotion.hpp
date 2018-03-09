@@ -125,10 +125,10 @@ public:
 			pName(nullptr), numFrames(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
 
 		GWTransformOrder get_xord(uint32_t frameNo) const {
-			return (pXOrd == nullptr) ? GWTransformOrder::RST : pXOrd[frameNo % numFrames];
+			return (pXOrd == nullptr) ? defXOrd : pXOrd[frameNo % numFrames];
 		}
 		GWRotationOrder get_rord(uint32_t frameNo) const {
-			return (pROrd == nullptr) ? GWRotationOrder::XYZ : pROrd[frameNo % numFrames];
+			return (pROrd == nullptr) ? defROrd : pROrd[frameNo % numFrames];
 		}
 		bool has_track(GWTrackKind kind) const { return pTrk[(uint8_t)kind] != nullptr; }
 		const TrackInfo* get_track_info(GWTrackKind kind) const { return pTrk[(uint8_t)kind]; }
@@ -161,8 +161,8 @@ public:
 		GWVectorF eval_trn(float frame) const { return eval(GWTrackKind::TRN, frame); }
 		GWVectorF eval_scl(float frame) const { return eval(GWTrackKind::SCL, frame); }
 
-		void eval_xform(GWTransformF& xform, float frame, GWTransformOrder order = GWTransformOrder::SRT) const {
-			mpMot->eval_xform(xform, mNodeId, frame, order);
+		void eval_xform(GWTransformF& xform, float frame) const {
+			mpMot->eval_xform(xform, mNodeId, frame);
 		}
 
 		bool is_valid() const { return (mNodeId != NONE) && (mpMot != nullptr); }
@@ -230,11 +230,14 @@ public:
 		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
 	}
 
-	void eval_xform(GWTransformF& xform, uint32_t nodeId, float frame, GWTransformOrder order = GWTransformOrder::SRT) const {
+	GWTransformOrder eval_xord(uint32_t nodeId, float frame) const;
+
+	void eval_xform(GWTransformF& xform, uint32_t nodeId, float frame) const {
 		GWQuaternionF qrot = eval_quat(nodeId, frame);
 		GWVectorF trn = eval(nodeId, GWTrackKind::TRN, frame);
 		GWVectorF scl = eval(nodeId, GWTrackKind::SCL, frame);
-		xform.make_transform(qrot, trn, scl, order);
+		GWTransformOrder xord = eval_xord(nodeId, frame);
+		xform.make_transform(qrot, trn, scl, xord);
 	}
 
 	bool dump_clip(std::ostream& os, RotDumpKind rotDumpKind = RotDumpKind::QUAT, bool rle = false) const;
