@@ -39,8 +39,8 @@ namespace GWBase {
 	template<typename T> inline T radians(T deg) { return (T)(deg * (pi / 180)); }
 	template<typename T> inline T degrees(T rad) { return (T)(rad * (180 / pi)); }
 
-	inline GWRotationOrder rord_from_float(float val) { return (GWRotationOrder)(int)val; }
-
+	GWRotationOrder rord_from_float(float val);
+	GWTransformOrder xord_from_float(float val);
 	template<typename T> inline T clamp(T x, T lo, T hi) { return std::max(std::min(x, hi), lo); }
 	template<typename T> inline T saturate(T x) { return clamp<T>(x, T(0), T(1)); }
 	template<typename T> inline T lerp(T a, T b, T t) { return a + (b - a)*t; }

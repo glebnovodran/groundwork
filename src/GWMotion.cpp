@@ -144,7 +144,7 @@ bool GWMotion::load(const std::string & filePath) {
 				pNodeInfo->pROrd = new GWRotationOrder[num];
 				for (size_t i = 0; i < pROrdChan->values.size(); ++i) {
 					float val = pROrdChan->values[i];
-					pNodeInfo->pROrd[i] = (GWRotationOrder)(uint8_t)val;
+					pNodeInfo->pROrd[i] = GWBase::rord_from_float(val);
 				}
 			}
 
@@ -154,7 +154,7 @@ bool GWMotion::load(const std::string & filePath) {
 				pNodeInfo->pXOrd = new GWTransformOrder[num];
 				for (size_t i = 0; i < pXOrdChan->values.size(); ++i) {
 					float val = pXOrdChan->values[i];
-					pNodeInfo->pXOrd[i] = (GWTransformOrder)(uint8_t)val;
+					pNodeInfo->pXOrd[i] = GWBase::xord_from_float(val);
 				}
 			}
 
@@ -279,7 +279,7 @@ void dump_track_to_clip(std::ostream & os, const GWMotion::Track& track) {
 			os << "      name = " << nodeName << ":" << "rts"[(uint32_t)track.kind()] << "xyz"[i] << endl;
 			os << "      data = ";
 			for (uint32_t fno = 0; fno < numFrames; ++fno) {
-				float val = track.eval(fno)[i];
+				float val = track.eval(float(fno))[i];
 				os << " " << val;
 			}
 			os << endl;
@@ -309,8 +309,8 @@ void dump_rot_track_to_clip(std::ostream & os, const GWMotion::Track& track, GWM
 			os << "      name = " << nodeName << ":" << prefix << "xyzw"[i] << endl;
 			os << "      data = ";
 			for (uint32_t fno = 0; fno < numFrames; ++fno) {
-				GWVectorF vec = track.eval(fno);
-				float val;
+				GWVectorF vec = track.eval(float(fno));
+				float val = 0.0f;
 				switch (dumpKind) {
 				case GWMotion::RotDumpKind::DEG: {
 						GWQuaternionF q = GWQuaternion::expmap_decode(vec);
