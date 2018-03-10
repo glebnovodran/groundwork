@@ -222,11 +222,6 @@ bool GWMotion::load(const std::string & filePath) {
 }
 
 void GWMotion::unload() {
-	TrackInfo* pTrackInfo = mpTrackInfo;
-	for (uint32_t i = 0; i < mNumTracks; ++i) {
-		delete[] pTrackInfo->pFrmData;
-		++pTrackInfo;
-	}
 	delete[] mpTrackInfo;
 	mpTrackInfo = nullptr;
 	delete[] mpNodeInfo;

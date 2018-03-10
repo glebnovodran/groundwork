@@ -19,9 +19,17 @@ public:
 
 		TrackInfo() : pFrmData(nullptr), minVal(0), maxVal(0), numFrames(0),
 			kind(GWTrackKind::ROT), dataMask(0), srcMask(0) {}
+		~TrackInfo() { reset(); }
 
 		void reset() {
 			if (pFrmData != nullptr) { delete[] pFrmData; }
+			pFrmData = nullptr;
+			minVal.fill(0.0f);
+			maxVal.fill(0.0f);
+			numFrames = 0;
+			kind = GWTrackKind::ROT;
+			dataMask = 0;
+			srcMask = 0;
 		}
 
 		uint32_t get_stride() const {
@@ -123,6 +131,16 @@ public:
 
 		NodeInfo() : pRotTrk(nullptr), pTrnTrk(nullptr), pSclTrk(nullptr), pXOrd(nullptr), pROrd(nullptr),
 			pName(nullptr), numFrames(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
+
+		void reset() {
+			pRotTrk = pTrnTrk = pSclTrk = nullptr;
+			if (pXOrd != nullptr) { delete[] pXOrd; }
+			if (pROrd != nullptr) { delete[] pROrd; }
+			pName = nullptr;
+			numFrames = 0;
+			defXOrd = GWTransformOrder::SRT;
+			defROrd = GWRotationOrder::XYZ;
+		}
 
 		GWTransformOrder get_xord(uint32_t frameNo) const {
 			return (pXOrd == nullptr) ? defXOrd : pXOrd[frameNo % numFrames];
