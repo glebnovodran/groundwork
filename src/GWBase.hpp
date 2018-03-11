@@ -350,6 +350,18 @@ namespace GWTuple {
 		copy(dst, src);
 		normalize_fast(dst);
 	}
+
+	template<typename TUPLE_T> inline void calc_bbox(const TUPLE_T* pData, uint32_t len, TUPLE_T& minVal, TUPLE_T& maxVal) {
+		for (uint32_t i = 0; i < len; ++i) {
+			if (i == 0) {
+				minVal = pData[i];
+				maxVal = pData[i];
+			} else {
+				GWTuple::max(maxVal, pData[i], maxVal);
+				GWTuple::min(minVal, pData[i], minVal);
+			}
+		}
+	}
 } // GWTuple
 
 template<typename T> struct GWTuple2 {

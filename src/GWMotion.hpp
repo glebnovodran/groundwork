@@ -59,6 +59,7 @@ public:
 		};
 
 		void create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask);
+		void replace_data(GWVectorF* pRawData, uint32_t len, uint8_t srcMask);
 	};
 
 	class Track {
@@ -131,6 +132,7 @@ public:
 
 		NodeInfo() : pRotTrk(nullptr), pTrnTrk(nullptr), pSclTrk(nullptr), pXOrd(nullptr), pROrd(nullptr),
 			pName(nullptr), numFrames(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
+		~NodeInfo() { reset(); }
 
 		void reset() {
 			pRotTrk = pTrnTrk = pSclTrk = nullptr;
@@ -210,6 +212,7 @@ public:
 
 	bool load(const std::string& filePath);
 	void unload();
+	void clone_to(GWMotion& mot) const;
 
 	uint32_t find_node_id(const char* name) const {
 		char* pName = const_cast<char*>(name);
@@ -237,6 +240,8 @@ public:
 		const NodeInfo* pInfo = get_node_info(nodeId);
 		return pInfo == nullptr ? "" : pInfo->pName;
 	}
+
+	uint32_t num_nodes() const { return mNumNodes; }
 
 	// all tracks have the same length
 	uint32_t num_frames() const {

@@ -149,6 +149,44 @@ void test_motion() {
 			cout << q.V().x << " " << q.V().y << " " << q.V().z << " " << q.S() <<endl;
 		}
 
+		cout << "===========================================" << endl;
+		for (int id = 0; id < mot.num_nodes(); ++id) {
+			GWMotion::Node node = mot.get_node_by_id(id);
+			cout << "Node: " << node.name() << endl;
+			GWMotion::Track track = node.get_track(GWTrackKind::ROT);
+			cout << "Rot : ";
+			if (track.is_valid()) {
+				const GWMotion::TrackInfo* pInfo = track.get_track_info();
+				cout << " srcMask = " << (uint32_t)pInfo->srcMask;
+				cout << "; dataMask = " << (uint32_t)pInfo->dataMask;
+			} else {
+				cout << "None";
+			}
+			cout << endl;
+
+			track = node.get_track(GWTrackKind::TRN);
+			cout << "Trn : ";
+			if (track.is_valid()) {
+				const GWMotion::TrackInfo* pInfo = track.get_track_info();
+				cout << " srcMask = " << (uint32_t)pInfo->srcMask;
+				cout << "; dataMask = " << (uint32_t)pInfo->dataMask;
+			} else {
+				cout << "None";
+			}
+			cout << endl;
+
+			track = node.get_track(GWTrackKind::SCL);
+			cout << "Scl : ";
+			if (track.is_valid()) {
+				const GWMotion::TrackInfo* pInfo = track.get_track_info();
+				cout << " srcMask = " << (uint32_t)pInfo->srcMask;
+				cout << "; dataMask = " << (uint32_t)pInfo->dataMask;
+			} else {
+				cout << "None";
+			}
+			cout << endl;
+			cout << "-------------------------------------------" << endl;
+		}
 		node = mot.get_node("====");
 		mot.save_clip("../data/dump.clip", GWMotion::RotDumpKind::DEG);
 		mot.unload();

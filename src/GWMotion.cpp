@@ -12,6 +12,8 @@ static const bool COLUMN_CHANS = false;
 
 void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
 	assert(pFrmData == nullptr);
+	this->srcMask = srcMask;
+	GWTuple::calc_bbox(pRawData, len, minVal, maxVal);
 	GWVectorF dim = maxVal - minVal;
 	int numChan = 0;
 	for (int i = 0; i < 3; ++i) {
@@ -30,6 +32,13 @@ void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uin
 		}
 	}
 	numFrames = len;
+}
+
+void GWMotion::TrackInfo::replace_data(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
+	GWTrackKind kind = this->kind;
+	reset();
+	this->kind = kind;
+	create_from_raw(pRawData, len, srcMask);
 }
 
 class CollectGrpFunc : public TDMotion::XformGrpFunc {
@@ -73,7 +82,7 @@ public:
 };
 
 uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp, GWTrackKind kind,
-	GWVectorF pOut[], GWVectorF& minVal, GWVectorF& maxVal, float defVal = 0.0f) {
+	GWVectorF pOut[], float defVal = 0.0f) {
 	const TDMotion::Channel* tdchan[3];
 	size_t motLen = tdmot.length();
 	uint8_t srcMask = 0;
@@ -92,13 +101,6 @@ uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp,
 			tuple[j] = tdchan[j] == nullptr ? 0.0f : tdchan[j]->get_val(i);
 		}
 		pOut[i].from_tuple(tuple);
-		if (i == 0) {
-			minVal = pOut[i];
-			maxVal = pOut[i];
-		} else {
-			GWTuple::max(maxVal, pOut[i], maxVal);
-			GWTuple::min(minVal, pOut[i], minVal);
-		}
 	}
 
 	return srcMask;
@@ -160,28 +162,23 @@ bool GWMotion::load(const std::string & filePath) {
 
 			if (grp.has_translation()) {
 				TrackInfo* pTrack = pTrackInfo++;
-				uint8_t srcMask = get_raw_track_data(tdmot, grp, GWTrackKind::TRN,
-					pTmpVec, pTrack->minVal, pTrack->maxVal, 0.0f);
+				uint8_t srcMask = get_raw_track_data(tdmot, grp, GWTrackKind::TRN, pTmpVec, 0.0f);
 
 				pTrack->create_from_raw(pTmpVec, motLen, srcMask);
-				pTrack->srcMask = srcMask;
 				pNodeInfo->pTrnTrk = pTrack;
 			}
 
 			if (grp.has_scale()) {
 				TrackInfo* pTrack = pTrackInfo++;
-				uint8_t srcMask = get_raw_track_data(tdmot, grp, GWTrackKind::SCL,
-					pTmpVec, pTrack->minVal, pTrack->maxVal, 1.0f);
+				uint8_t srcMask = get_raw_track_data(tdmot, grp, GWTrackKind::SCL, pTmpVec, 1.0f);
 
 				pTrack->create_from_raw(pTmpVec, motLen, srcMask);
-				pTrack->srcMask = srcMask;
 				pNodeInfo->pSclTrk = pTrack;
 			}
 
 			if (grp.has_rotation()) {
 				TrackInfo* pTrack = pTrackInfo++;
-				uint8_t srcMask = get_raw_track_data(tdmot, grp, GWTrackKind::ROT,
-					pTmpVec, pTrack->minVal, pTrack->maxVal, 0.0f);
+				uint8_t srcMask = get_raw_track_data(tdmot, grp, GWTrackKind::ROT, pTmpVec, 0.0f);
 				
 				GWQuaternionF prevQ;
 				for (uint32_t fno = 0; fno < motLen; ++fno) {
@@ -194,20 +191,12 @@ bool GWMotion::load(const std::string & filePath) {
 					}
 					prevQ = q;
 					pTmpVec[fno] = GWUnitQuaternion::log(q);
-
-					if (fno == 0) {
-						pTrack->minVal = pTmpVec[0];
-						pTrack->maxVal = pTmpVec[0];
-					} else {
-						GWTuple::max(pTrack->maxVal, pTmpVec[fno], pTrack->maxVal);
-						GWTuple::min(pTrack->minVal, pTmpVec[fno], pTrack->minVal);
-					}
 				}
 
 				pTrack->create_from_raw(pTmpVec, motLen, srcMask);
-				pTrack->srcMask = srcMask;
 				pNodeInfo->pRotTrk = pTrack;
 			}
+
 			mNodeMap[pNodeInfo->pName] = idx;
 			++pNodeInfo;
 			++idx;
