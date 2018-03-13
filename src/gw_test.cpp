@@ -190,7 +190,7 @@ void test_motion() {
 		node = mot.get_node("====");
 		mot.save_clip("../data/dump.clip", GWMotion::RotDumpKind::DEG);
 		GWMotion clonedMot;
-		mot.clone_to(clonedMot);
+		clonedMot.clone_from(mot);
 		node = mot.get_node("/obj/ANIM/j_Ankle_R");
 		xform.set_zero();
 		node.eval_xform(xform, 10.0f);

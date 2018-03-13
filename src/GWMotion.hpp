@@ -212,7 +212,7 @@ public:
 
 	bool load(const std::string& filePath);
 	void unload();
-	void clone_to(GWMotion& mot) const;
+	void clone_from(const GWMotion& mot);
 
 	uint32_t find_node_id(const char* name) const {
 		char* pName = const_cast<char*>(name);

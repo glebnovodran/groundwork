@@ -211,6 +211,7 @@ bool GWMotion::load(const std::string & filePath) {
 }
 
 void GWMotion::unload() {
+	mNodeMap.clear();
 	delete[] mpTrackInfo;
 	mpTrackInfo = nullptr;
 	delete[] mpNodeInfo;
@@ -222,37 +223,38 @@ void GWMotion::unload() {
 	mStrDataSz = 0;
 }
 
-void GWMotion::clone_to(GWMotion& mot) const {
-	mot.unload();
-	mot.mpTrackInfo = new TrackInfo[mNumTracks];
-	mot.mNumTracks = mNumTracks;
-	mot.mpNodeInfo = new NodeInfo[mNumNodes];
-	mot.mNumNodes = mNumNodes;
-	mot.mpStrData = new char[mStrDataSz];
-	mot.mStrDataSz = mStrDataSz;
-	::memcpy(mot.mpStrData, mpStrData, mStrDataSz);
+void GWMotion::clone_from(const GWMotion& mot) {
+	unload();
+
+	mpTrackInfo = new TrackInfo[mot.mNumTracks];
+	mNumTracks = mot.mNumTracks;
+	mpNodeInfo = new NodeInfo[mot.mNumNodes];
+	mNumNodes = mot.mNumNodes;
+	mpStrData = new char[mot.mStrDataSz];
+	mStrDataSz = mot.mStrDataSz;
+	::memcpy(mpStrData, mot.mpStrData, mot.mStrDataSz);
 
 	for (int i = 0; i < mNumNodes; ++i) {
-		mot.mpNodeInfo[i] = mpNodeInfo[i];
+		mpNodeInfo[i] = mot.mpNodeInfo[i];
 		for (int j = 0; j < 3; ++j) {
-			const TrackInfo* pTrkInfo = mpNodeInfo[i].pTrk[j];
+			const TrackInfo* pTrkInfo = mot.mpNodeInfo[i].pTrk[j];
 			if (pTrkInfo == nullptr) {
-				mot.mpNodeInfo[i].pTrk[j] = nullptr;
+				mpNodeInfo[i].pTrk[j] = nullptr;
 			} else {
-				mot.mpNodeInfo[i].pTrk[j] = mot.mpTrackInfo + (pTrkInfo - mpTrackInfo);
-				*mot.mpNodeInfo[i].pTrk[j] = *pTrkInfo;
+				mpNodeInfo[i].pTrk[j] = mpTrackInfo + (pTrkInfo - mot.mpTrackInfo);
+				*mpNodeInfo[i].pTrk[j] = *pTrkInfo;
 
 				uint32_t numFrames = pTrkInfo->numFrames;
 				float* pFrameData = new float[numFrames];
-				::memcpy(pFrameData, pTrkInfo->pFrmData, numFrames*sizeof(float));
-				mot.mpNodeInfo[i].pTrk[j]->pFrmData = pFrameData;
+				::memcpy(pFrameData, pTrkInfo->pFrmData, numFrames * sizeof(float));
+				mpNodeInfo[i].pTrk[j]->pFrmData = pFrameData;
 			}
 		}
-		uint32_t offs = mpNodeInfo[i].pName - mpStrData;
-		mot.mpNodeInfo[i].pName = mot.mpStrData + offs;
+		uint32_t offs = mot.mpNodeInfo[i].pName - mot.mpStrData;
+		mpNodeInfo[i].pName = mot.mpStrData + offs;
 	}
 	for (int i = 0; i < mNumNodes; ++i) {
-		mot.mNodeMap[mot.mpNodeInfo[i].pName] = i;
+		mNodeMap[mpNodeInfo[i].pName] = i;
 	}
 }
 
