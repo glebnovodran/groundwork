@@ -222,6 +222,40 @@ void GWMotion::unload() {
 	mStrDataSz = 0;
 }
 
+void GWMotion::clone_to(GWMotion& mot) const {
+	mot.unload();
+	mot.mpTrackInfo = new TrackInfo[mNumTracks];
+	mot.mNumTracks = mNumTracks;
+	mot.mpNodeInfo = new NodeInfo[mNumNodes];
+	mot.mNumNodes = mNumNodes;
+	mot.mpStrData = new char[mStrDataSz];
+	mot.mStrDataSz = mStrDataSz;
+	::memcpy(mot.mpStrData, mpStrData, mStrDataSz);
+
+	for (int i = 0; i < mNumNodes; ++i) {
+		mot.mpNodeInfo[i] = mpNodeInfo[i];
+		for (int j = 0; j < 3; ++j) {
+			const TrackInfo* pTrkInfo = mpNodeInfo[i].pTrk[j];
+			if (pTrkInfo == nullptr) {
+				mot.mpNodeInfo[i].pTrk[j] = nullptr;
+			} else {
+				mot.mpNodeInfo[i].pTrk[j] = mot.mpTrackInfo + (pTrkInfo - mpTrackInfo);
+				*mot.mpNodeInfo[i].pTrk[j] = *pTrkInfo;
+
+				uint32_t numFrames = pTrkInfo->numFrames;
+				float* pFrameData = new float[numFrames];
+				::memcpy(pFrameData, pTrkInfo->pFrmData, numFrames*sizeof(float));
+				mot.mpNodeInfo[i].pTrk[j]->pFrmData = pFrameData;
+			}
+		}
+		uint32_t offs = mpNodeInfo[i].pName - mpStrData;
+		mot.mpNodeInfo[i].pName = mot.mpStrData + offs;
+	}
+	for (int i = 0; i < mNumNodes; ++i) {
+		mot.mNodeMap[mot.mpNodeInfo[i].pName] = i;
+	}
+}
+
 GWTransformOrder GWMotion::eval_xord(uint32_t nodeId, float frame) const {
 	const NodeInfo* pInfo = get_node_info(nodeId);
 	if (pInfo == nullptr) { return GWTransformOrder::SRT; }

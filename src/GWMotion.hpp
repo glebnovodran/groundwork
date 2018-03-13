@@ -206,7 +206,7 @@ protected:
 	uint32_t mStrDataSz;
 
 public:
-	GWMotion() : mNodeMap([](const char*a, const char*b) { return ::strcmp(a, b) < 0; }),
+	GWMotion() : mNodeMap([](const char* a, const char* b) { return ::strcmp(a, b) < 0; }),
 		mpNodeInfo(nullptr), mpTrackInfo(nullptr), mpStrData(nullptr),
 		mNumNodes(0), mNumTracks(0), mStrDataSz(0) {}
 

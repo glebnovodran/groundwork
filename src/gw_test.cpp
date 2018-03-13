@@ -189,6 +189,15 @@ void test_motion() {
 		}
 		node = mot.get_node("====");
 		mot.save_clip("../data/dump.clip", GWMotion::RotDumpKind::DEG);
+		GWMotion clonedMot;
+		mot.clone_to(clonedMot);
+		node = mot.get_node("/obj/ANIM/j_Ankle_R");
+		xform.set_zero();
+		node.eval_xform(xform, 10.0f);
+		q = node.eval_rot(10.0f);
+		node = clonedMot.get_node("/obj/ANIM/j_Ankle_R");
+		node.eval_xform(xform, 10.0f);
+		q = node.eval_rot(10.0f);
 		mot.unload();
 	}
 }
