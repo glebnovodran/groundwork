@@ -59,7 +59,7 @@ public:
 		};
 
 		void create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask);
-		void replace_data(GWVectorF* pRawData, uint32_t len, uint8_t srcMask);
+		void replace_data(GWVectorF* pRawData);
 	};
 
 	class Track {

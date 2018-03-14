@@ -10,36 +10,62 @@
 static const bool HAS_NAMES = true;
 static const bool COLUMN_CHANS = false;
 
-void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
-	assert(pFrmData == nullptr);
-	this->srcMask = srcMask;
-	GWTuple::calc_bbox(pRawData, len, minVal, maxVal);
-	GWVectorF dim = maxVal - minVal;
-	int numChan = 0;
-	for (int i = 0; i < 3; ++i) {
-		if (dim[i] != 0.0f) {
-			dataMask |= (1 << i);
-			++numChan;
-		}
-	}
-	pFrmData = new float[numChan * len];
-	float* pData = pFrmData;
-	for (uint32_t fno = 0; fno < len; ++fno) {
-		for (int i = 0; i < 3; ++i) {
-			if (dataMask & (1 << i)) {
-				*pData++ = pRawData[fno][i];
+void place_data(float* pDst, const GWVectorF* pRawData, uint32_t len, uint8_t dataMask) {
+	if (pDst != nullptr) {
+		float* pData = pDst;
+		for (uint32_t fno = 0; fno < len; ++fno) {
+			for (int i = 0; i < 3; ++i) {
+				if (dataMask & (1 << i)) {
+					*pData++ = pRawData[fno][i];
+				}
 			}
 		}
 	}
+}
+
+uint8_t calc_data_mask(const GWVectorF& minVal, const GWVectorF& maxVal) {
+	uint8_t dataMask = 0;
+	GWVectorF dim = maxVal - minVal;
+	for (int i = 0; i < 3; ++i) {
+		if (dim[i] != 0.0f) {
+			dataMask |= (1 << i);
+		}
+	}
+	return dataMask;
+}
+
+void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
+	assert(pFrmData == nullptr);
+	this->srcMask = srcMask;
+	uint32_t numChan = 0;
+
+	GWTuple::calc_bbox(pRawData, len, minVal, maxVal);
+	dataMask = calc_data_mask(minVal, maxVal);
+	numChan = get_stride();
+	pFrmData = new float[numChan * len];
+	place_data(pFrmData, pRawData, len, dataMask);
 	numFrames = len;
 }
 
-void GWMotion::TrackInfo::replace_data(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
-	GWTrackKind kind = this->kind;
-	reset();
-	this->kind = kind;
-	create_from_raw(pRawData, len, srcMask);
+void GWMotion::TrackInfo::replace_data(GWVectorF* pRawData) {
+	assert(pFrmData != nullptr);
+	uint32_t numChan = 0;
+	uint32_t oldNumChan = get_stride();
+
+	GWTuple::calc_bbox(pRawData, numFrames, minVal, maxVal);
+	dataMask = calc_data_mask(minVal, maxVal);
+	numChan = get_stride();
+	if (numChan != oldNumChan) {
+		delete[] pFrmData;
+		pFrmData = nullptr;
+		uint32_t newSz = numChan * numFrames;
+		if (newSz > 0) {
+			pFrmData = new float[newSz];
+		}
+	}
+	place_data(pFrmData, pRawData, numFrames, dataMask);
 }
+
 
 class CollectGrpFunc : public TDMotion::XformGrpFunc {
 protected:
@@ -234,9 +260,9 @@ void GWMotion::clone_from(const GWMotion& mot) {
 	mStrDataSz = mot.mStrDataSz;
 	::memcpy(mpStrData, mot.mpStrData, mot.mStrDataSz);
 
-	for (int i = 0; i < mNumNodes; ++i) {
+	for (uint32_t i = 0; i < mNumNodes; ++i) {
 		mpNodeInfo[i] = mot.mpNodeInfo[i];
-		for (int j = 0; j < 3; ++j) {
+		for (uint32_t j = 0; j < 3; ++j) {
 			const TrackInfo* pTrkInfo = mot.mpNodeInfo[i].pTrk[j];
 			if (pTrkInfo == nullptr) {
 				mpNodeInfo[i].pTrk[j] = nullptr;
@@ -253,7 +279,7 @@ void GWMotion::clone_from(const GWMotion& mot) {
 		uint32_t offs = mot.mpNodeInfo[i].pName - mot.mpStrData;
 		mpNodeInfo[i].pName = mot.mpStrData + offs;
 	}
-	for (int i = 0; i < mNumNodes; ++i) {
+	for (uint32_t i = 0; i < mNumNodes; ++i) {
 		mNodeMap[mpNodeInfo[i].pName] = i;
 	}
 }
