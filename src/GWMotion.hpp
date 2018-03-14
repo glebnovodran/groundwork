@@ -131,7 +131,7 @@ public:
 		GWRotationOrder defROrd;
 
 		NodeInfo() : pRotTrk(nullptr), pTrnTrk(nullptr), pSclTrk(nullptr), pXOrd(nullptr), pROrd(nullptr),
-			pName(nullptr), numFrames(0), defXOrd(GWTransformOrder::RST), defROrd(GWRotationOrder::XYZ) {}
+			pName(nullptr), numFrames(0), defXOrd(GWTransformOrder::SRT), defROrd(GWRotationOrder::XYZ) {}
 		~NodeInfo() { reset(); }
 
 		void reset() {

@@ -264,9 +264,10 @@ void GWMotion::clone_from(const GWMotion& mot) {
 	std::copy_n(mot.mpStrData, mStrDataSz, mpStrData);
 
 	for (uint32_t i = 0; i < mNumNodes; ++i) {
-		mpNodeInfo[i] = mot.mpNodeInfo[i];
+		const NodeInfo* pNodeInfo = &mot.mpNodeInfo[i];
+		mpNodeInfo[i] = *pNodeInfo;
 		for (uint32_t j = 0; j < 3; ++j) {
-			const TrackInfo* pTrkInfo = mot.mpNodeInfo[i].pTrk[j];
+			const TrackInfo* pTrkInfo = pNodeInfo->pTrk[j];
 			if (pTrkInfo == nullptr) {
 				mpNodeInfo[i].pTrk[j] = nullptr;
 			} else {
@@ -279,7 +280,22 @@ void GWMotion::clone_from(const GWMotion& mot) {
 				mpNodeInfo[i].pTrk[j]->pFrmData = pFrameData;
 			}
 		}
-		uint32_t offs = mot.mpNodeInfo[i].pName - mot.mpStrData;
+
+		GWTransformOrder* pXOrd = nullptr;
+		if (pNodeInfo->pXOrd != nullptr) {
+			pXOrd = new GWTransformOrder[pNodeInfo->numFrames];
+			std::copy_n(pNodeInfo->pXOrd, pNodeInfo->numFrames, pXOrd);
+		}
+		mpNodeInfo[i].pXOrd = pXOrd;
+
+		GWRotationOrder* pROrd = nullptr;
+		if (pNodeInfo->pROrd != nullptr) {
+			pROrd = new GWRotationOrder[pNodeInfo->numFrames];
+			std::copy_n(pNodeInfo->pROrd, pNodeInfo->numFrames, pROrd);
+		}
+		mpNodeInfo[i].pROrd = pROrd;
+
+		uint32_t offs = pNodeInfo->pName - mot.mpStrData;
 		mpNodeInfo[i].pName = mpStrData + offs;
 	}
 	for (uint32_t i = 0; i < mNumNodes; ++i) {
