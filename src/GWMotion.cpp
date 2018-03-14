@@ -238,12 +238,15 @@ bool GWMotion::load(const std::string & filePath) {
 
 void GWMotion::unload() {
 	mNodeMap.clear();
-	delete[] mpTrackInfo;
+	if (mpTrackInfo) { delete[] mpTrackInfo; }
 	mpTrackInfo = nullptr;
-	delete[] mpNodeInfo;
+
+	if (mpNodeInfo) { delete[] mpNodeInfo; }
 	mpNodeInfo = nullptr;
-	delete[] mpStrData;
+
+	if (mpStrData) { delete[] mpStrData; }
 	mpStrData = nullptr;
+
 	mNumNodes = 0;
 	mNumTracks = 0;
 	mStrDataSz = 0;
