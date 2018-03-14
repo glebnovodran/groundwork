@@ -258,7 +258,7 @@ void GWMotion::clone_from(const GWMotion& mot) {
 	mNumNodes = mot.mNumNodes;
 	mpStrData = new char[mot.mStrDataSz];
 	mStrDataSz = mot.mStrDataSz;
-	::memcpy(mpStrData, mot.mpStrData, mot.mStrDataSz);
+	std::copy_n(mot.mpStrData, mStrDataSz, mpStrData);
 
 	for (uint32_t i = 0; i < mNumNodes; ++i) {
 		mpNodeInfo[i] = mot.mpNodeInfo[i];
@@ -272,12 +272,12 @@ void GWMotion::clone_from(const GWMotion& mot) {
 
 				uint32_t numFrames = pTrkInfo->numFrames;
 				float* pFrameData = new float[numFrames];
-				::memcpy(pFrameData, pTrkInfo->pFrmData, numFrames * sizeof(float));
+				std::copy_n(pTrkInfo->pFrmData, numFrames, pFrameData);
 				mpNodeInfo[i].pTrk[j]->pFrmData = pFrameData;
 			}
 		}
 		uint32_t offs = mot.mpNodeInfo[i].pName - mot.mpStrData;
-		mpNodeInfo[i].pName = mot.mpStrData + offs;
+		mpNodeInfo[i].pName = mpStrData + offs;
 	}
 	for (uint32_t i = 0; i < mNumNodes; ++i) {
 		mNodeMap[mpNodeInfo[i].pName] = i;
