@@ -273,10 +273,11 @@ void GWMotion::clone_from(const GWMotion& mot) {
 			} else {
 				mpNodeInfo[i].pTrk[j] = mpTrackInfo + (pTrkInfo - mot.mpTrackInfo);
 				*mpNodeInfo[i].pTrk[j] = *pTrkInfo;
-
+				uint32_t numChan = mpNodeInfo[i].pTrk[j]->get_stride();
 				uint32_t numFrames = pTrkInfo->numFrames;
-				float* pFrameData = new float[numFrames];
-				std::copy_n(pTrkInfo->pFrmData, numFrames, pFrameData);
+				uint32_t dataSize = numChan * numFrames;
+				float* pFrameData = new float[dataSize];
+				std::copy_n(pTrkInfo->pFrmData, dataSize, pFrameData);
 				mpNodeInfo[i].pTrk[j]->pFrmData = pFrameData;
 			}
 		}
