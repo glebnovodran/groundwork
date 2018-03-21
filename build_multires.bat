@@ -1,0 +1,1 @@
+g++ -std=c++11 -g -O3 -mavx2 -mfpmath=sse -ffast-math -ftree-vectorize -mfma -I../TDMotion/src -I./src ../TDMotion/src/TDMotion.cpp ./src/GWBase.cpp ./src/GWVector.cpp ./src/GWMatrix.cpp ./src/GWTransform.cpp ./src/GWQuaternion.cpp ./src/GWMotion.cpp ./samples/multiresfilter/src/filter.cpp ./samples/multiresfilter/src/main.cpp

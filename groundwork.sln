@@ -7,6 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGroundwork", "libGroundw
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gw_test", "gw_test.vcxproj", "{061A5633-DEA4-4528-9888-5724444E2160}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multires_filter", "samples\multiresfilter\multires_filter.vcxproj", "{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B14C7422-48E2-444E-AE5C-6D2D6FE6442E} = {B14C7422-48E2-444E-AE5C-6D2D6FE6442E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +36,14 @@ Global
 		{061A5633-DEA4-4528-9888-5724444E2160}.Release|x64.Build.0 = Release|x64
 		{061A5633-DEA4-4528-9888-5724444E2160}.Release|x86.ActiveCfg = Release|Win32
 		{061A5633-DEA4-4528-9888-5724444E2160}.Release|x86.Build.0 = Release|Win32
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Debug|x64.ActiveCfg = Debug|x64
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Debug|x64.Build.0 = Debug|x64
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Debug|x86.ActiveCfg = Debug|Win32
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Debug|x86.Build.0 = Debug|Win32
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Release|x64.ActiveCfg = Release|x64
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Release|x64.Build.0 = Release|x64
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Release|x86.ActiveCfg = Release|Win32
+		{D6D69C4E-4832-4D06-8710-E2FA5BCBDB78}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
