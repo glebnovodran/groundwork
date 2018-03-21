@@ -28,29 +28,10 @@ void MotionBands::init(const GWMotion* pMot) {
 }
 
 uint32_t MotionBands::calc_number(uint32_t numFrames) {
-	//uint32_t numFrames = mMot.num_frames();
 	uint32_t bitLen = get_bit_len(numFrames);
 	if (1 << bitLen) { return bitLen; }
 	return bitLen - 1;
 }
-
-/*
-void MultiResFilter::build() {
-	uint32_t numBands = calc_num_bands();
-
-	mG = new GWVectorF**[numBands];
-	mL = new GWVectorF**[numBands-1];
-
-	uint32_t numNodes = mMot.num_nodes();
-	uint32_t numFrames = mMot.num_frames();
-	for (uint32_t i = 0; i < numBands; ++i) {
-		mG[i] = new GWVectorF*[numNodes];
-		for (uint32_t j = 0; j < numNodes; ++j) {
-			mG[i][j] = new GWVectorF[numFrames];
-		}
-	}
-}
-*/
 
 void MotionBands::build() {
 	copy_g0();

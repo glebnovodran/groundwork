@@ -2,23 +2,6 @@
  * Motion multiresolution filtering
  * Author: Gleb Novodran <novodran@gmail.com>
  */
-/*
-struct NodeRawData {
-	GWVectorF* pRot;
-	GWVectorF* pTrn;
-	GWVectorF* pScl;
-	uint32_t len;
-};
-
-struct MotionRawData {
-	NodeRawData* pNodeData;
-	uint32_t numNodes;
-};
-
-struct BandData {
-	MotionRawData* pMotData;
-};
-*/
 
 struct NodeBands {
 	GWVectorF* pRotG;
@@ -46,7 +29,6 @@ protected:
 	NodeBands* mpNodes;
 	const GWMotion* mpMot;
 	uint32_t mNumNodes;
-	//NodeBands& node_bands(uint32_t idx) const { return pNodes[idx]; }
 	uint32_t mNumBands;
 
 public:
