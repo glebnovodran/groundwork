@@ -82,9 +82,9 @@ namespace GWBase {
 		Random(uint64_t seed = 0ULL) { set_seed(seed); }
 		void set_seed(uint64_t seed) {
 			mVal = seed ^ 4101842887655102017ULL;
-			mVal = i64();
+			mVal = u64();
 		}
-		int64_t i64() {
+		uint64_t u64() {
 			mVal ^= mVal >> 21;
 			mVal ^= mVal << 35;
 			mVal ^= mVal >> 4;
@@ -93,7 +93,7 @@ namespace GWBase {
 	};
 
 	void set_random_seed(uint64_t seed);
-	int64_t random_i64();
+	uint64_t random_u64();
 }
 
 namespace GWTuple {

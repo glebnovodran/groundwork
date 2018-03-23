@@ -12,5 +12,5 @@ namespace GWBase {
 		s_rnd.set_seed(seed);
 	}
 
-	int64_t random_i64() { return s_rnd.i64(); }
+	uint64_t random_u64() { return s_rnd.u64(); }
 }

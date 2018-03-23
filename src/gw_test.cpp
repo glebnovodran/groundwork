@@ -13,9 +13,9 @@ void test_basic() {
 
 	GWBase::Random rnd;
 	rnd.set_seed(32);
-	int64_t rndVal = GWBase::random_i64();
+	int64_t rndVal = GWBase::random_u64();
 	for (int i = 0; i < 100; ++i) {
-		rndVal = rnd.i64();
+		rndVal = rnd.u64();
 	}
 }
 
