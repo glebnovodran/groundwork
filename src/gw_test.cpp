@@ -10,6 +10,13 @@ void test_basic() {
 	float rad = GWBase::radians(271.0f);
 	float deg = GWBase::degrees(rad);
 	GWRotationOrder rord = GWBase::rord_from_float(75.0f);
+
+	GWBase::Random rnd;
+	rnd.set_seed(32);
+	int64_t rndVal = GWBase::random_i64();
+	for (int i = 0; i < 100; ++i) {
+		rndVal = rnd.i64();
+	}
 }
 
 void test_tuple() {
@@ -150,7 +157,7 @@ void test_motion() {
 		}
 
 		cout << "===========================================" << endl;
-		for (int id = 0; id < mot.num_nodes(); ++id) {
+		for (uint32_t id = 0; id < mot.num_nodes(); ++id) {
 			GWMotion::Node node = mot.get_node_by_id(id);
 			cout << "Node: " << node.name() << endl;
 			GWMotion::Track track = node.get_track(GWTrackKind::ROT);
@@ -198,6 +205,12 @@ void test_motion() {
 		node = clonedMot.get_node("/obj/ANIM/j_Ankle_R");
 		node.eval_xform(xform, 10.0f);
 		q = node.eval_rot(10.0f);
+
+		GWMotion::TrackInfo* pTrk = const_cast<GWMotion::TrackInfo*>(mot.get_track_info(0));
+		GWVectorF newRot[75] = {};
+		newRot[1].y = 1.0f;
+		pTrk->replace_data(newRot);
+
 		mot.unload();
 	}
 }
