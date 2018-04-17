@@ -25,13 +25,13 @@ public:
 	void scl(float s) { GWTuple::scl(*this, s); }
 
 	void scl_rgb(const GWColorF& c, float s) {
-		r = c.r * s;
-		g = c.g * s;
-		b = c.b * s;
+		for (int i = 0; i < 3; ++i) {
+			(*this)[i] = c[i] * s;
+		}
 	}
 	void scl_rgb(float s) {
-		r *= s;
-		g *= s;
-		b *= s;
+		for (int i = 0; i < 3; ++i) {
+			(*this)[i] *= s;
+		}
 	}
 };
