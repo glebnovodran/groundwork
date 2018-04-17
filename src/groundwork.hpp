@@ -1,5 +1,6 @@
 #include "GWBase.hpp"
 #include "GWVector.hpp"
+#include "GWColor.hpp"
 #include "GWMatrix.hpp"
 #include "GWTransform.hpp"
 #include "GWQuaternion.hpp"
