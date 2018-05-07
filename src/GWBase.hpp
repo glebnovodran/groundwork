@@ -412,6 +412,24 @@ template<typename T> struct GWTuple4 {
 	T& operator [](size_t i) { return elems[i]; }
 };
 
+template<typename T> struct GWColorTuple3 {
+	typedef T elem_t;
+	static const int ELEMS_NUM = 3;
+	union { struct { elem_t r, g, b; }; elem_t elems[ELEMS_NUM]; };
+
+	T operator [](size_t i) const { return elems[i]; }
+	T& operator [](size_t i) { return elems[i]; }
+};
+
+template<typename T> struct GWColorTuple4 {
+	typedef T elem_t;
+	static const int ELEMS_NUM = 4;
+	union { struct { elem_t r, g, b, a; }; elem_t elems[ELEMS_NUM]; };
+
+	T operator [](size_t i) const { return elems[i]; }
+	T& operator [](size_t i) { return elems[i]; }
+};
+
 typedef GWTuple2<float> GWTuple2f;
 typedef GWTuple3<float> GWTuple3f;
 typedef GWTuple4<float> GWTuple4f;
@@ -419,4 +437,7 @@ typedef GWTuple4<float> GWTuple4f;
 typedef GWTuple2<double> GWTuple2d;
 typedef GWTuple3<double> GWTuple3d;
 typedef GWTuple4<double> GWTuple4d;
+
+typedef GWColorTuple3<float> GWColorTuple3f;
+typedef GWColorTuple4<float> GWColorTuple4f;
 
