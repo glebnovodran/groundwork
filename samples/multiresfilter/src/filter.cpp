@@ -1,7 +1,7 @@
 /*
-* Motion multiresolution filtering
-* Author: Gleb Novodran <novodran@gmail.com>
-*/
+ * Motion multiresolution filtering
+ * Author: Gleb Novodran <novodran@gmail.com>
+ */
 
 #include <groundwork.hpp>
 #include "filter.hpp"
@@ -87,5 +87,5 @@ void MotionBands::build_band_pass(uint32_t lvl) {
 	}
 }
 
-void MultiResFilter::apply(const float * pGains) {
+void MotionEqualizer::apply(uint32_t nodeId, const float* pGains) {
 }

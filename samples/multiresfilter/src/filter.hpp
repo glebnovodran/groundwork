@@ -1,5 +1,7 @@
 /*
  * Motion multiresolution filtering
+ * https://www.researchgate.net/publication/2325084_Motion_Signal_Processing
+ * alt link: http://mrl.snu.ac.kr/courses/CourseDataDrivenAnimation/readings/BRUDRLIN.PDF
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
@@ -8,9 +10,11 @@ struct NodeBands {
 	GWVectorF* pRotL;
 	uint32_t numFrames;
 
+	// Gaussian pyramid level
 	inline GWVectorF* G(uint32_t idx) {
 		return pRotG + idx * numFrames;
 	};
+	// Laplacian pyramid level
 	inline GWVectorF* L(uint32_t idx) { return pRotL + idx * numFrames; };
 
 	inline GWVectorF* G(uint32_t idx, int fno) {
@@ -44,28 +48,28 @@ protected:
 	void build_band_pass(uint32_t lvl);
 };
 
-class MultiResFilter {
+class MotionEqualizer {
 protected:
 	GWMotion mMot;
-	GWMotion mFilteredMot;
+	GWMotion mEqualizedMot;
 	MotionBands mBands;
 
 public:
 
-	MultiResFilter(const GWMotion& mot) : mBands() {
+	MotionEqualizer(const GWMotion& mot) : mBands() {
 		set_motion(mot);
 	}
 
 	void build() { mBands.build(); }
-	void apply(const float* pGains);
+	void apply(uint32_t nodeId, const float* pGains);
 
-	GWMotion* get_filtered() { return &mFilteredMot; }
+	GWMotion* get_filtered() { return &mEqualizedMot; }
 	const GWMotion* get_motion() const { return &mMot; }
 
 protected:
 	void set_motion(const GWMotion& mot) {
 		mMot.clone_from(mot);
-		mFilteredMot.clone_from(mot);
+		mEqualizedMot.clone_from(mot);
 		mBands.init(&mMot);
 	}
 

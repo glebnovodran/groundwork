@@ -17,10 +17,9 @@ int main(int argc, char* argv[]) {
 		GWMotion cloned;
 		cloned.clone_from(mot);
 		GWVectorF v1 = cloned.eval(0, GWTrackKind::ROT, 73.0f);
-		MultiResFilter flt(mot);
-		//flt.filter(mot);
-		//flt.set_motion(mot);
-		flt.build();
+		MotionEqualizer equ(mot);
+
+		equ.build();
 		mot.unload();
 		return 0;
 	}
