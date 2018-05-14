@@ -34,13 +34,19 @@ protected:
 	const GWMotion* mpMot;
 	uint32_t mNumNodes;
 	uint32_t mNumBands;
-
+	bool mBuilt;
 public:
-	MotionBands() : mpNodes(nullptr), mpMot(nullptr), mNumNodes(0), mNumBands(0) {}
+	MotionBands() : mpNodes(nullptr), mpMot(nullptr), mNumNodes(0), mNumBands(0), mBuilt(false) {}
 
 	void init(const GWMotion* pMot);
-	static uint32_t calc_number(uint32_t numFrames);
+	void reset();
 	void build();
+	bool is_built() const { return mBuilt; }
+	NodeBands* node_bands(uint32_t nodeId) const {
+		return (nodeId < mNumNodes) ? &mpNodes[nodeId] : nullptr;
+	}
+	uint32_t num_bands() const { return mNumBands; }
+	static uint32_t calc_number(uint32_t numFrames);
 
 protected:
 	void copy_g0();
@@ -61,6 +67,7 @@ public:
 	}
 
 	void build() { mBands.build(); }
+	void reset() { mBands.reset(); }
 	void apply(uint32_t nodeId, const float* pGains);
 
 	GWMotion* get_filtered() { return &mEqualizedMot; }

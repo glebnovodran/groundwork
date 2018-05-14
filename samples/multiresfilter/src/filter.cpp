@@ -24,13 +24,22 @@ void MotionBands::init(const GWMotion* pMot) {
 		mpNodes[id].pRotL = new GWVectorF[mNumBands * numFrames];
 		mpNodes[id].numFrames = numFrames;
 	}
+}
 
+void MotionBands::reset() {
+	if (mpNodes != nullptr) {
+		for (uint32_t id = 0; id < mNumNodes; ++id) {
+			if (mpNodes[id].pRotG != nullptr) { delete[] mpNodes[id].pRotG; }
+			if (mpNodes[id].pRotL != nullptr) { delete[] mpNodes[id].pRotL; }
+			delete[] mpNodes;
+		}
+	}
 }
 
 uint32_t MotionBands::calc_number(uint32_t numFrames) {
 	uint32_t bitLen = get_bit_len(numFrames);
 	if (1 << bitLen) { return bitLen; }
-	return bitLen - 1;
+	return bitLen - 1;// bitLen
 }
 
 void MotionBands::build() {
@@ -41,6 +50,7 @@ void MotionBands::build() {
 	for (uint32_t lvl = 1; lvl < mNumBands - 1; ++lvl) {
 		build_band_pass(lvl);
 	}
+	mBuilt = true;
 }
 
 void MotionBands::copy_g0() {
@@ -49,8 +59,9 @@ void MotionBands::copy_g0() {
 	for (uint32_t i = 0; i < mNumNodes; ++i) {
 		NodeBands& nodeBands = mpNodes[i];
 		GWVectorF* pG = nodeBands.G(0);
-		for (uint32_t fno = 0; fno < nodeBands.numFrames; ++fno) {
-			*pG++ = mpMot->eval(i, GWTrackKind::ROT, fno);
+		GWMotion::Node node = mpMot->get_node_by_id(i);
+		for (int32_t fno = 0; fno < nodeBands.numFrames; ++fno) {
+			*pG++ = node.eval(GWTrackKind::ROT, fno);
 		}
 	}
 }
@@ -88,4 +99,26 @@ void MotionBands::build_band_pass(uint32_t lvl) {
 }
 
 void MotionEqualizer::apply(uint32_t nodeId, const float* pGains) {
+	if (!mBands.is_built()) { return; }
+
+	GWMotion::Node node = mMot.get_node_by_id(nodeId);
+	if (node.is_valid()) {
+		const GWMotion::NodeInfo* pInfo = node.get_node_info();
+		GWMotion::Track track = node.get_track(GWTrackKind::ROT);
+		const GWMotion::TrackInfo* pTrkInfo = track.get_track_info();
+
+		uint32_t numFrames = track.num_frames();
+
+		GWVectorF* pRawData = new GWVectorF[numFrames];
+		NodeBands* pBands = mBands.node_bands(nodeId);
+		for (int32_t fno = 0; fno < numFrames; ++fno) {
+			GWVectorF gfb = *(pBands->G(numFrames - 1, fno));
+			GWVectorF sum(0.0f);
+			for (uint32_t band = 0; band < mBands.num_bands() - 1; ++band) {
+
+			}
+		}
+
+		delete[] pRawData;
+	}
 }

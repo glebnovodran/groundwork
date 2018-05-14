@@ -20,6 +20,7 @@ int main(int argc, char* argv[]) {
 		MotionEqualizer equ(mot);
 
 		equ.build();
+		equ.reset();
 		mot.unload();
 		return 0;
 	}
