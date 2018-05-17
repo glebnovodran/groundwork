@@ -68,11 +68,15 @@ public:
 
 	void build() { mBands.build(); }
 	void reset() { mBands.reset(); }
-	void apply(uint32_t nodeId, const float* pGains);
+	void apply(uint32_t nodeId, uint32_t numGains = 0, const float* pGains = nullptr);
 
-	GWMotion* get_filtered() { return &mEqualizedMot; }
+	GWMotion* get_equalized() { return &mEqualizedMot; }
 	const GWMotion* get_motion() const { return &mMot; }
 
+	float get_gain(uint32_t band, uint32_t numGains = 0, const float* pGains = nullptr) const {
+		if (pGains == nullptr) { return 1.0f; }
+		return band < numGains ? pGains[band] : 1.0f;
+	}
 protected:
 	void set_motion(const GWMotion& mot) {
 		mMot.clone_from(mot);

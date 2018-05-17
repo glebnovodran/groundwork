@@ -20,7 +20,7 @@ void MotionBands::init(const GWMotion* pMot) {
 	mNumNodes = pMot->num_nodes();
 	mpNodes = new NodeBands[mNumNodes];
 	for (uint32_t id = 0; id < mNumNodes; ++id) {
-		mpNodes[id].pRotG = new GWVectorF[mNumBands * numFrames];
+		mpNodes[id].pRotG = new GWVectorF[(mNumBands+1) * numFrames];
 		mpNodes[id].pRotL = new GWVectorF[mNumBands * numFrames];
 		mpNodes[id].numFrames = numFrames;
 	}
@@ -38,16 +38,17 @@ void MotionBands::reset() {
 
 uint32_t MotionBands::calc_number(uint32_t numFrames) {
 	uint32_t bitLen = get_bit_len(numFrames);
-	if (1 << bitLen) { return bitLen; }
-	return bitLen - 1;// bitLen
+	return bitLen;
+	//if (1 << bitLen) { return bitLen; }
+	//return bitLen-1;// bitLen-1
 }
 
 void MotionBands::build() {
 	copy_g0();
-	for (uint32_t lvl = 1; lvl < mNumBands; ++lvl) {
+	for (uint32_t lvl = 1; lvl <= mNumBands; ++lvl) {
 		build_low_pass(lvl);
 	}
-	for (uint32_t lvl = 1; lvl < mNumBands - 1; ++lvl) {
+	for (uint32_t lvl = 0; lvl < mNumBands; ++lvl) {
 		build_band_pass(lvl);
 	}
 	mBuilt = true;
@@ -98,27 +99,33 @@ void MotionBands::build_band_pass(uint32_t lvl) {
 	}
 }
 
-void MotionEqualizer::apply(uint32_t nodeId, const float* pGains) {
+void MotionEqualizer::apply(uint32_t nodeId, uint32_t numGains, const float* pGains) {
 	if (!mBands.is_built()) { return; }
 
 	GWMotion::Node node = mMot.get_node_by_id(nodeId);
 	if (node.is_valid()) {
 		const GWMotion::NodeInfo* pInfo = node.get_node_info();
 		GWMotion::Track track = node.get_track(GWTrackKind::ROT);
-		const GWMotion::TrackInfo* pTrkInfo = track.get_track_info();
+		GWMotion::TrackInfo* pTrkInfo = track.get_track_info();
 
 		uint32_t numFrames = track.num_frames();
 
 		GWVectorF* pRawData = new GWVectorF[numFrames];
 		NodeBands* pBands = mBands.node_bands(nodeId);
+		uint32_t numBands = mBands.num_bands();
 		for (int32_t fno = 0; fno < numFrames; ++fno) {
-			GWVectorF gfb = *(pBands->G(numFrames - 1, fno));
+			GWVectorF reconstructed = *(pBands->G(numBands, fno));
 			GWVectorF sum(0.0f);
-			for (uint32_t band = 0; band < mBands.num_bands() - 1; ++band) {
-
+			for (uint32_t band = 0; band < numBands - 1; ++band) {
+				float gain = get_gain(band, numGains, pGains);
+				sum += (*pBands->L(band, fno)) * gain;
 			}
-		}
+			reconstructed += sum;
 
+			pRawData[fno] = reconstructed;
+		}
+		
+		pTrkInfo->replace_data(pRawData);
 		delete[] pRawData;
 	}
 }

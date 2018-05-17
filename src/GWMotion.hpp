@@ -84,7 +84,7 @@ public:
 			return is_valid() ? mpMot->num_frames() : 0;
 		}
 
-		const TrackInfo* get_track_info() const {
+		TrackInfo* get_track_info() const {
 			return is_valid() ? mpMot->get_track_info(mNodeId, mKind) : nullptr;
 		}
 
@@ -151,7 +151,7 @@ public:
 			return (pROrd == nullptr) ? defROrd : pROrd[frameNo % numFrames];
 		}
 		bool has_track(GWTrackKind kind) const { return pTrk[(uint8_t)kind] != nullptr; }
-		const TrackInfo* get_track_info(GWTrackKind kind) const { return pTrk[(uint8_t)kind]; }
+		TrackInfo* get_track_info(GWTrackKind kind) const { return pTrk[(uint8_t)kind]; }
 	};
 
 	class Node {
@@ -229,10 +229,10 @@ public:
 	}
 
 	const NodeInfo* get_node_info(uint32_t id) const { return id < mNumNodes ? &mpNodeInfo[id] : nullptr; }
-	const TrackInfo* get_track_info(uint32_t trackId) const { return trackId < mNumTracks ? &mpTrackInfo[trackId] : nullptr; }
-	const TrackInfo* get_track_info(uint32_t nodeId, GWTrackKind kind) const {
+	TrackInfo* get_track_info(uint32_t trackId) const { return trackId < mNumTracks ? &mpTrackInfo[trackId] : nullptr; }
+	TrackInfo* get_track_info(uint32_t nodeId, GWTrackKind kind) const {
 		const NodeInfo* pNodeInfo = get_node_info(nodeId);
-		const TrackInfo* pInfo = pNodeInfo == nullptr ? nullptr : pNodeInfo->get_track_info(kind);
+		TrackInfo* pInfo = pNodeInfo == nullptr ? nullptr : pNodeInfo->get_track_info(kind);
 		return pInfo;
 	}
 
