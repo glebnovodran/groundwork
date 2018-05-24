@@ -10,6 +10,7 @@ struct NodeBands {
 	GWVectorF* pRotL;
 	uint32_t numFrames;
 
+	NodeBands() : pRotG(nullptr), pRotL(nullptr), numFrames(0) {}
 	// Gaussian pyramid level
 	inline GWVectorF* G(uint32_t idx) {
 		return pRotG + idx * numFrames;

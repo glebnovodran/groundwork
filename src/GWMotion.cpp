@@ -307,7 +307,7 @@ void GWMotion::clone_from(const GWMotion& mot) {
 GWTransformOrder GWMotion::eval_xord(uint32_t nodeId, float frame) const {
 	const NodeInfo* pInfo = get_node_info(nodeId);
 	if (pInfo == nullptr) { return GWTransformOrder::SRT; }
-	int fno = ::floorf(frame);
+	int fno = int32_t(::floorf(frame));
 	int maxFrame = pInfo->numFrames - 1;
 	fno = fno % int32_t(pInfo->numFrames);
 	fno += pInfo->numFrames;

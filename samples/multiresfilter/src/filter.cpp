@@ -29,10 +29,17 @@ void MotionBands::init(const GWMotion* pMot) {
 void MotionBands::reset() {
 	if (mpNodes != nullptr) {
 		for (uint32_t id = 0; id < mNumNodes; ++id) {
-			if (mpNodes[id].pRotG != nullptr) { delete[] mpNodes[id].pRotG; }
-			if (mpNodes[id].pRotL != nullptr) { delete[] mpNodes[id].pRotL; }
-			delete[] mpNodes;
+			if (mpNodes[id].pRotG != nullptr) {
+				delete[] mpNodes[id].pRotG;
+				mpNodes[id].pRotG = nullptr;
+			}
+			if (mpNodes[id].pRotL != nullptr) {
+				delete[] mpNodes[id].pRotL;
+				mpNodes[id].pRotL = nullptr;
+			}
 		}
+		delete[] mpNodes;
+		mpNodes = nullptr;
 	}
 }
 
