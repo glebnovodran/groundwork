@@ -69,7 +69,7 @@ public:
 
 	void build() { mBands.build(); }
 	void reset() { mBands.reset(); }
-	void apply(uint32_t nodeId, uint32_t numGains = 0, const float* pGains = nullptr);
+	void apply(uint32_t nodeId, GWVectorF* pMem, uint32_t numGains = 0, const float* pGains = nullptr);
 
 	GWMotion* get_equalized() { return &mEqualizedMot; }
 	const GWMotion* get_motion() const { return &mMot; }
@@ -78,11 +78,28 @@ public:
 		if (pGains == nullptr) { return 1.0f; }
 		return band < numGains ? pGains[band] : 1.0f;
 	}
+
+	uint32_t get_num_bands() const { return mBands.num_bands(); }
 protected:
 	void set_motion(const GWMotion& mot) {
 		mMot.clone_from(mot);
 		mEqualizedMot.clone_from(mot);
 		mBands.init(&mMot);
 	}
+};
 
+class MotionGains {
+private:
+	uint32_t mNumNodes;
+	uint32_t mNumGains;
+	float** mppGains;
+public:
+	MotionGains(uint32_t numNodes, uint32_t numGains) : mNumNodes(numNodes), mNumGains(numGains) {
+		mppGains = new float*[numNodes]();
+	}
+
+	void load(std::string fpath);
+	void apply_to(MotionEqualizer& equ);
+
+	void set_gains(uint32_t nodeId, const float* pGains);
 };

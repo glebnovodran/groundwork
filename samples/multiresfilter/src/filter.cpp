@@ -106,7 +106,7 @@ void MotionBands::build_band_pass(uint32_t lvl) {
 	}
 }
 
-void MotionEqualizer::apply(uint32_t nodeId, uint32_t numGains, const float* pGains) {
+void MotionEqualizer::apply(uint32_t nodeId, GWVectorF* pMem, uint32_t numGains, const float* pGains) {
 	if (!mBands.is_built()) { return; }
 
 	GWMotion::Node node = mMot.get_node_by_id(nodeId);
@@ -117,7 +117,7 @@ void MotionEqualizer::apply(uint32_t nodeId, uint32_t numGains, const float* pGa
 
 		uint32_t numFrames = track.num_frames();
 
-		GWVectorF* pRawData = new GWVectorF[numFrames];
+		GWVectorF* pRawData = pMem == nullptr ? new GWVectorF[numFrames] : pMem;
 		NodeBands* pBands = mBands.node_bands(nodeId);
 		uint32_t numBands = mBands.num_bands();
 		for (int32_t fno = 0; fno < numFrames; ++fno) {
@@ -132,7 +132,13 @@ void MotionEqualizer::apply(uint32_t nodeId, uint32_t numGains, const float* pGa
 			pRawData[fno] = reconstructed;
 		}
 		
-		pTrkInfo->replace_data(pRawData);
-		delete[] pRawData;
+		GWMotion::Node equNode = mEqualizedMot.get_node_by_id(nodeId);
+		GWMotion::TrackInfo* pEquTrkInfo = equNode.get_track(GWTrackKind::ROT).get_track_info();
+		pEquTrkInfo->replace_data(pRawData);
+
+		if (pMem == nullptr) { delete[] pRawData; }
 	}
+}
+
+void MotionGains::set_gains(uint32_t nodeId, const float * pGains) {
 }
