@@ -2,7 +2,7 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
-template<typename T> class GWVectorBase :public GWTuple3<T> {
+template<typename T> struct GWVectorBase :public GWTuple3<T> {
 public:
 	GWVectorBase() = default;
 	GWVectorBase(const GWTuple3<T>& tuple) { from_tuple(tuple); }
