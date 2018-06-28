@@ -62,6 +62,20 @@ void test_vec() {
 	float laf = a.length_fast();
 }
 
+void test_ray() {
+	using namespace std;
+	GWRayF rayA(GWVectorF(0.0f), GWVectorF(1.0f, 0.0f, 0.0f));
+	GWVectorF v = rayA.at(2.0f);
+
+	GWRayF ray;
+	ray.from_asimuth_elevation(0.0f, 0.0f);
+	cout << "from_asimuth_elevation() = (" << ray.direction().x << ", "<< ray.direction().y << ", "<< ray.direction().z << ")\n";
+}
+
+void test_color() {
+	GWColorF color;
+}
+
 void test_mtx() {
 	GWTransformF xform = {
 		1, 0, 0, 0,
@@ -220,6 +234,7 @@ int main(int argc, char* argv[]) {
 	test_basic();
 	test_tuple();
 	test_vec();
+	test_ray();
 	test_mtx();
 	test_quat();
 	test_motion();

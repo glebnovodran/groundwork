@@ -1,6 +1,6 @@
 /*
-* Author: Gleb Novodran <novodran@gmail.com>
-*/
+ * Author: Gleb Novodran <novodran@gmail.com>
+ */
 
 template<typename T> class GWRayBase {
 protected:
@@ -10,7 +10,7 @@ protected:
 public:
 	GWRayBase() = default;
 	GWRayBase(const GWVectorBase<T>& orig, const GWVectorBase<T>& dir) :
-		nOrig(orig), mDir(dir) {}
+		mOrig(orig), mDir(dir) {}
 	GWVectorBase<T> origin() const { return mOrig; }
 	GWVectorBase<T> direction() const { return mDir; }
 	GWVectorBase<T> at(T t) const { return mOrig + t * mDir; }
@@ -32,3 +32,6 @@ public:
 	}
 
 };
+
+typedef GWRayBase<float> GWRayF;
+typedef GWRayBase<double> GWRayD;
