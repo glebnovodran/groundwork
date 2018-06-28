@@ -68,8 +68,8 @@ void test_ray() {
 	GWVectorF v = rayA.at(2.0f);
 
 	GWRayF ray;
-	ray.from_asimuth_elevation(0.0f, 0.0f);
-	cout << "from_asimuth_elevation() = (" << ray.direction().x << ", "<< ray.direction().y << ", "<< ray.direction().z << ")\n";
+	ray.from_asimuth_inclination(0.0f, GWBase::pi * 0.5f);
+	cout << "from_asimuth_inclination(0, 90) = (" << ray.direction().x << ", "<< ray.direction().y << ", "<< ray.direction().z << ")\n";
 }
 
 void test_color() {
