@@ -37,6 +37,7 @@ enum class GWTrackKind : uint8_t {
 namespace GWBase {
 	extern const long double pi;
 
+	void half_to_float(float* pDst, const uint16_t* pSrc, int n);
 	template<typename T> inline T radians(T deg) { return (T)(deg * (pi / 180)); }
 	template<typename T> inline T degrees(T rad) { return (T)(rad * (180 / pi)); }
 
