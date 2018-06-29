@@ -1,3 +1,7 @@
+/*
+ * Author: Gleb Novodran <novodran@gmail.com>
+ */
+
 class GWColorF : public GWColorTuple4f {
 public:
 	float luma() const {

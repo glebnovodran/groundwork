@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\TDMotion\src\TDMotion.cpp" />
     <ClCompile Include="src\GWBase.cpp" />
+    <ClCompile Include="src\GWImage.cpp" />
     <ClCompile Include="src\GWMatrix.cpp" />
     <ClCompile Include="src\GWMotion.cpp" />
     <ClCompile Include="src\GWQuaternion.cpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="src\groundwork.hpp" />
     <ClInclude Include="src\GWBase.hpp" />
     <ClInclude Include="src\GWColor.hpp" />
+    <ClInclude Include="src\GWImage.hpp" />
     <ClInclude Include="src\GWMatrix.hpp" />
     <ClInclude Include="src\GWMotion.hpp" />
     <ClInclude Include="src\GWQuaternion.hpp" />
