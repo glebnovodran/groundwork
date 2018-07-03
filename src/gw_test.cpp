@@ -72,10 +72,6 @@ void test_ray() {
 	cout << "from_asimuth_inclination(0, 90) = (" << ray.direction().x << ", "<< ray.direction().y << ", "<< ray.direction().z << ")\n";
 }
 
-void test_color() {
-	GWColorF color;
-}
-
 void test_mtx() {
 	GWTransformF xform = {
 		1, 0, 0, 0,
@@ -229,6 +225,23 @@ void test_motion() {
 	}
 }
 
+void test_image(const std::string& imgPath) {
+	using namespace std;
+	ifstream ifs(imgPath, ios::binary);
+	if (ifs.good()) {
+		GWImage* pImg = GWImage::read_dds(ifs);
+		if (pImg) {
+			cout << "read " << pImg->get_width() << "x" << pImg->get_height() << '\n';
+			cout << "min: " << pImg->get_min() << '\n';
+			cout << "max:" << pImg->get_max() << '\n';
+		} else {
+			cout << "Bad file format\n";
+		}
+	} else {
+		cout << "Image file not found\n";
+	}
+}
+
 int main(int argc, char* argv[]) {
 
 	test_basic();
@@ -239,5 +252,6 @@ int main(int argc, char* argv[]) {
 	test_quat();
 	test_motion();
 
+	test_image("../data/pano_test1_h.dds");
 	return 0;
 }

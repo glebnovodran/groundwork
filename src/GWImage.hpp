@@ -27,7 +27,9 @@ public:
 	GWColorF get_pixel(int x, int y) { return mPixels[(y * mWidth) + x]; }
 	void update();
 
-	static GWImage* alloc(int w, int h);
 	static void free(GWImage* pImg);
 	static GWImage* read_dds(std::ifstream& ifs);
+
+protected:
+	static GWImage* alloc(int w, int h);
 };
