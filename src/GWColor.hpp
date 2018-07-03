@@ -38,4 +38,8 @@ public:
 			(*this)[i] *= s;
 		}
 	}
+
+	void zero() { GWTuple::fill(*this, 0.0f); }
 };
+
+std::ostream& operator << (std::ostream& os, const GWColorF& color);
