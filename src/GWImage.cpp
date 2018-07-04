@@ -38,7 +38,10 @@ void GWImage::update() {
 }
 
 struct DDSHead {
-	char magic[4];
+	union {
+		char magic[4];
+		uint32_t magic32;
+	};
 	uint32_t size;
 	uint32_t flags;
 	uint32_t height;
@@ -49,7 +52,7 @@ struct DDSHead {
 	uint32_t reserved1[11];
 	struct PixelFormat {
 		uint32_t size;
-		uint32_t dlags;
+		uint32_t flags;
 		uint32_t fourCC;
 		uint32_t bitCount;
 		uint32_t maskR;
@@ -57,9 +60,11 @@ struct DDSHead {
 		uint32_t maskB;
 		uint32_t maskA;
 	} format;
-	uint32_t caps1;
+	uint32_t caps;
 	uint32_t caps2;
-	uint32_t reserved2[3];
+	uint32_t caps3;
+	uint32_t caps4;
+	uint32_t reserved2;
 
 	bool is_dds() const {
 		static char sig[4] = { 'D', 'D', 'S', ' ' };
@@ -67,6 +72,7 @@ struct DDSHead {
 	}
 	bool is_dds128() const { return format.fourCC == 0x74; }
 	bool is_dds64() const { return format.fourCC == 0x71; }
+
 };
 
 GWImage* GWImage::read_dds(std::ifstream& ifs) {
@@ -80,12 +86,12 @@ GWImage* GWImage::read_dds(std::ifstream& ifs) {
 		int npix = w * h;
 		if (header.is_dds128()) {
 			pImg = alloc(w, h);
-			ifs.read(reinterpret_cast<char*>(pImg->mPixels), npix * sizeof(GWColorF));
+			ifs.read(reinterpret_cast<char*>(pImg->mPixels), header.pitchLin);
 		} else {
 			pImg = alloc(w, h);
 			int n = npix * 4;
 			uint16_t* pTmp = new uint16_t[n];
-			ifs.read(reinterpret_cast<char*>(pTmp), n * sizeof(uint16_t));
+			ifs.read(reinterpret_cast<char*>(pTmp), header.pitchLin);
 			GWBase::half_to_float(reinterpret_cast<float*>(&pImg->mPixels[0]), pTmp, n);
 			delete[] pTmp;
 		}
@@ -94,4 +100,33 @@ GWImage* GWImage::read_dds(std::ifstream& ifs) {
 	if (pImg) { pImg->update(); }
 
 	return pImg;
+}
+
+// D3DFMT_A32B32G32R32F (dds128), no mipmap
+void GWImage::write_dds(std::ofstream & ofs) {
+	DDSHead header;
+	header.magic32 = 0x20534444; // "DDS "
+	header.size = 124;
+	header.flags = 0x081007; // DDS_HEADER_FLAGS_TEXTURE | DDS_HEADER_FLAGS_LINEARSIZE
+	header.width = mWidth;
+	header.height = mHeight;
+	//header.pitchLin = ;
+	header.depth = 0;
+	header.mipMapCount = 0;
+	header.format.size = 0x20;
+	header.format.flags = 0x4;
+	header.format.fourCC = 0x74; // D3DFMT_A32B32G32R32F
+	header.format.bitCount = 0;
+	header.format.maskR = 0;
+	header.format.maskG = 0;
+	header.format.maskB = 0;
+	header.format.maskA = 0;
+	header.pitchLin = header.width * header.height * 4 * sizeof(float);
+	header.caps = 0x1000;
+
+	ofs.write(reinterpret_cast<char*>(&header), sizeof(header));
+	int w = header.width;
+	int h = header.height;
+	int npix = w * h;
+	ofs.write(reinterpret_cast<char*>(mPixels), npix * 4 * sizeof(float));
 }

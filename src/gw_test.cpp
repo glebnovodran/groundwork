@@ -234,9 +234,16 @@ void test_image(const std::string& imgPath) {
 			cout << "read " << pImg->get_width() << "x" << pImg->get_height() << '\n';
 			cout << "min: " << pImg->get_min() << '\n';
 			cout << "max:" << pImg->get_max() << '\n';
+
+			ofstream os("out.dds", ios::binary);
+			if (os.good()) {
+				pImg->write_dds(os);
+				os.close();
+			}
 		} else {
 			cout << "Bad file format\n";
 		}
+		ifs.close();
 	} else {
 		cout << "Image file not found\n";
 	}
