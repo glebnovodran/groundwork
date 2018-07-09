@@ -40,6 +40,7 @@
     <ClInclude Include="src\GWMotion.hpp" />
     <ClInclude Include="src\GWQuaternion.hpp" />
     <ClInclude Include="src\GWRay.hpp" />
+    <ClInclude Include="src\GWSphericalHarmonics.hpp" />
     <ClInclude Include="src\GWTransform.hpp" />
     <ClInclude Include="src\GWVector.hpp" />
   </ItemGroup>

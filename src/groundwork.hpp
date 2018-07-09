@@ -10,3 +10,4 @@
 #include "GWQuaternion.hpp"
 #include "GWMotion.hpp"
 #include "GWImage.hpp"
+#include "GWSphericalHarmonics.hpp"
