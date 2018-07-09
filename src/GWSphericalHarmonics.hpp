@@ -1,11 +1,4 @@
-template <typename T>
-#if defined(_MSC_VER)
-__forceinline
-#elif defined(__GNUC__)
-__inline__ __attribute__((__always_inline__))
-#else
-inline
-#endif
+template <typename T> GW_FORCEINLINE
 void sh3_eval_i(T* pCoefs, const T x[], const T y[], const T z[], const int N = 1) {
 	for (int i = 0; i < N; ++i) {
 		pCoefs[i] = T(0.28209479177387814);
@@ -65,8 +58,7 @@ void sh3_eval_i(T* pCoefs, const T x[], const T y[], const T z[], const int N = 
 	}
 }
 
-template <typename T>
-inline
+template <typename T> inline
 void sh3_eval(T* pCoefs, const T x[], const T y[], const T z[], const int N = 1) {
 	sh3_eval_i(pCoefs, x, y, z, N);
 }

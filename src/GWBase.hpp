@@ -7,6 +7,26 @@
 #include <cstdarg>
 #include <algorithm>
 
+#ifndef GW_NOINLINE
+#	if defined(_MSC_VER)
+#		define GW_NOINLINE __declspec(noinline)
+#	elif defined(__GNUC__)
+#		define GW_NOINLINE __attribute__((noinline))
+#	else
+#		define GW_NOINLINE
+#	endif
+#endif
+
+#ifndef GW_FORCEINLINE
+#	if defined(_MSC_VER)
+#		define GW_FORCEINLINE __forceinline
+#	elif defined(__GNUC__)
+#		define GW_FORCEINLINE __inline__ __attribute__((__always_inline__))
+#	else
+#		define GW_FORCEINLINE inline
+#	endif
+#endif
+
 enum class GWTransformOrder : uint8_t {
 	SRT = 0,
 	STR = 1,
