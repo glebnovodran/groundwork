@@ -27,6 +27,7 @@
     <ClCompile Include="src\GWMotion.cpp" />
     <ClCompile Include="src\GWQuaternion.cpp" />
     <ClCompile Include="src\GWRay.cpp" />
+    <ClCompile Include="src\GWSphericalHarmonics.cpp" />
     <ClCompile Include="src\GWTransform.cpp" />
     <ClCompile Include="src\GWVector.cpp" />
   </ItemGroup>

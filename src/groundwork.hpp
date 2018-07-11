@@ -8,6 +8,6 @@
 #include "GWMatrix.hpp"
 #include "GWTransform.hpp"
 #include "GWQuaternion.hpp"
+#include "GWSphericalHarmonics.hpp"
 #include "GWMotion.hpp"
 #include "GWImage.hpp"
-#include "GWSphericalHarmonics.hpp"
