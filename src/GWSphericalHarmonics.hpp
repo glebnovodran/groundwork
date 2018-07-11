@@ -88,12 +88,12 @@ public:
 
 	void clear() {
 		T* pData = as_raw();
-		for (int i = 0; i < N * 3; ++i) { *pData[i] = T(0); }
+		for (int i = 0; i < N * 3; ++i) { pData[i] = T(0); }
 	}
 
 	void scl(T s) {
 		T* pData = as_raw();
-		for (int i = 0; i < N * 3; ++i) { *pData[i] *= s; }
+		for (int i = 0; i < N * 3; ++i) { pData[i] *= s; }
 	}
 
 	void lerp(GWSHCoeffsBase<T>& coefA, GWSHCoeffsBase<T>& coefB, T t);
