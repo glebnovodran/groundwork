@@ -102,8 +102,18 @@ GWImage* GWImage::read_dds(std::ifstream& ifs) {
 	return pImg;
 }
 
+GWImage* GWImage::read_dds(std::string& path) {
+	using namespace std;
+	GWImage* pImg = nullptr;
+	ifstream ifs(path, ios::binary);
+	if (ifs.good()) {
+		pImg = read_dds(ifs);
+	}
+	return pImg;
+}
+
 // D3DFMT_A32B32G32R32F (dds128), no mipmap
-void GWImage::write_dds(std::ofstream & ofs) {
+void GWImage::write_dds(std::ofstream & ofs) const {
 	DDSHead header;
 	header.magic32 = 0x20534444; // "DDS "
 	header.size = 124;
@@ -128,5 +138,5 @@ void GWImage::write_dds(std::ofstream & ofs) {
 	int w = header.width;
 	int h = header.height;
 	int npix = w * h;
-	ofs.write(reinterpret_cast<char*>(mPixels), npix * 4 * sizeof(float));
+	ofs.write(reinterpret_cast<const char*>(mPixels), npix * 4 * sizeof(float));
 }
