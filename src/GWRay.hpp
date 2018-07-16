@@ -28,7 +28,7 @@ public:
 	inline void from_polar_uv(T u, T v) {
 		float azimuth = u * T(2) * GWBase::pi;
 		float inclination = (v - T(1)) * GWBase::pi;
-		from_asimuth_elevation(azimuth, inclination);
+		from_asimuth_inclination(azimuth, inclination);
 	}
 
 };
