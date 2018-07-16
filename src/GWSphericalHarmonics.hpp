@@ -80,11 +80,11 @@ protected:
 public:
 	GWSHCoeffsBase() = default;
 
-	inline T* as_raw() const { return reinterpret_cast<T>(mCoeffs); }
+	inline T* as_raw() const { return reinterpret_cast<T>(mCoef); }
 	void load(T* pData);
 
 	GWColorTuple3<T> operator ()(int l, int m) const { return mCoef[get_idx(l, m)]; }
-	GWColorTuple3<T>& operator ()(int l, int m) const { return mCoef[get_idx(l, m)]; }
+	GWColorTuple3<T>& operator ()(int l, int m) /*const*/ { return mCoef[get_idx(l, m)]; }
 
 	void clear() {
 		T* pData = as_raw();
