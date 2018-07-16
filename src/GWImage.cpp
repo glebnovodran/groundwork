@@ -1,6 +1,7 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
+#include <cstring>
 #include "GWBase.hpp"
 #include "GWVector.hpp"
 #include "GWColor.hpp"
