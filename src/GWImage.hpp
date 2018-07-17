@@ -25,6 +25,8 @@ public:
 	GWColorF get_max() const { return mMax; }
 	GWColorF* get_pixels() { return mPixels; }
 	GWColorF get_pixel(int x, int y) const { return mPixels[(y * mWidth) + x]; }
+	void set_pixel(int x, int y, const GWColorF& clr) { mPixels[(y * mWidth) + x] = clr; };
+
 	void update();
 
 	void write_dds(std::ofstream& ofs) const;
@@ -33,4 +35,5 @@ public:
 	static void free(GWImage* pImg);
 	static GWImage* read_dds(std::ifstream& ifs);
 	static GWImage* read_dds(std::string& path);
+
 };
