@@ -10,3 +10,9 @@
 *.bak
 *.bak.*
 todo.txt
+*.log
+*.tlog
+*.obj
+*.lastbuildstate
+*.pdb
+*.idb
