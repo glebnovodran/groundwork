@@ -5,11 +5,7 @@
 
 #include <iostream>
 #include <groundwork.hpp>
-
-float* project_img(const GWImage* pImg) {
-	return 0;
-}
-
+//void print_coefs(const GWSHCoeffsF)
 void test(const std::string& panoPath) {
 	using namespace std;
 
@@ -19,6 +15,10 @@ void test(const std::string& panoPath) {
 		if (pPanoImg != nullptr) {
 			GWSHCoeffsF coefs;
 			coefs.calc_pano(pPanoImg);
+			for (int i = 0; i < 9; ++i) {
+				cout << i << " : ";
+				cout << coefs(i).r << ", " << coefs(i).g << ", " << coefs(i).b << endl;
+			}
 		} else {
 			cout << "Not a DDS file" << endl;
 		}

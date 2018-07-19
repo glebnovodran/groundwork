@@ -72,13 +72,35 @@ namespace GWSH {
 	void vec_project(T* pCoefs, const T x[], const T y[], const T z[], const int N = 1) {
 		vec_project_i(pCoefs, x, y, z, N);
 	}
+
+	template <typename T> inline
+	void calc_refl_weights(T* pWgt, T s, T scl) {
+		if (pWgt) {
+			for (int i = 0; i < 3; ++i) {
+				pWgt[i] = ::exp(float(-i * i) / (T(2) * s)) * scl;
+			}
+		}
+	}
+
+	template <typename T> inline
+	void calc_diff_weights(T* pWgt, T scl) {
+		if (pWgt) {
+			std::fill_n(pWgt, ORDER, T(0));
+			pWgt[0] = scl;
+			pWgt[1] = scl / T(1.5f);
+			pWgt[2] = scl / T(4.0f);
+		}
+	}
+
 }
 template<typename T> class GWSHCoeffsBase {
 protected:
 	static const int N = 9;
+	static const int ORDER = 3;
 	GWColorTuple3<T> mCoef[N];
 
-	static inline int get_idx(int l, int m) { return l*(l + 1) + m; }
+	static constexpr int get_idx(int l, int m) { return l*(l + 1) + m; }
+	static constexpr int get_coef_num(int order) { return order*order; }
 public:
 	GWSHCoeffsBase() = default;
 
@@ -87,6 +109,9 @@ public:
 
 	GWColorTuple3<T> operator ()(int l, int m) const { return mCoef[get_idx(l, m)]; }
 	GWColorTuple3<T>& operator ()(int l, int m) /*const*/ { return mCoef[get_idx(l, m)]; }
+
+	GWColorTuple3<T> operator ()(int i) const { return mCoef[i]; }
+	GWColorTuple3<T>& operator ()(int i) { return mCoef[i]; }
 
 	void clear() {
 		T* pData = as_raw();
@@ -103,6 +128,24 @@ public:
 	void calc_const(const GWColorF& clr);
 	void calc_dir(const GWColorF& clr, const GWVectorBase<T>& dir);
 	void calc_pano(const GWImage* pImg);
+
+	GWColorTuple3<T> synthesize(T x, T y, T z) {
+		T nx[1] = { x };
+		T ny[1] = { y };
+		T nz[1] = { z };
+		T dirCoefs[N];
+
+		GWSH:vec_project_i<T>(dirCoefs, nx, ny, nz);
+
+		GWColorTuple3<T> clr;
+		GWTuple::set(clr, T(0));
+		for (int i = 0; i < N; ++i) {
+			clr[i] += mCoef[i] * dirCoefs[i];
+		}
+
+		return clr;
+	}
+
 };
 
 typedef GWSHCoeffsBase<float> GWSHCoeffsF;
