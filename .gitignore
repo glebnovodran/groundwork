@@ -1,5 +1,8 @@
 /Debug/*
 /Release/*
+/bin/*
+/build/*
+/lib/*
 /x64/*
 /.vs/*
 /hou/*
@@ -16,3 +19,8 @@ todo.txt
 *.lastbuildstate
 *.pdb
 *.idb
+**/CMakeFiles/*
+CMakeCache.txt
+*.cmake
+**/Makefile
+.vscode
