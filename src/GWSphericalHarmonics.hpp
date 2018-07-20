@@ -85,7 +85,7 @@ namespace GWSH {
 	template <typename T> inline
 	void calc_diff_weights(T* pWgt, T scl) {
 		if (pWgt) {
-			std::fill_n(pWgt, ORDER, T(0));
+			std::fill_n(pWgt, 3, T(0));
 			pWgt[0] = scl;
 			pWgt[1] = scl / T(1.5f);
 			pWgt[2] = scl / T(4.0f);
@@ -135,7 +135,7 @@ public:
 		T nz[1] = { z };
 		T dirCoefs[N];
 
-		GWSH:vec_project_i<T>(dirCoefs, nx, ny, nz);
+		GWSH::vec_project<T>(dirCoefs, nx, ny, nz, 1);
 
 		GWColorTuple3<T> clr;
 		GWTuple::set(clr, T(0));
