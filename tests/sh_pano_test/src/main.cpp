@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <groundwork.hpp>
-//void print_coefs(const GWSHCoeffsF)
+
 void test(const std::string& panoPath) {
 	using namespace std;
 
@@ -29,11 +29,19 @@ void test(const std::string& panoPath) {
 	}
 }
 
+void print_usage() {
+	using namespace std;
+
+	cout<<"sh_pano_test <dds file name>" << endl;
+}
+
 int main(int argc, char* argv[]) {
 	using namespace std;
 
 	if (argc > 1) {
 		test(argv[1]);
+	} else {
+		print_usage();
 	}
 
 	return -1;
