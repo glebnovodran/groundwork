@@ -19,6 +19,15 @@ void test(const std::string& panoPath) {
 				cout << i << " : ";
 				cout << coefs(i).r << ", " << coefs(i).g << ", " << coefs(i).b << endl;
 			}
+
+			GWImage* pSynthImg = GWImage::alloc(pPanoImg->get_width(), pPanoImg->get_height());
+			//coefs.synth_pano(pSynthImg);
+			ofstream os("synth.dds", ios::binary);
+			if (os.good()) {
+				coefs.synth_pano(pSynthImg);
+				pSynthImg->write_dds(os);
+				os.close();
+			}
 		} else {
 			cout << "Not a DDS file" << endl;
 		}

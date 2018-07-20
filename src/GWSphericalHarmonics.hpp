@@ -129,7 +129,7 @@ public:
 	void calc_dir(const GWColorF& clr, const GWVectorBase<T>& dir);
 	void calc_pano(const GWImage* pImg);
 
-	GWColorTuple3<T> synthesize(T x, T y, T z) {
+	GWColorTuple3<T> synthesize(T x, T y, T z) const {
 		T nx[1] = { x };
 		T ny[1] = { y };
 		T nz[1] = { z };
@@ -138,14 +138,17 @@ public:
 		GWSH::vec_project<T>(dirCoefs, nx, ny, nz, 1);
 
 		GWColorTuple3<T> clr;
-		GWTuple::set(clr, T(0));
+		GWTuple::fill(clr, T(0));
 		for (int i = 0; i < N; ++i) {
-			clr[i] += mCoef[i] * dirCoefs[i];
+			GWColorTuple3<T> c;
+			GWTuple::scl(c, mCoef[i], dirCoefs[i]);
+			GWTuple::add(clr, c);
 		}
 
 		return clr;
 	}
 
+	void synth_pano(GWImage* pImg) const;
 };
 
 typedef GWSHCoeffsBase<float> GWSHCoeffsF;

@@ -4,6 +4,11 @@
 
 class GWColorF : public GWColorTuple4f {
 public:
+
+	GWColorF() = default;
+
+	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(*this, tuple); }
+
 	float luma() const {
 		return r*0.299f + g*0.587f + b*0.114f;
 	}
