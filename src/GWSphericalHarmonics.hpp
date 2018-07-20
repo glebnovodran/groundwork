@@ -74,7 +74,7 @@ namespace GWSH {
 	}
 
 	template <typename T> inline
-	void calc_refl_weights(T* pWgt, T s, T scl) {
+	void calc_weights(T* pWgt, T s, T scl) {
 		if (pWgt) {
 			for (int i = 0; i < 3; ++i) {
 				pWgt[i] = ::exp(float(-i * i) / (T(2) * s)) * scl;
@@ -83,7 +83,7 @@ namespace GWSH {
 	}
 
 	template <typename T> inline
-	void calc_diff_weights(T* pWgt, T scl) {
+	void calc_irradiance_weights(T* pWgt, T scl) {
 		if (pWgt) {
 			std::fill_n(pWgt, 3, T(0));
 			pWgt[0] = scl;
@@ -140,9 +140,7 @@ public:
 		GWColorTuple3<T> clr;
 		GWTuple::fill(clr, T(0));
 		for (int i = 0; i < N; ++i) {
-			GWColorTuple3<T> c;
-			GWTuple::scl(c, mCoef[i], dirCoefs[i]);
-			GWTuple::add(clr, c);
+			GWTuple::add_scaled(clr, mCoef[i], dirCoefs[i]);
 		}
 
 		return clr;

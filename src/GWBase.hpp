@@ -248,6 +248,14 @@ namespace GWTuple {
 	template<typename TUPLE_DST_T> inline void neg(TUPLE_DST_T& dst) {
 		GWTuple::neg(dst, dst);
 	}
+	// Add scaled: y = ax + y
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename SCALAR_T>
+	inline void add_scaled(TUPLE_DST_T& y, const TUPLE_SRC_T& x, SCALAR_T a) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			y.elems[i] += a * x.elems[i];
+		}
+	}
 
 	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T, typename T>
 	inline void lerp(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
