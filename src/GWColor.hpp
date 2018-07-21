@@ -44,6 +44,7 @@ public:
 		}
 	}
 
+	void clip_negative() { GWTuple::clip_low(*this, 0.0f); }
 	void zero() { GWTuple::fill(*this, 0.0f); }
 };
 

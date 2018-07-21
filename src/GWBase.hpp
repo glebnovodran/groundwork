@@ -172,6 +172,32 @@ namespace GWTuple {
 		}
 	}
 
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename SCALAR_T>
+	inline void clip_low(TUPLE_DST_T& dst, const TUPLE_SRC_T& src, SCALAR_T val) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = std::max(src.elems[i], val);
+		}
+	}
+
+	template<typename TUPLE_DST_T, typename SCALAR_T>
+	inline void clip_low(TUPLE_DST_T& dst, SCALAR_T val) {
+		GWTuple::clip_low(dst, dst, val);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename SCALAR_T>
+	inline void clip_high(TUPLE_DST_T& dst, const TUPLE_SRC_T& src, SCALAR_T val) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = std::min(src.elems[i], val);
+		}
+	}
+
+	template<typename TUPLE_DST_T, typename SCALAR_T>
+	inline void clip_high(TUPLE_DST_T& dst, SCALAR_T val) {
+		GWTuple::clip_high(dst, dst, val);
+	}
+
 	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
 	inline void add(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));
