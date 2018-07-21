@@ -116,6 +116,8 @@ GWImage* GWImage::read_dds(std::string& path) {
 // D3DFMT_A32B32G32R32F (dds128), no mipmap
 void GWImage::write_dds(std::ofstream & ofs) const {
 	DDSHead header;
+	std::memset(&header, 0, sizeof(DDSHead));
+
 	header.magic32 = 0x20534444; // "DDS "
 	header.size = 124;
 	header.flags = 0x081007; // DDS_HEADER_FLAGS_TEXTURE | DDS_HEADER_FLAGS_LINEARSIZE
