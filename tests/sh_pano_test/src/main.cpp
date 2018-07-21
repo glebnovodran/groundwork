@@ -22,9 +22,31 @@ void test(const std::string& panoPath) {
 
 			GWImage* pSynthImg = GWImage::alloc(pPanoImg->get_width(), pPanoImg->get_height());
 			//coefs.synth_pano(pSynthImg);
-			ofstream os("synth.dds", ios::binary);
+			ofstream os("_synth.dds", ios::binary);
 			if (os.good()) {
 				coefs.synth_pano(pSynthImg);
+				pSynthImg->write_dds(os);
+				os.close();
+			}
+
+			GWSHCoeffsF coefsIrr = coefs;
+			float weights[3];
+			GWSH::calc_irradiance_weights(weights, 1.0f);
+			coefsIrr.apply_weights(weights);
+
+			os.open("_irr.dds", ios::binary);
+			if (os.good()) {
+				coefsIrr.synth_pano(pSynthImg);
+				pSynthImg->write_dds(os);
+				os.close();
+			}
+
+			GWSHCoeffsF coefsRefl = coefs;
+			GWSH::calc_weights(weights, 2.5f, 1.0f);
+			coefsRefl.apply_weights(weights);
+			os.open("_refl.dds", ios::binary);
+			if (os.good()) {
+				coefsRefl.synth_pano(pSynthImg);
 				pSynthImg->write_dds(os);
 				os.close();
 			}

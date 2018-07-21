@@ -95,12 +95,13 @@ namespace GWSH {
 }
 template<typename T> class GWSHCoeffsBase {
 protected:
-	static const int N = 9;
 	static const int ORDER = 3;
-	GWColorTuple3<T> mCoef[N];
 
 	static constexpr int get_idx(int l, int m) { return l*(l + 1) + m; }
 	static constexpr int get_coef_num(int order) { return order*order; }
+	static constexpr int N = get_coef_num(ORDER);
+
+	GWColorTuple3<T> mCoef[N];
 public:
 	GWSHCoeffsBase() = default;
 
@@ -121,6 +122,26 @@ public:
 	void scl(T s) {
 		T* pData = as_raw();
 		for (int i = 0; i < N * 3; ++i) { pData[i] *= s; }
+	}
+
+	void apply_weights(T* pWgt) {
+		const int NUM_WEIGHTS = 3;
+		for (int l = 0; l < ORDER; ++l) {
+			int i0 = get_coef_num(l);
+			int i1 = get_coef_num(l + 1);
+			float w = pWgt[l];
+			for (int i = i0; i < i1; ++i) {
+				GWTuple::scl(mCoef[i], w);
+			}
+			/*
+			for (int i = i0; i < i1; ++i) {
+				int idx = i * NUM_WEIGHTS;
+				for (int j = 0; j < NUM_WEIGHTS; ++j) {
+					pDst[idx + j] = pSrc[idx + j] * w;
+				}
+			}
+			*/
+		}
 	}
 
 	void lerp(GWSHCoeffsBase<T>& coefA, GWSHCoeffsBase<T>& coefB, T t);
