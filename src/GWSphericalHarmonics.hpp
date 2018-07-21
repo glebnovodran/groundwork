@@ -109,7 +109,7 @@ public:
 	void load(T* pData);
 
 	GWColorTuple3<T> operator ()(int l, int m) const { return mCoef[get_idx(l, m)]; }
-	GWColorTuple3<T>& operator ()(int l, int m) /*const*/ { return mCoef[get_idx(l, m)]; }
+	GWColorTuple3<T>& operator ()(int l, int m) { return mCoef[get_idx(l, m)]; }
 
 	GWColorTuple3<T> operator ()(int i) const { return mCoef[i]; }
 	GWColorTuple3<T>& operator ()(int i) { return mCoef[i]; }
@@ -133,14 +133,6 @@ public:
 			for (int i = i0; i < i1; ++i) {
 				GWTuple::scl(mCoef[i], w);
 			}
-			/*
-			for (int i = i0; i < i1; ++i) {
-				int idx = i * NUM_WEIGHTS;
-				for (int j = 0; j < NUM_WEIGHTS; ++j) {
-					pDst[idx + j] = pSrc[idx + j] * w;
-				}
-			}
-			*/
 		}
 	}
 

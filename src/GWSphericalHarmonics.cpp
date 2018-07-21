@@ -85,6 +85,7 @@ template<typename T> void GWSHCoeffsBase<T>::synth_pano(GWImage * pImg) const {
 			GWColorF clr;
 			clr.from_tuple(synthesize(dx, dy, dz));
 			clr.a = 1.0f;
+			clr.clip_negative();
 			pImg->set_pixel(x, y, clr);
 		}
 	}
