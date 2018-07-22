@@ -42,9 +42,9 @@ void test(const std::string& panoPath) {
 			}
 
 			GWSHCoeffsF coefsRefl = coefs;
-			GWSH::calc_weights(weights, 2.5f, 1.0f);
+			GWSH::calc_phong_weights(weights, 2.5f, 1.0f);
 			coefsRefl.apply_weights(weights);
-			os.open("_refl.dds", ios::binary);
+			os.open("_phong.dds", ios::binary);
 			if (os.good()) {
 				coefsRefl.synth_pano(pSynthImg);
 				pSynthImg->write_dds(os);

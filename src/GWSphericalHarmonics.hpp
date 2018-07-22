@@ -74,7 +74,7 @@ namespace GWSH {
 	}
 
 	template <typename T> inline
-	void calc_weights(T* pWgt, T s, T scl) {
+	void calc_phong_weights(T* pWgt, T s, T scl) {
 		if (pWgt) {
 			for (int i = 0; i < 3; ++i) {
 				pWgt[i] = ::exp(float(-i * i) / (T(2) * s)) * scl;
