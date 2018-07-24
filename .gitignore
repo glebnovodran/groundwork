@@ -1,6 +1,7 @@
 /Debug/*
 /Release/*
 /bin/*
+/tmp/*
 /build/*
 /lib/*
 /x64/*
