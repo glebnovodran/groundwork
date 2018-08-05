@@ -56,3 +56,81 @@ template<typename T> void GWTransform<T>::make_projection(T fovY, T aspect, T zn
 
 template void GWTransform<float>::make_projection(float fovY, float aspect, float znear, float zfar);
 template void GWTransform<double>::make_projection(double fovY, double aspect, double znear, double zfar);
+
+
+template<typename T> void GWTransform<T>::transpose(const GWTransform& x) {
+	for (uint32_t i = 0; i < 4; ++i) {
+		for (uint32_t j = i; j < 4; ++j) {
+			T val = x.m[i][j]; m[i][j] = x.m[j][i]; m[j][i] = val;
+		}
+	}
+}
+
+template void GWTransform<float>::transpose(const GWTransform& x);
+template void GWTransform<double>::transpose(const GWTransform& x);
+
+template<typename T> void GWTransform<T>::transpose_sr(const GWTransform & x) {
+	for (uint32_t i = 0; i < 3; ++i) {
+		for (uint32_t j = i; j < 3; ++j) {
+			T val = x.m[i][j]; m[i][j] = x.m[j][i]; m[j][i] = val;
+		}
+	}
+}
+template void GWTransform<float>::transpose_sr(const GWTransform& x);
+template void GWTransform<double>::transpose_sr(const GWTransform& x);
+
+template<typename T> GWTransform<T> GWTransform<T>::get_inverted() const{
+	GWTransform inv;
+
+	T a0 = m[0][0] * m[1][1] - m[0][1] * m[1][0];
+	T a1 = m[0][0] * m[1][2] - m[0][2] * m[1][0];
+	T a2 = m[0][0] * m[1][3] - m[0][3] * m[1][0];
+	T a3 = m[0][1] * m[1][2] - m[0][2] * m[1][1];
+	T a4 = m[0][1] * m[1][3] - m[0][3] * m[1][1];
+	T a5 = m[0][2] * m[1][3] - m[0][3] * m[1][2];
+
+	T b0 = m[2][0] * m[3][1] - m[2][1] * m[3][0];
+	T b1 = m[2][0] * m[3][2] - m[2][2] * m[3][0];
+	T b2 = m[2][0] * m[3][3] - m[2][3] * m[3][0];
+	T b3 = m[2][1] * m[3][2] - m[2][2] * m[3][1];
+	T b4 = m[2][1] * m[3][3] - m[2][3] * m[3][1];
+	T b5 = m[2][2] * m[3][3] - m[2][3] * m[3][2];
+
+	T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+
+	if (T(0) == det) {
+		inv.set_zero();
+	} else {
+		T invDet = T(1) / det;
+
+		inv.m[0][0] = m[1][1] * b5 - m[1][2] * b4 + m[1][3] * b3;
+		inv.m[1][0] = -m[1][0] * b5 + m[1][2] * b2 - m[1][3] * b1;
+		inv.m[2][0] = m[1][0] * b4 - m[1][1] * b2 + m[1][3] * b0;
+		inv.m[3][0] = -m[1][0] * b3 + m[1][1] * b1 - m[1][2] * b0;
+
+		inv.m[0][1] = -m[0][1] * b5 + m[0][2] * b4 - m[0][3] * b3;
+		inv.m[1][1] = m[0][0] * b5 - m[0][2] * b2 + m[0][3] * b1;
+		inv.m[2][1] = -m[0][0] * b4 + m[0][1] * b2 - m[0][3] * b0;
+		inv.m[3][1] = m[0][0] * b3 - m[0][1] * b1 + m[0][2] * b0;
+
+		inv.m[0][2] = m[3][1] * a5 - m[3][2] * a4 + m[3][3] * a3;
+		inv.m[1][2] = -m[3][0] * a5 + m[3][2] * a2 - m[3][3] * a1;
+		inv.m[2][2] = m[3][0] * a4 - m[3][1] * a2 + m[3][3] * a0;
+		inv.m[3][2] = -m[3][0] * a3 + m[3][1] * a1 - m[3][2] * a0;
+
+		inv.m[0][3] = -m[2][1] * a5 + m[2][2] * a4 - m[2][3] * a3;
+		inv.m[1][3] = m[2][0] * a5 - m[2][2] * a2 + m[2][3] * a1;
+		inv.m[2][3] = -m[2][0] * a4 + m[2][1] * a2 - m[2][3] * a0;
+		inv.m[3][3] = m[2][0] * a3 - m[2][1] * a1 + m[2][2] * a0;
+
+		for (uint32_t i = 0; i < 4; ++i) {
+			for (uint32_t j = 0; j < 4; ++j) {
+				inv.m[i][j] *= invDet;
+			}
+		}
+	}
+	return inv;
+}
+
+template GWTransform<float> GWTransform<float>::get_inverted() const;
+template GWTransform<double> GWTransform<double>::get_inverted() const;

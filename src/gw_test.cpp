@@ -72,7 +72,7 @@ void test_ray() {
 	cout << "from_asimuth_inclination(0, 90) = (" << ray.direction().x << ", "<< ray.direction().y << ", "<< ray.direction().z << ")\n";
 }
 
-void test_mtx() {
+void test_xform() {
 	GWTransformF xform = {
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -82,6 +82,28 @@ void test_mtx() {
 	GWVectorF v(1.0f, 1.0f, 1.0f);
 	GWVectorF res = xform.calc_vec(v);
 	res = xform.calc_pnt(v);
+	xform.transpose();
+
+	GWTransformF xform1 = {
+		1, 0, 0, 0,
+		0, 2, 0, 0,
+		0, 0, 3, 0,
+		3, 2, 1, 1
+	};
+	GWVectorF c(1.0f, 0.0f, 0.0f);
+	GWVectorF a = xform1.calc_pnt(c);
+	GWTransformF xform2 = xform1.get_inverted();
+	GWVectorF b = xform2.calc_pnt(a);
+	if (!GWTuple::compare(c, b, 0.001f)) {
+		std::cout << "Inversion error\n";
+	}
+	xform2.invert();
+	xform.invert();
+
+	GWTransformF xformT;
+	xformT.set_identity();
+	xformT.set_translation(2.0f, 0.0f, 0.0f);
+	xformT.invert();
 }
 
 void test_quat() {
@@ -255,7 +277,7 @@ int main(int argc, char* argv[]) {
 	test_tuple();
 	test_vec();
 	test_ray();
-	test_mtx();
+	test_xform();
 	test_quat();
 	test_motion();
 
