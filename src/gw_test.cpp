@@ -84,6 +84,14 @@ void test_xform() {
 	res = xform.calc_pnt(v);
 	xform.transpose();
 
+	GWTransformF sclX;
+	sclX.make_scaling(1, 2, 3);
+	GWTransformF trnX;
+	trnX.make_translation(4, 5, 6);
+
+	xform.set_identity();
+	xform.mul(sclX, trnX);
+
 	GWTransformF xform1 = {
 		1, 0, 0, 0,
 		0, 2, 0, 0,
@@ -104,6 +112,22 @@ void test_xform() {
 	xformT.set_identity();
 	xformT.set_translation(2.0f, 0.0f, 0.0f);
 	xformT.invert();
+
+	xform1.make_rotation(GWBase::radians(10.0f), GWBase::radians(20.0f), GWBase::radians(30.0f));
+	GWQuaternionF q;
+	q.set_degrees(10.0f, 20.0f, 30.0f);
+	xform2 = q.get_transform();
+
+	if (!xform1.compare(xform2, 0.0001f)) {
+		std::cout << "make_rotation error\n";
+	}
+
+	GWTransformF rx; rx.make_deg_rx(10.0f);
+	GWTransformF ry; ry.make_deg_ry(20.0f);
+	GWTransformF rz; rz.make_deg_rz(30.0f);
+	xform = rx;
+	xform.mul(ry);
+	xform.mul(rx, ry);
 }
 
 void test_quat() {

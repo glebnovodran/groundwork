@@ -26,7 +26,7 @@ public:
 		set_row(3, v, 1);
 	}
 
-	void set_translation(T tx, T ty, T tz) {
+	inline void set_translation(T tx, T ty, T tz) {
 		m[3][0] = tx;
 		m[3][1] = ty;
 		m[3][2] = tz;
@@ -42,17 +42,55 @@ public:
 		make_translation(trn.x, trn.y, trn.z);
 	}
 
-	void make_scaling(T sx, T sy, T sz) {
-		set_zero();
+	inline void set_scaling(T sx, T sy, T sz) {
 		m[0][0] = sx;
 		m[1][1] = sy;
 		m[2][2] = sz;
 		m[3][3] = T(1);
 	}
 
+	void make_scaling(T sx, T sy, T sz) {
+		set_zero();
+		set_scaling(sx, sy, sz);
+	}
+
 	void make_scaling(const GWVectorBase<T>& scl) {
 		make_scaling(scl.x, scl.y, scl.z);
 	}
+
+	void make_rx(T rx) {
+		T s = ::sin(rx);
+		T c = ::cos(rx);
+		set_identity();
+		m[1][1] = c;
+		m[1][2] = s;
+		m[2][1] = -s;
+		m[2][2] = c;
+	}
+	void make_ry(T ry) {
+		T s = ::sin(ry);
+		T c = ::cos(ry);
+		set_identity();
+		m[0][0] = c;
+		m[0][2] = -s;
+		m[2][0] = s;
+		m[2][2] = c;
+	}
+	void make_rz(T rz) {
+		T s = ::sin(rz);
+		T c = ::cos(rz);
+		set_identity();
+		m[0][0] = c;
+		m[0][1] = s;
+		m[1][0] = -s;
+		m[1][1] = c;
+	}
+
+	void make_deg_rx(T degX) { make_rx(GWBase::radians(degX)); }
+	void make_deg_ry(T degY) { make_ry(GWBase::radians(degY)); }
+	void make_deg_rz(T degZ) { make_rz(GWBase::radians(degZ)); }
+
+	void make_rotation(T rx, T ry, T rz, GWRotationOrder order = GWRotationOrder::XYZ);
 
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT);
 
@@ -93,7 +131,6 @@ public:
 		return GWVectorBase<T>(res);
 	}
 
-protected:
 	inline T determinant() const {
 		T a0 = m[0][0] * m[1][1] - m[0][1] * m[1][0];
 		T a1 = m[0][0] * m[1][2] - m[0][2] * m[1][0];
@@ -110,6 +147,26 @@ protected:
 		T b5 = m[2][2] * m[3][3] - m[2][3] * m[3][2];
 
 		return a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+	}
+
+	GWTuple4<T>* as_tuple(uint32_t idx) const {
+		GWTuple4<T>* pTuple = nullptr;
+		if (idx < 4) {
+			pTuple = (GWTuple4<T>*)m[idx];
+		}
+		return pTuple;
+	}
+
+	bool compare(const GWTransform& xform, T eps) const {
+		for (uint32_t i = 0; i < 4; ++i) {
+			GWTuple4<T>* pTuple = as_tuple(i);
+			if (!GWTuple::compare(*as_tuple(i),
+				*xform.as_tuple(i),
+				eps)) {
+				return false;
+			}
+		}
+		return true;
 	}
 };
 

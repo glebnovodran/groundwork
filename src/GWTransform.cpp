@@ -8,6 +8,35 @@
 #include "GWTransform.hpp"
 #include "GWQuaternion.hpp"
 
+template<typename T> void GWTransform<T>::make_rotation(T rx, T ry, T rz, GWRotationOrder order) {
+	static uint8_t tbl[] = {
+		0, 1, 2,
+		0, 2, 1,
+		1, 0, 2,
+		1, 2, 0,
+		2, 0, 1,
+		2, 1, 0
+	};
+	int idx = (int)order;
+	if (idx >= 6) {
+		set_identity();
+	} else {
+		GWTransform r[3];
+		r[0].make_rx(rx);
+		r[1].make_ry(ry);
+		r[2].make_rz(rz);
+		idx *= 3;
+		int i0 = tbl[idx];
+		int i1 = tbl[idx+1];
+		int i2 = tbl[idx+2];
+		mul(r[i0], r[i1]);
+		mul(r[i2]);
+	}
+}
+
+template void GWTransform<float>::make_rotation(float rx, float ry, float rz, GWRotationOrder order);
+template void GWTransform<double>::make_rotation(double rx, double ry, double rz, GWRotationOrder order);
+
 template<typename T> void GWTransform<T>::make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order) {
 	const uint8_t SCL = 0;
 	const uint8_t ROT = 1;
