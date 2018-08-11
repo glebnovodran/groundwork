@@ -152,9 +152,7 @@ void test_quat() {
 	q.normalize();
 
 	GWQuaternionF q1(1.0f, 2.0f, 3.0f, 0.5f);
-	GWQuaternionF p1 = -q1;
-	float dist = GWQuaternion::arc_distance(q1, p1);
-	cout << "Geodesic distance between inverse quaternions = " << dist << endl;
+
 	GWVectorF vec(1.0f, 1.0f, 0.0f);
 	GWVectorF vec0 = q1.apply(vec);
 	q1.normalize();
@@ -193,7 +191,7 @@ void test_quat() {
 void test_motion() {
 	using namespace std;
 	GWMotion mot;
-	if (mot.load("../data/walk_rn.txt")) {
+	if (mot.load("../../data/walk_rn.txt")) {
 		GWMotion::Node node = mot.get_node("/obj/ANIM/j_Ankle_L");
 		GWMotion::Track rotTrk = node.get_track(GWTrackKind::ROT);
 		GWQuaternionF q = rotTrk.eval_quat(0.5f);
@@ -201,6 +199,12 @@ void test_motion() {
 		GWTransformF xform;
 		node.eval_xform(xform, 74.5f);
 		node.eval_xform(xform, -0.5f);
+		node.eval_xform(xform, -2.1f);
+
+		GWQuaternionF lerpVal = node.eval_rot(21.3, false);
+		GWQuaternionF slerpVal = node.eval_rot(21.3, true);
+		cout << "slerp to exp lerp distance " << slerpVal.arc_distance(lerpVal) << endl;
+
 		uint32_t badId = 7777;
 		node = mot.get_node_by_id(badId);
 		rotTrk = node.get_track(GWTrackKind::ROT);

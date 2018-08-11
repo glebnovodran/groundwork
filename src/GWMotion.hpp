@@ -249,8 +249,25 @@ public:
 	}
 
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;
-	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = true) const {
-		return GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
+	GWQuaternionF eval_quat(uint32_t nodeId, float frame, bool useSlerp = false) const {
+		GWQuaternionF res;
+
+		if (useSlerp) {
+			float fstart = ::floorf(frame);
+			float bias = frame - fstart;
+			if (0.0f == bias) {
+				res = GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, fstart));
+			} else {
+				GWQuaternionF startVal = GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, fstart));
+				GWQuaternionF endVal = GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, fstart+1.0f));
+				res = GWUnitQuaternion::slerp(startVal, endVal, bias);
+				res.normalize();
+			}
+		} else {
+			res = GWQuaternion::expmap_decode(eval(nodeId, GWTrackKind::ROT, frame));
+		}
+
+		return res;
 	}
 
 	GWTransformOrder eval_xord(uint32_t nodeId, float frame) const;
