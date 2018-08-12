@@ -11,3 +11,4 @@
 #include "GWMotion.hpp"
 #include "GWImage.hpp"
 #include "GWSphericalHarmonics.hpp"
+#include "GWResource.hpp"

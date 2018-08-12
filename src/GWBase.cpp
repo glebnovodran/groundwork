@@ -28,4 +28,31 @@ namespace GWBase {
 			p[i] &= (h != 0) ? 0xFFFFFFFF : 0;
 		}
 	}
+
+	void vec_to_octo(float vx, float vy, float vz, float& ox, float& oy) {
+		float d = 1.0f / (::fabsf(vx) + ::fabsf(vy) + ::fabsf(vz));
+		ox = vx * d;
+		oy = vy * d;
+		if (vz < 0.0f) {
+			float tx = (1.0f - fabsf(oy)) * (ox < 0.0f ? -1.0f : 1.0f);
+			float ty = (1.0f - fabsf(ox)) * (oy < 0.0f ? -1.0f : 1.0f);
+			ox = tx;
+			oy = ty;
+		}
+	}
+
+	void octo_to_vec(float ox, float oy, float& vx, float& vy, float& vz) {
+		float ax = ::fabsf(ox);
+		float ay = ::fabsf(oy);
+		GWTuple3f v;
+		v.x = ox;
+		v.y = oy;
+		v.z = 1.0f - ax - ay;
+		if (v.z < 0.0f) {
+			v.x = (1.0f - ay) * (ox < 0.0f ? -1.0f : 1.0f);
+			v.y = (1.0f - ax) * (oy < 0.0f ? -1.0f : 1.0f);
+		}
+		GWTuple::normalize(v);
+		vx = v.x; vy = v.y; vz = v.z;
+	}
 }

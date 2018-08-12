@@ -7,6 +7,7 @@
 #include "groundwork.hpp"
 
 void test_basic() {
+	using namespace std;
 	float rad = GWBase::radians(271.0f);
 	float deg = GWBase::degrees(rad);
 	GWRotationOrder rord = GWBase::rord_from_float(75.0f);
@@ -16,6 +17,19 @@ void test_basic() {
 	int64_t rndVal = GWBase::random_u64();
 	for (int i = 0; i < 100; ++i) {
 		rndVal = rnd.u64();
+	}
+
+	GWVectorF v(-2.0f, 2.5f, -1.5f);
+	v.normalize();
+	float mag = GWTuple::magnitude(v);
+	
+	float ox, oy;
+	GWVectorF decoded;
+	GWBase::vec_to_octo(v.x, v.y, v.z, ox, oy);
+	GWBase::octo_to_vec(ox, oy, decoded.x, decoded.y, decoded.z);
+	
+	if (!GWTuple::compare(v, decoded, 0.001f)) {
+		cout << "octo encoding diff test failed" << endl;
 	}
 }
 
