@@ -25,8 +25,8 @@ void test_basic() {
 	
 	float ox, oy;
 	GWVectorF decoded;
-	GWBase::vec_to_octo(v.x, v.y, v.z, ox, oy);
-	GWBase::octo_to_vec(ox, oy, decoded.x, decoded.y, decoded.z);
+	GWBase::vec_to_oct(v.x, v.y, v.z, ox, oy);
+	GWBase::oct_to_vec(ox, oy, decoded.x, decoded.y, decoded.z);
 	
 	if (!GWTuple::compare(v, decoded, 0.001f)) {
 		cout << "octo encoding diff test failed" << endl;

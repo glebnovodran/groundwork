@@ -29,7 +29,7 @@ namespace GWBase {
 		}
 	}
 
-	void vec_to_octo(float vx, float vy, float vz, float& ox, float& oy) {
+	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy) {
 		float d = 1.0f / (::fabsf(vx) + ::fabsf(vy) + ::fabsf(vz));
 		ox = vx * d;
 		oy = vy * d;
@@ -41,7 +41,7 @@ namespace GWBase {
 		}
 	}
 
-	void octo_to_vec(float ox, float oy, float& vx, float& vy, float& vz) {
+	void oct_to_vec(float ox, float oy, float& vx, float& vy, float& vz) {
 		float ax = ::fabsf(ox);
 		float ay = ::fabsf(oy);
 		GWTuple3f v;

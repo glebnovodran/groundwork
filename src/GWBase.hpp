@@ -58,8 +58,8 @@ namespace GWBase {
 	extern const long double pi;
 
 	void half_to_float(float* pDst, const uint16_t* pSrc, int n);
-	void vec_to_octo(float vx, float vy, float vz, float& ox, float& oy);
-	void octo_to_vec(float ox, float oy, float& vx, float& vy, float& vz);
+	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy);
+	void oct_to_vec(float ox, float oy, float& vx, float& vy, float& vz);
 
 	template<typename T> inline T radians(T deg) { return (T)(deg * (pi / 180)); }
 	template<typename T> inline T degrees(T rad) { return (T)(rad * (180 / pi)); }
