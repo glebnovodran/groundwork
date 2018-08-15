@@ -3,6 +3,7 @@
 */
 
 #include <fstream>
+#include <cstddef>
 #include "groundwork.hpp"
 
 GWResource* GWResource::load(const std::string& path, const char* pSig) {
