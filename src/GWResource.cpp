@@ -3,6 +3,7 @@
 */
 
 #include <fstream>
+#include <cstddef>
 #include "groundwork.hpp"
 
 const char* name_from_path(const char* pPath) {
