@@ -316,8 +316,7 @@ void test_image(const std::string& imgPath) {
 void test_model_recource(const std::string& mdlPath) {
 	using namespace std;
 
-	GWModelResource* pMdlRsc;
-	pMdlRsc = reinterpret_cast<GWModelResource*>(GWResource::load(mdlPath, "rsrc:GWModel"));
+	GWModelResource* pMdlRsc = GWModelResource::load(mdlPath);
 	if (pMdlRsc == nullptr) {
 		cout << "Cannot load the model file" << endl;
 		return;

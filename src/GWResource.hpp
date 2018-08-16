@@ -272,4 +272,6 @@ struct GWModelResource : public GWResource {
 	GWTuple4f get_pnt_skin_weights(int pntIdx);
 
 	int get_pnt_skin_joints_count(int pntIdx);
+
+	static GWModelResource* load(const std::string& path);
 };

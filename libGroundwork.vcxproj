@@ -30,6 +30,7 @@
     <ClCompile Include="src\GWResource.cpp" />
     <ClCompile Include="src\GWSphere.cpp" />
     <ClCompile Include="src\GWSphericalHarmonics.cpp" />
+    <ClCompile Include="src\GWSys.cpp" />
     <ClCompile Include="src\GWTransform.cpp" />
     <ClCompile Include="src\GWVector.cpp" />
   </ItemGroup>
@@ -46,6 +47,7 @@
     <ClInclude Include="src\GWResource.hpp" />
     <ClInclude Include="src\GWSphere.hpp" />
     <ClInclude Include="src\GWSphericalHarmonics.hpp" />
+    <ClInclude Include="src\GWSys.hpp" />
     <ClInclude Include="src\GWTransform.hpp" />
     <ClInclude Include="src\GWVector.hpp" />
   </ItemGroup>
