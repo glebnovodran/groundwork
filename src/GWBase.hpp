@@ -138,6 +138,14 @@ namespace GWTuple {
 		}
 	}
 
+	template<typename TUPLE_T, typename SCALAR_PTR_T>
+	inline void load(TUPLE_T& dst, SCALAR_PTR_T pMem) {
+		const int n = TUPLE_T::ELEMS_NUM;
+		for (int i = 0; i < n; ++i) {
+			dst[i] = pMem[i];
+		}
+	}
+
 	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
 	inline void copy(TUPLE_DST_T& dst, TUPLE_SRC_T src) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
@@ -507,4 +515,8 @@ typedef GWTuple4<double> GWTuple4d;
 
 typedef GWColorTuple3<float> GWColorTuple3f;
 typedef GWColorTuple4<float> GWColorTuple4f;
+
+typedef GWTuple2<int> GWTuple2i;
+typedef GWTuple3<int> GWTuple3i;
+typedef GWTuple4<int> GWTuple4i;
 

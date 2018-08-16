@@ -313,6 +313,18 @@ void test_image(const std::string& imgPath) {
 	}
 }
 
+void test_model_recource(const std::string& mdlPath) {
+	using namespace std;
+
+	GWModelResource* pMdlRsc;
+	pMdlRsc = reinterpret_cast<GWModelResource*>(GWResource::load(mdlPath, "rsrc:GWModel"));
+	if (pMdlRsc == nullptr) {
+		cout << "Cannot load the model file" << endl;
+		return;
+	}
+
+}
+
 int main(int argc, char* argv[]) {
 
 	test_basic();
@@ -323,6 +335,8 @@ int main(int argc, char* argv[]) {
 	test_quat();
 	test_motion();
 
-	test_image("../data/pano_test1_h.dds");
+	test_image("../../data/pano_test1_h.dds");
+	test_model_recource("../../data/cook_rb.gwmdl");
+
 	return 0;
 }
