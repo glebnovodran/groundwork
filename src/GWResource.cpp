@@ -23,7 +23,7 @@ const char* name_from_path(const char* pPath) {
 
 GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	char sig[0x10];
-
+	std::cout<<pSig<<std::endl;
 	std::ifstream fs(path, std::ios::binary);
 	if (fs.bad()) { return nullptr; }
 
@@ -160,7 +160,7 @@ int GWModelResource::get_pnt_skin_joints_count(int pntIdx) {
 
 GWModelResource* GWModelResource::load(const std::string& path) {
 	GWModelResource* pMdr = nullptr;
-	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID("GWModel"));
+	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID(GWModel));
 	if (pRsrc) {
 		pMdr = reinterpret_cast<GWModelResource*>(pRsrc);
 		GWSys::dbg_msg("+ model resource: %s\n", pMdr->get_path());

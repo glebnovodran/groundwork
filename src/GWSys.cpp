@@ -12,7 +12,7 @@ void GWSys::dbg_msg(const char* pFmt, ...) {
 #ifdef _MSC_VER
 	vsprintf_s(buf, sizeof(buf), pFmt, lst);
 #else
-	vsprintf(pBuf, pFmt, lst);
+	vsprintf(buf, pFmt, lst);
 #endif
 	va_end(lst);
 	std::cout << buf;

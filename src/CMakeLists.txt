@@ -14,6 +14,7 @@ SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_RELEASE_LINK_FLAGS}
 SET(TDMOTION_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../TDMotion/src")
 
 add_library(Groundwork STATIC
+	GWSys.cpp
 	GWBase.cpp
 	GWVector.cpp
 	GWRay.cpp
