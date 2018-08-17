@@ -3,8 +3,7 @@
 */
 
 #define GW_RSRC_SIG "rsrc:"
-#define REPARSE(a) #a
-#define GW_RSRC_ID(_name) GW_RSRC_SIG REPARSE(_name)
+#define GW_RSRC_ID(_name) GW_RSRC_SIG _name
 
 struct GWResource {
 	/* +00*/ char mSignature[0x10];

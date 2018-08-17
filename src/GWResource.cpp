@@ -160,7 +160,7 @@ int GWModelResource::get_pnt_skin_joints_count(int pntIdx) {
 
 GWModelResource* GWModelResource::load(const std::string& path) {
 	GWModelResource* pMdr = nullptr;
-	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID(GWModel));
+	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID("GWModel"));
 	if (pRsrc) {
 		pMdr = reinterpret_cast<GWModelResource*>(pRsrc);
 		GWSys::dbg_msg("+ model resource: %s\n", pMdr->get_path());
