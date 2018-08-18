@@ -6,6 +6,16 @@ class GWColorF : public GWColorTuple4f {
 public:
 
 	GWColorF() = default;
+	GWColorF(float cr, float cg, float cb, float ca = 1.0f) {
+		set(cr, cg, cb, ca);
+	}
+
+	void set(float cr, float cg, float cb, float ca = 1.0f) {
+		r = cr;
+		g = cg;
+		b = cb;
+		a = ca;
+	}
 
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(*this, tuple); }
 
