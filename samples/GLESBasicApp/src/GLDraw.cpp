@@ -272,10 +272,10 @@ static int wait_for_MapNotify(Display* pDisp, XEvent* pEvt, char* pArg) {
 void GLESApp::init_wnd() {
 	using namespace std;
 
-	sys_dbg_msg("GLESApp::init_wnd()");
+	GWSys::dbg_msg("GLESApp::init_wnd()");
 	mpNativeDisplay = XOpenDisplay(0);
 	if (mpNativeDisplay == 0) {
-		sys_dbg_msg("ERROR: can't open X display");
+		GWSys::dbg_msg("ERROR: can't open X display");
 		return;
 	}
 
@@ -286,7 +286,7 @@ void GLESApp::init_wnd() {
 	XMatchVisualInfo(mpNativeDisplay, defaultScreen, defaultDepth, TrueColor, pVisualInfo);
 
 	if (pVisualInfo == nullptr) {
-		sys_dbg_msg("ERROR: can't aquire visual info");
+		GWSys::dbg_msg("ERROR: can't aquire visual info");
 		return;
 	}
 
@@ -320,7 +320,7 @@ void GLESApp::init_wnd() {
 
 	XEvent event;
 	XIfEvent(mpNativeDisplay, &event, wait_for_MapNotify, (char*)mNativeWindow);
-	sys_dbg_msg("finished");
+	GWSys::dbg_msg("finished");
 }
 
 void GLESApp::reset_wnd() {
