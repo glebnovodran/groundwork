@@ -9,6 +9,10 @@ template<typename T> struct GWSphereBase {
 		this->c = center;
 		this->r = rad;
 	}
+	GWSphereBase(T x, T y, T z, T rad) {
+		c.x = x; c.y = y; c.z = z;
+		r = rad;
+	}
 
 	inline void enclose(const GWVectorBase<T>& pnt) {
 		GWVectorBase<T> d = pnt - c;
