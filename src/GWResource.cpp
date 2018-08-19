@@ -102,7 +102,7 @@ const char* GWModelResource::get_skin_node_name(uint32_t skinIdx) {
 	return pName;
 }
 
-GWTuple4i GWModelResource::get_pnt_skin_joints(int pntIdx) {
+GWTuple4i GWModelResource::get_pnt_skin_joints(uint32_t pntIdx) {
 	GWTuple4i jnt;
 	GWTuple::fill(jnt, -1);
 	if (has_skin() && check_pnt_idx(pntIdx)) {
@@ -125,7 +125,7 @@ GWTuple4i GWModelResource::get_pnt_skin_joints(int pntIdx) {
 	return jnt;
 }
 
-GWTuple4f GWModelResource::get_pnt_skin_weights(int pntIdx) {
+GWTuple4f GWModelResource::get_pnt_skin_weights(uint32_t pntIdx) {
 	GWTuple4f wgt;
 	GWTuple::fill(wgt, 0.0f);
 	if (has_skin() && check_pnt_idx(pntIdx)) {
@@ -142,8 +142,8 @@ GWTuple4f GWModelResource::get_pnt_skin_weights(int pntIdx) {
 	return wgt;
 }
 
-int GWModelResource::get_pnt_skin_joints_count(int pntIdx) {
-	int njnt = 0;
+uint32_t GWModelResource::get_pnt_skin_joints_count(uint32_t pntIdx) {
+	int numJnt = 0;
 	if (has_skin() && check_pnt_idx(pntIdx)) {
 		void* pData = get_skin_data();
 		bool byteIdxFlg = mNumSkinNodes <= (1 << 8);
@@ -152,10 +152,48 @@ int GWModelResource::get_pnt_skin_joints_count(int pntIdx) {
 		uint8_t* pWgt = reinterpret_cast<uint8_t*>(pData);
 		for (int j = 0; j < 4; ++j) {
 			if (pWgt[j] == 0) break;
-			++njnt;
+			++numJnt;
 		}
 	}
-	return njnt;
+	return numJnt;
+}
+GWSphereF GWModelResource::calc_skin_node_sphere_of_influence(uint32_t skinIdx, GWVectorF* pMem) {
+	GWSphereF sph(0.0f, 0.0f, 0.0f, 0.0f);
+
+	if (check_skin_node_idx(skinIdx)) {
+		GWVectorF* pMdlPts = reinterpret_cast<GWVectorF*>(get_pnt_ptr(0));
+		GWVectorF* pPts = (pMem == nullptr) ? new GWVectorF[mNumPnt] : pMem;
+
+		uint32_t k = 0;
+		for (uint32_t i = 0; i < mNumPnt; ++i) {
+			uint32_t numJnt = get_pnt_skin_joints_count(i);
+			GWTuple4i ptJnts = get_pnt_skin_joints(i);
+			for (uint32_t j = 0; j < numJnt; ++j) {
+				if (ptJnts[j] == skinIdx) {
+					pPts[k] = pMdlPts[i];
+					++k;
+					break;
+				}
+			}
+		}
+
+		sph = GWSphere::ritter(pPts, k);
+		if (pMem == nullptr) { delete[] pPts; }
+	}
+	return sph;
+}
+
+GWSphereF* GWModelResource::calc_skin_spheres_of_influence() {
+	GWSphereF* pSph = nullptr;
+	if (has_skin()) {
+		GWVectorF* pMem = new GWVectorF[mNumPnt];
+		pSph = new GWSphereF[mNumSkinNodes];
+		for (uint32_t i = 0; i < mNumSkinNodes; ++i) {
+			pSph[i] = calc_skin_node_sphere_of_influence(i, pMem);
+		}
+		delete[] pMem;
+	}
+	return pSph;
 }
 
 GWModelResource* GWModelResource::load(const std::string& path) {
@@ -166,4 +204,114 @@ GWModelResource* GWModelResource::load(const std::string& path) {
 		GWSys::dbg_msg("+ model resource: %s\n", pMdr->get_path());
 	}
 	return pMdr;
+}
+
+void GWModelResource::write_geo(std::ostream& os) {
+	using namespace std;
+
+	int numAttr = 0;
+
+	if (valid_nrm()) numAttr++;
+	if (valid_tng()) numAttr++;
+	if (valid_rgb()) numAttr++;
+	if (valid_uv()) numAttr++;
+	if (valid_ao()) numAttr++;
+
+	os << "PGEOMETRY V5" << endl;
+	os << "NPoints " << mNumPnt << " NPrims " << mNumTri << endl;
+	os << "NPointGroups 0 NPrimGroups " << mNumMtl << endl;
+	os << "NPointAttrib " << numAttr << " NVertexAttrib 0 NPrimAttrib 0 NAttrib 0" << endl;
+	if (numAttr > 0) {
+		os << "PointAttrib" << endl;
+	}
+	if (valid_nrm()) {
+		os << "N 3 vector 0 0 0" << endl;
+	}
+	if (valid_tng()) {
+		os << "tangentu 3 vector 0 0 0" << endl;
+	}
+	if (valid_rgb()) {
+		os << "Cd 3 float 1 1 1" << endl;
+	}
+	if (valid_uv()) {
+		os << "uv 3 float 0 0 1" << endl;
+	}
+	if (valid_ao()) {
+		os << "AO 1 float 1" << endl;
+	}
+
+	for (uint32_t i = 0; i < mNumPnt; ++i) {
+		Attr* pAttr = get_attr(i);
+		GWVectorF pnt = get_pnt(i);
+		os << pnt.x << " " << pnt.y << " " << pnt.z << " 1";
+		if (numAttr > 0) {
+			os << " (";
+			if (valid_nrm()) {
+				GWVectorF nrm = pAttr->get_normal();
+				os << " " << nrm.x << " " << nrm.y << " " << nrm.z << " ";
+			}
+			if (valid_tng()) {
+				GWVectorF tng = pAttr->get_tangent();
+				os << " " << tng.x << " " << tng.y << " " << tng.z << " ";
+			}
+			if (valid_rgb()) {
+				GWColorTuple3f rgb = pAttr->get_rgb();
+				os << " " << rgb.r << " " << rgb.g << " " << rgb.b << " ";
+			}
+			if (valid_uv()) {
+				GWTuple2f uv = pAttr->get_uv();
+				os << " " << uv.x << " " << 1.0f - uv.y << " 1 ";
+			}
+			if (valid_ao()) {
+				os << " " << get_pnt_ao(i) << " ";
+			}
+			os << ")";
+		}
+		os << endl;
+	}
+
+	os << "Run " << mNumTri << " Poly" << endl;
+	for (uint32_t i = 0; i < mNumMtl; ++i) {
+		Material* pMtl = get_mtl(i);
+		for (uint32_t j = 0; j < pMtl->mNumTri; ++j) {
+			uint32_t idx[3];
+			if (pMtl->is_idx16()) {
+				uint16_t* pIdx16 = reinterpret_cast<uint16_t*>(get_ptr(mOffsIdx16)) + pMtl->mIdxOrg;
+				for (int k = 0; k < 3; ++k) {
+					idx[k] = pIdx16[(j * 3) + k];
+				}
+			} else {
+				uint32_t* pIdx32 = reinterpret_cast<uint32_t*>(get_ptr(mOffsIdx32)) + pMtl->mIdxOrg;
+				for (int k = 0; k < 3; ++k) {
+					idx[k] = pIdx32[(j * 3) + k];
+				}
+			}
+			for (int k = 0; k < 3; ++k) {
+				idx[k] += pMtl->mMinIdx;
+			}
+			os << " 3 < " << idx[0] << " " << idx[1] << " " << idx[2] << endl;
+		}
+	}
+
+	uint32_t triOrg = 0;
+	for (uint32_t i = 0; i < mNumMtl; ++i) {
+		Material* pMtl = get_mtl(i);
+		const char* pMtlName = get_mtl_name(i);
+		os << pMtlName << " unordered" << endl;
+		os << mNumTri << " ";
+		int cnt = 0;
+		for (uint32_t j = 0; j < mNumTri; ++j) {
+			char cflg = j >= triOrg && j < triOrg + pMtl->mNumTri ? '1' : '0';
+			os << cflg;
+			++cnt;
+			if (cnt > 64) {
+				os << endl;
+				cnt = 0;
+			}
+		}
+		triOrg += pMtl->mNumTri;
+		os << endl;
+	}
+	os << "beginExtra" << endl;
+	os << "endExtra" << endl;
 }

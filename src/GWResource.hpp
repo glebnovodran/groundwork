@@ -65,6 +65,7 @@ struct GWModelResource : public GWResource {
 			float oct[2];
 			GWBase::half_to_float(oct, &mNrmTgtEnc[0], 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
+			return vec;
 		}
 
 		GWVectorF get_tangent() const {
@@ -72,6 +73,7 @@ struct GWModelResource : public GWResource {
 			float oct[2];
 			GWBase::half_to_float(oct, &mNrmTgtEnc[2], 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
+			return vec;
 		}
 
 		GWColorF get_color() const {
@@ -111,7 +113,7 @@ struct GWModelResource : public GWResource {
 		uint32_t mBaseMapPathOffs;
 		uint32_t mExtParamsOffs;
 		int32_t mIdxOrg;
-		int32_t mNumTris;
+		uint32_t mNumTri;
 		int32_t mMinIdx;
 		int32_t mMaxIdx;
 		GWColorTuple3f mBaseColor;
@@ -219,7 +221,6 @@ struct GWModelResource : public GWResource {
 
 	const char* get_mtl_name(uint32_t idx);
 
-
 	GWTransformF get_skel_node_local_mtx(uint32_t idx) {
 		GWTransformF lm;
 		lm.set_identity();
@@ -257,8 +258,8 @@ struct GWModelResource : public GWResource {
 		return parentIdx;
 	}
 
-
 	uint32_t* get_skin_to_skel_map() { return &reinterpret_cast<uint32_t*>(get_ptr(mOffsSkin))[mNumSkinNodes]; }
+
 	uint32_t find_skel_node_skin_idx(uint32_t skelIdx);
 
 	bool is_skel_node_skin_deformer(uint32_t skelIdx) { return check_skin_node_idx(find_skel_node_skin_idx(skelIdx)); }
@@ -268,10 +269,21 @@ struct GWModelResource : public GWResource {
 	void* get_skin_data() {
 		return &reinterpret_cast<uint32_t*>(get_ptr(mOffsSkin))[mNumSkinNodes * 2];
 	}
-	GWTuple4i get_pnt_skin_joints(int pntIdx);
-	GWTuple4f get_pnt_skin_weights(int pntIdx);
 
-	int get_pnt_skin_joints_count(int pntIdx);
+	GWTuple4i get_pnt_skin_joints(uint32_t pntIdx);
+	GWTuple4f get_pnt_skin_weights(uint32_t pntIdx);
+	uint32_t get_pnt_skin_joints_count(uint32_t pntIdx);
+
+	GWSphereF calc_skin_node_sphere_of_influence(uint32_t skinIdx, GWVectorF* pMem = nullptr);
+	GWSphereF* calc_skin_spheres_of_influence();
 
 	static GWModelResource* load(const std::string& path);
+
+	void write_geo(std::ostream& os);
+	void save_geo(const std::string& path) {
+		std::ofstream os(path);
+		if (os.bad()) return;
+		write_geo(os);
+		os.close();
+	}
 };

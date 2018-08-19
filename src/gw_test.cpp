@@ -321,7 +321,7 @@ void test_model_recource(const std::string& mdlPath) {
 		cout << "Cannot load the model file" << endl;
 		return;
 	}
-
+	pMdlRsc->save_geo("out.geo");
 }
 
 int main(int argc, char* argv[]) {
