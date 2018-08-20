@@ -21,6 +21,20 @@ const char* name_from_path(const char* pPath) {
 	return pName;
 }
 
+void write_py_mtx(std::ostream& os, const GWTransformF& xform) {
+	os << "[";
+	for (int i = 0; i < 4; ++i) {
+		os << "[";
+		for (int j = 0; j < 4; ++j) {
+			os << xform.m[i][j];
+			if (j < 3) os << ", ";
+		}
+		os << "]";
+		if (i < 3) os << ", ";
+	}
+	os << "]";
+}
+
 GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	char sig[0x10];
 	std::cout<<pSig<<std::endl;
@@ -189,7 +203,11 @@ GWSphereF* GWModelResource::calc_skin_spheres_of_influence() {
 		GWVectorF* pMem = new GWVectorF[mNumPnt];
 		pSph = new GWSphereF[mNumSkinNodes];
 		for (uint32_t i = 0; i < mNumSkinNodes; ++i) {
-			pSph[i] = calc_skin_node_sphere_of_influence(i, pMem);
+			if (is_skel_node_skin_deformer(i)) {
+				pSph[i] = calc_skin_node_sphere_of_influence(i, pMem);
+			} else {
+				pSph[i].set_zero();
+			}
 		}
 		delete[] pMem;
 	}
@@ -315,3 +333,45 @@ void GWModelResource::write_geo(std::ostream& os) {
 	os << "beginExtra" << endl;
 	os << "endExtra" << endl;
 }
+
+void GWModelResource::write_skel(std::ostream& os, const char* pBase) {
+	using namespace std;
+	if (!has_skel()) return;
+	if (!pBase) {
+		pBase = "/obj";
+	}
+	int n = mNumSkelNodes;
+	GWSphereF* pSph = calc_skin_spheres_of_influence();
+	for (int i = 0; i < n; ++i) {
+		const char* pNodeName = get_skel_node_name(i);
+		if (pNodeName) {
+			os << "# "; write_py_mtx(os, calc_skel_node_world_mtx(i)); os << endl;
+			os << "nd = hou.node('" << pBase << "').createNode('null', '" << pNodeName << "')" << endl;
+			GWTransformF lm = get_skel_node_local_mtx(i);
+			os << "nd.setParmTransform(hou.Matrix4(";
+			write_py_mtx(os, lm);
+			os << "))" << endl;
+			bool skinFlg = is_skel_node_skin_deformer(i);
+			os << "nd.setParms({'geoscale':0.01,'controltype':1})" << endl;
+			os << "nd.setUserData('nodeshape', '" << (skinFlg ? "bone" : "rect") << "')" << endl;
+			if (skinFlg) {
+				//glm::vec4 sph = calc_skin_node_sphere_of_influence(find_skel_node_skin_idx(i));
+				GWSphereF sph= pSph[i];
+				os << "# " << pNodeName << " skin SOI: " << sph.c.x << ", " << sph.c.y << ", " << sph.c.z << ", " << sph.r << endl;
+				os << "cr = nd.createNode('cregion', 'cregion')" << endl;
+				os << "cr.setParms({'squashx':0.0001,'squashy':0.0001,'squashz':0.0001})" << endl;
+			}
+		}
+	}
+	for (int i = 0; i < n; ++i) {
+		uint32_t parentIdx = get_skel_node_parent_idx(i);
+		if (check_skel_node_idx(parentIdx)) {
+			const char* pNodeName = get_skel_node_name(i);
+			const char* pParentName = get_skel_node_name(parentIdx);
+			os << "hou.node('" << pBase << "/" << pNodeName << "').setFirstInput(hou.node('" << pBase << "/" << pParentName << "'))" << endl;
+		}
+	}
+
+	if (pSph != nullptr) { delete[] pSph; }
+}
+

@@ -286,4 +286,13 @@ struct GWModelResource : public GWResource {
 		write_geo(os);
 		os.close();
 	}
+
+	void write_skel(std::ostream& os, const char* pBase = nullptr);
+	void save_skel(const std::string& path) {
+		if (!has_skel()) return;
+		std::ofstream os(path);
+		if (os.bad()) return;
+		write_skel(os);
+		os.close();
+	}
 };
