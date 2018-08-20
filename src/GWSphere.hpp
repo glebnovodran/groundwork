@@ -23,7 +23,13 @@ template<typename T> struct GWSphereBase {
 			T s = (newR - r) / dist;
 			r = newR;
 			c += (d * s);
+		
 		}
+	}
+
+	void set_zero() {
+		c.fill(0.0f);
+		r = 0.0f;
 	}
 };
 namespace GWSphere {

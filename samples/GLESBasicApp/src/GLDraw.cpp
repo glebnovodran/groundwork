@@ -184,6 +184,7 @@ void GLESApp::init_egl() {
 	}
 	if (!eglMakeCurrent(mEGL.display, mEGL.surface, mEGL.surface, mEGL.context)) {
 		GWSys::dbg_msg("eglMakeCurrent failed");
+		return;
 	}
 
 	GWSys::dbg_msg("finished");
