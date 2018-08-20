@@ -5,6 +5,10 @@
 #define GW_RSRC_SIG "rsrc:"
 #define GW_RSRC_ID(_name) GW_RSRC_SIG _name
 
+namespace GWResourceUtil {
+	const char* name_from_path(const char* pPath);
+}
+
 struct GWResource {
 	/* +00*/ char mSignature[0x10];
 	/* +10*/ uint32_t mVersion;
@@ -12,7 +16,7 @@ struct GWResource {
 	/* +18*/ uint32_t mStrsTop;
 	/* +1c*/ uint32_t mStrsSize;
 
-	const char* get_str(uint32_t offs) const {
+	const char* get_str(uint32_t offs = 0) const {
 		if (offs < mStrsSize) {
 			return reinterpret_cast<const char*>(this) + mStrsTop + offs;
 		}
@@ -220,6 +224,12 @@ struct GWModelResource : public GWResource {
 	}
 
 	const char* get_mtl_name(uint32_t idx);
+
+	char* get_mtl_ext_params(uint32_t idx) {
+		Material* pMtl = get_mtl(idx);
+		uint32_t offs = pMtl->mExtParamsOffs;
+		return reinterpret_cast<char*>(get_ptr(offs));
+	}
 
 	GWTransformF get_skel_node_local_mtx(uint32_t idx) {
 		GWTransformF lm;

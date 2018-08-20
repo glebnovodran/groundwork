@@ -6,7 +6,7 @@
 #include <cstddef>
 #include "groundwork.hpp"
 
-const char* name_from_path(const char* pPath) {
+const char* GWResourceUtil::name_from_path(const char* pPath) {
 	const char* pName = nullptr;
 	if (pPath) {
 		const char* p = pPath + ::strlen(pPath);
@@ -62,7 +62,7 @@ GWResource* GWResource::load(const std::string& path, const char* pSig) {
 }
 
 const char* GWModelResource::get_mtl_name(uint32_t idx) {
-	return name_from_path(get_mtl_path(idx));
+	return GWResourceUtil::name_from_path(get_mtl_path(idx));
 }
 
 GWTransformF GWModelResource::calc_skel_node_world_mtx(uint32_t idx, const GWTransformF* pLM, GWTransformF* pParentWM) {
