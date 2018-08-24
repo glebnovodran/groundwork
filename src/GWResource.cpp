@@ -191,7 +191,7 @@ GWSphereF GWModelResource::calc_skin_node_sphere_of_influence(uint32_t skinIdx, 
 			}
 		}
 
-		sph = GWSphere::ritter(pPts, k);
+		sph.ritter(pPts, k);
 		if (pMem == nullptr) { delete[] pPts; }
 	}
 	return sph;

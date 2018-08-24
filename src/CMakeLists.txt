@@ -17,6 +17,7 @@ add_library(Groundwork STATIC
 	GWSys.cpp
 	GWBase.cpp
 	GWVector.cpp
+	GWSphere.cpp
 	GWRay.cpp
 	GWColor.cpp
 	GWMatrix.cpp

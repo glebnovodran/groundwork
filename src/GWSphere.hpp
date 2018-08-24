@@ -31,11 +31,14 @@ template<typename T> struct GWSphereBase {
 		c.fill(0.0f);
 		r = 0.0f;
 	}
+
+	void ritter(const GWVectorBase<T>* pPts, int numPts);
 };
+/*
 namespace GWSphere {
 	// Ritter's bounding sphere
 	template<typename T> GWSphereBase<T> ritter(GWVectorBase<T>* pPts, int numPts);
 }
-
+*/
 typedef GWSphereBase<float> GWSphereF;
 typedef GWSphereBase<double> GWSphereD;

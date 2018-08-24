@@ -6,7 +6,7 @@
 #include "GWVector.hpp"
 #include "GWSphere.hpp"
 
-template<typename T> GWSphereBase<T> GWSphere::ritter(GWVectorBase<T>* pPts, int numPts) {
+template<typename T> void GWSphereBase<T>::ritter(const GWVectorBase<T>* pPts, int numPts) {
 	GWSphereBase<T> sph;
 	GWTuple3i imin, imax;
 	GWTuple::fill(imin, 0);
@@ -54,8 +54,8 @@ template<typename T> GWSphereBase<T> GWSphere::ritter(GWVectorBase<T>* pPts, int
 			sph.r = ::sqrt(sqd) + (sph.r* T(1.0e-5));
 		}
 	}
-	return sph;
+	*this = sph;
 }
 
-template GWSphereBase<float> GWSphere::ritter(GWVectorBase<float>* pPnts, int numPts);
-template GWSphereBase<double> GWSphere::ritter(GWVectorBase<double>* pPnts, int numPts);
+template void GWSphereBase<float>::ritter(const GWVectorBase<float>* pPnts, int numPts);
+template void GWSphereBase<double>::ritter(const GWVectorBase<double>* pPnts, int numPts);
