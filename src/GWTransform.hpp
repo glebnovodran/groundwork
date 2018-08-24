@@ -95,9 +95,9 @@ public:
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT);
 
 	void make_projection(T fovY, T aspect, T znear, T zfar);
-	void make_view(const GWVectorBase<T>& pos, const GWVectorBase<T>& tgt, const GWVectorBase<T>& up) {
+	void make_view(const GWVectorBase<T>& pos, const GWVectorBase<T>& tgt, const GWVectorBase<T>& upVec) {
 		GWVectorBase<T> dir = (tgt - pos).normalize();
-		GWVectorBase<T> side = GWVector::cross(up, dir).normalize();
+		GWVectorBase<T> side = GWVector::cross(upVec, dir).normalize();
 		GWVectorBase<T> up = GWVector::cross(side, dir);
 
 		set_row(0, -side, 0.0f);
