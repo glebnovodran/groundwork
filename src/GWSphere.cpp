@@ -49,9 +49,9 @@ template<typename T> void GWSphereBase<T>::ritter(const GWVectorBase<T>* pPts, i
 	}
 
 	for (int i = 0; i < numPts; ++i) {
-		T sqd = (pPts[i] - sph.c).length();
+		T sqd = (pPts[i] - sph.c).length_sq();
 		if (sqd > sph.r * sph.r) {
-			sph.r = ::sqrt(sqd) + (sph.r* T(1.0e-5));
+			sph.r = ::sqrt(sqd) + (sph.r * T(1.0e-5));
 		}
 	}
 	*this = sph;
