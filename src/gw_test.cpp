@@ -39,6 +39,33 @@ void test_basic() {
 	cout << "compare " << hashA.val << " and " << hashB.val << " " << ((hashA == hashB) ? "true" : "false") << endl;
 	cout << hashA.len << ":" << hashA.hash << endl;
 	cout << hashB.len << ":" << hashB.hash << endl;
+	cout << "=====================" << endl;
+}
+
+void test_list() {
+	using namespace std;
+	int val0 = 0;
+	int val1 = 1;
+	int val2 = 2;
+	GWListItem<int> item0("item0", &val0);
+	GWListItem<int> item1;
+	item1.set_name("item1");
+	item1.mpVal = &val1;
+	GWListItem<int> item2("item0", &val2);
+
+	GWNamedObjList< GWListItem<int> > list;
+	list.link(&item0);
+	list.link(&item1);
+	list.link(&item2);
+
+	GWListItem<int>* pFound = list.find_first("item1");
+	pFound = list.find_first("item0");
+	do {
+		cout << pFound->mpName << " : " << *pFound->mpVal << endl;
+	} while (pFound = list.find_next(pFound));
+	pFound = list.find_next(pFound);
+	pFound = list.find_first("/root/item0");
+	cout << "=====================" << endl;
 }
 
 void test_tuple() {
@@ -51,6 +78,7 @@ void test_tuple() {
 	tupleC[3] = 1.0f;
 
 	GWTuple::copy(tupleC, tupleB, 1.0f);
+	cout << "=====================" << endl;
 }
 
 void test_vec() {
@@ -92,9 +120,11 @@ void test_ray() {
 	GWRayF ray;
 	ray.from_asimuth_inclination(0.0f, GWBase::pi * 0.5f);
 	cout << "from_asimuth_inclination(0, 90) = (" << ray.direction().x << ", "<< ray.direction().y << ", "<< ray.direction().z << ")\n";
+	cout << "=====================" << endl;
 }
 
 void test_xform() {
+	using namespace std;
 	GWTransformF xform = {
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -150,6 +180,7 @@ void test_xform() {
 	xform = rx;
 	xform.mul(ry);
 	xform.mul(rx, ry);
+	cout << "=====================" << endl;
 }
 
 void test_quat() {
@@ -208,6 +239,7 @@ void test_quat() {
 	GWVectorF v(1.0f, 0.0f, 0.0f);
 	GWVectorF v1 = q.apply(v);
 	GWVectorF v2 = xform.calc_vec(v);
+	cout << "=====================" << endl;
 }
 
 void test_motion() {
@@ -336,6 +368,7 @@ void test_model_recource(const std::string& mdlPath) {
 int main(int argc, char* argv[]) {
 
 	test_basic();
+	test_list();
 	test_tuple();
 	test_vec();
 	test_ray();
