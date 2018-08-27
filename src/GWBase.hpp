@@ -118,6 +118,25 @@ namespace GWBase {
 
 	void set_random_seed(uint64_t seed);
 	uint64_t random_u64();
+
+	struct StrHash {
+		union {
+			uint64_t val;
+			struct {
+				uint32_t len;
+				uint32_t hash;
+			};
+		};
+		StrHash() : val(0ULL) {}
+		StrHash(const char* pStr) {
+			calculate(pStr);
+		}
+		void calculate(const char* pStr);
+	};
+
+	inline bool operator == (const StrHash& hashA, const StrHash& hashB) {
+		return hashA.val == hashB.val;
+	}
 }
 
 namespace GWTuple {

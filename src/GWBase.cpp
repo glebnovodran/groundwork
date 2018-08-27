@@ -55,4 +55,21 @@ namespace GWBase {
 		GWTuple::normalize(v);
 		vx = v.x; vy = v.y; vz = v.z;
 	}
+
+	// http://www.isthe.com/chongo/tech/comp/fnv/index.html
+	void StrHash::calculate(const char* pStr) {
+		len = 0;
+		hash = 0;
+		if (pStr) {
+			uint32_t h = 2166136261;
+			while (true) {
+				uint8_t c = *pStr++;
+				if (!c) break;
+				++len;
+				h *= 16777619;
+				h ^= c;
+			}
+			hash = h;
+		}
+	}
 }
