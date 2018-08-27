@@ -31,6 +31,14 @@ void test_basic() {
 	if (!GWTuple::compare(v, decoded, 0.001f)) {
 		cout << "octo encoding diff test failed" << endl;
 	}
+
+	GWBase::StrHash hashA, hashB("bbb");
+	cout << hashA.len << ":" << hashA.hash << endl;
+	hashA.calculate("aaa");
+	//hashB.calculate("aaa");
+	cout << "compare " << hashA.val << " and " << hashB.val << " " << ((hashA == hashB) ? "true" : "false") << endl;
+	cout << hashA.len << ":" << hashA.hash << endl;
+	cout << hashB.len << ":" << hashB.hash << endl;
 }
 
 void test_tuple() {
@@ -321,6 +329,7 @@ void test_model_recource(const std::string& mdlPath) {
 		cout << "Cannot load the model file" << endl;
 		return;
 	}
+	GWModelResource::Material* pMtl = pMdlRsc->get_mtl(0);
 	pMdlRsc->save_geo("out.geo");
 }
 

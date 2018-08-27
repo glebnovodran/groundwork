@@ -3,6 +3,7 @@
  */
 #include "GWSys.hpp"
 #include "GWBase.hpp"
+#include "GWList.hpp"
 #include "GWVector.hpp"
 #include "GWSphere.hpp"
 #include "GWRay.hpp"
