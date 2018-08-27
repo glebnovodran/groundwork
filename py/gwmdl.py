@@ -70,7 +70,7 @@ def encodeOcta(v):
 
 def fresnelFromIOR(ior):
 	r = (ior - 1.0) / (ior + 1.0)
-	return r * r;
+	return r * r
 
 def encodePntAttr(nrm, tng, clr, tex):
 	onrm = encodeOcta(nrm)
@@ -99,7 +99,7 @@ class Strings:
 		if not s in self.strToOffs:
 			offs = self.offs
 			self.strToOffs[s] = offs
-			n = len(s) + 1;
+			n = len(s) + 1
 			self.data += struct.pack(str(n)+"s", s)
 			self.offs += n
 		return self.strToOffs[s]
