@@ -47,25 +47,36 @@ void test_list() {
 	int val0 = 0;
 	int val1 = 1;
 	int val2 = 2;
+
 	GWListItem<int> item0("item0", &val0);
 	GWListItem<int> item1;
-	item1.set_name("item1");
-	item1.mpVal = &val1;
+	item1.set_name_val("item1", &val1);
 	GWListItem<int> item2("item0", &val2);
 
+/*
 	GWNamedObjList< GWListItem<int> > list;
-	list.link(&item0);
-	list.link(&item1);
-	list.link(&item2);
+	list.add(&item0);
+	list.add(&item1);
+	list.add(&item2);
+*/
+
+	GWNamedObjList<int> list;
+	list.add(&item0);
+	list.add(&item1);
+	list.add(&item2);
 
 	GWListItem<int>* pFound = list.find_first("item1");
 	pFound = list.find_first("item0");
-	do {
+	while (pFound) {
 		cout << pFound->mpName << " : " << *pFound->mpVal << endl;
-	} while (pFound = list.find_next(pFound));
+		pFound = list.find_next(pFound);
+	}
 	pFound = list.find_next(pFound);
 	pFound = list.find_first("/root/item0");
 	cout << "=====================" << endl;
+	list.remove(&item1);
+	pFound = list.find_first("item1");
+	if (pFound != nullptr) { cout << "GWNamedObjist::remove failed" << endl;}
 }
 
 void test_tuple() {

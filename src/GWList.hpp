@@ -12,26 +12,30 @@ template<typename T> struct GWListItem {
 
 	GWListItem() : mNameHash(), mpName(nullptr), mpPrev(nullptr), mpNext(nullptr), mpVal(nullptr) {}
 	GWListItem(const char* pName, T* pVal = nullptr) : mpPrev(nullptr), mpNext(nullptr) {
-		set_name(pName);
-		mpVal = pVal;
+		set_name_val(pName, pVal);
 	}
 
 	void set_name(const char* pName) {
 		mpName = const_cast<char*>(pName);
 		mNameHash.calculate(pName);
 	}
+
+	void set_name_val(const char* pName, T* pVal) {
+		set_name(pName);
+		mpVal = pVal;
+	}
 };
 
-template<typename ITEM_T> class GWNamedObjList {
+template<typename T> class GWNamedObjList {
 protected:
-	ITEM_T* mpHead;
-	ITEM_T* mpTail;
+	GWListItem<T>* mpHead;
+	GWListItem<T>* mpTail;
 	uint32_t mCount;
 
 public:
 	GWNamedObjList() : mpHead(nullptr), mpTail(nullptr), mCount(0) {}
 
-	void link(ITEM_T* pItem) {
+	void add(GWListItem<T>* pItem) {
 		if (pItem == nullptr) { return; }
 
 		pItem->mpPrev = nullptr;
@@ -49,10 +53,10 @@ public:
 		++mCount;
 	}
 
-	void unlink(ITEM_T* pItem) {
+	void remove(GWListItem<T>* pItem) {
 		if (pItem == nullptr) { return; }
 
-		ITEM_T pNext = pItem->mpNext;
+		GWListItem<T>* pNext = pItem->mpNext;
 		if (pItem->mpPrev == nullptr) {
 			mpHead = pNext;
 			if (pNext == nullptr) {
@@ -71,21 +75,21 @@ public:
 		--mCount;
 	}
 
-	ITEM_T* find_first(const char* pName) {
+	GWListItem<T>* find_first(const char* pName) {
 		if (pName == nullptr) { return nullptr; }
 		GWBase::StrHash nameHash(pName);
 		return find(nameHash, pName);
 	}
 
-	ITEM_T* find_next(const ITEM_T* pFirst) {
+	GWListItem<T>* find_next(const GWListItem<T>* pFirst) {
 		if (pFirst == nullptr) { return nullptr; }
 		return find(pFirst->mNameHash, pFirst->mpName, pFirst);
 	}
 
 protected:
-	inline ITEM_T* find(const GWBase::StrHash& nameHash, const char* pName, const ITEM_T* pFirst = nullptr) {
-		ITEM_T* pFound = nullptr;
-		ITEM_T* pItem = pFirst == nullptr? mpHead : pFirst->mpNext;
+	inline GWListItem<T>* find(const GWBase::StrHash& nameHash, const char* pName, const GWListItem<T>* pFirst = nullptr) {
+		GWListItem<T>* pFound = nullptr;
+		GWListItem<T>* pItem = pFirst == nullptr? mpHead : pFirst->mpNext;
 
 		while (pItem) {
 			if (pItem->mNameHash == nameHash) {
