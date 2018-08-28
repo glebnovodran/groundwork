@@ -1,6 +1,6 @@
 /*
-* Author: Gleb Novodran <novodran@gmail.com>
-*/
+ * Author: Gleb Novodran <novodran@gmail.com>
+ */
 
 #define GW_RSRC_SIG "rsrc:"
 #define GW_RSRC_ID(_name) GW_RSRC_SIG _name
