@@ -16,6 +16,7 @@ SET(TDMOTION_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../TDMotion/src")
 add_library(Groundwork STATIC
 	GWSys.cpp
 	GWBase.cpp
+	GWList.cpp
 	GWVector.cpp
 	GWSphere.cpp
 	GWRay.cpp
