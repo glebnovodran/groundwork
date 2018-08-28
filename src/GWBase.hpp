@@ -486,6 +486,10 @@ template<typename T> struct GWTuple2 {
 
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
+	template<typename TUPLE_T> GWTuple2& operator = (const TUPLE_T& tuple) {
+		GWTuple::copy(*this, tuple);
+		return *this;
+	}
 };
 
 template<typename T> struct GWTuple3 {
@@ -495,6 +499,11 @@ template<typename T> struct GWTuple3 {
 
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
+
+	template<typename TUPLE_T> GWTuple3& operator = (const TUPLE_T& tuple) {
+		GWTuple::copy(*this, tuple);
+		return *this;
+	}
 };
 
 template<typename T> struct GWTuple4 {
@@ -504,6 +513,11 @@ template<typename T> struct GWTuple4 {
 
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
+
+	template<typename TUPLE_T> GWTuple4& operator = (const TUPLE_T& tuple) {
+		GWTuple::copy(*this, tuple);
+		return *this;
+	}
 };
 
 template<typename T> struct GWColorTuple3 {
@@ -513,6 +527,11 @@ template<typename T> struct GWColorTuple3 {
 
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
+
+	template<typename TUPLE_T> GWColorTuple3& operator = (const TUPLE_T& tuple) {
+		GWTuple::copy(*this, tuple);
+		return *this;
+	}
 };
 
 template<typename T> struct GWColorTuple4 {
@@ -522,6 +541,11 @@ template<typename T> struct GWColorTuple4 {
 
 	T operator [](size_t i) const { return elems[i]; }
 	T& operator [](size_t i) { return elems[i]; }
+
+	template<typename TUPLE_T> GWColorTuple4& operator = (const TUPLE_T& tuple) {
+		GWTuple::copy(*this, tuple);
+		return *this;
+	}
 };
 
 typedef GWTuple2<float> GWTuple2f;

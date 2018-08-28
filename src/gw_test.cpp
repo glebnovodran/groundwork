@@ -53,13 +53,6 @@ void test_list() {
 	item1.set_name_val("item1", &val1);
 	GWListItem<int> item2("item0", &val2);
 
-/*
-	GWNamedObjList< GWListItem<int> > list;
-	list.add(&item0);
-	list.add(&item1);
-	list.add(&item2);
-*/
-
 	GWNamedObjList<int> list;
 	list.add(&item0);
 	list.add(&item1);
@@ -89,6 +82,16 @@ void test_tuple() {
 	tupleC[3] = 1.0f;
 
 	GWTuple::copy(tupleC, tupleB, 1.0f);
+
+	GWColorTuple4f clr4;
+	GWColorTuple3<double> clr3;
+	GWTuple::fill(clr4, 0.0f);
+	clr3.r = 1.0; clr3.g = 0.5; clr3.b = 0.25;
+	clr4 = clr3;
+	GWTuple::fill(clr4, 0.0f);
+	clr3 = clr4;
+	GWVectorF v(1.0, 0.8, 0.7);
+	clr4 = v;
 	cout << "=====================" << endl;
 }
 
