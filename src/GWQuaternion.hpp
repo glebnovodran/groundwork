@@ -193,6 +193,12 @@ public:
 };
 
 namespace GWUnitQuaternion {
+	template<typename T> inline GWQuaternionBase<T> invert(const GWQuaternionBase<T>& q) {
+		GWQuaternionBase<T> p;
+		p.conjugate(q);
+		return p;
+		
+	}
 	template<typename T> inline GWVectorBase<T> log(const GWQuaternionBase<T>& q) {
 		GWVectorBase<T> v = q.V();
 		T vmag;
