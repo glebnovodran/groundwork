@@ -29,6 +29,33 @@ namespace GWBase {
 		}
 	}
 
+	void float_to_half(uint16_t* pDst, const float* pSrc, int n) {
+		float* p = const_cast<float*>(pSrc);
+		for (int i = 0; i < n; ++i) {
+			uint32_t bits = reinterpret_cast<uint32_t*>(p)[i];
+			uint16_t sign = (uint16_t)((bits >> 16) & (1 << 15));
+			bits &= ~(1U << 31);
+			if (bits > 0x477FE000U) {
+				bits = 0x7C00;// infinity
+			} else {
+				if (bits < 0x38800000U) {
+					uint32_t r = 0x70 + 1 - (bits >> 23);
+					bits &= (1U << 23) - 1;
+					bits |= (1U << 23);
+					bits >>= r;
+				} else {
+					bits += 0xC8000000U;
+				}
+				uint32_t a = (bits >> 13) & 1;
+				bits += (1U << 12) - 1;
+				bits += a;
+				bits >>= 13;
+				bits &= (1U << 15) - 1;
+			}
+			pDst[i] = sign | bits;
+		}
+	}
+
 	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy) {
 		float d = 1.0f / (::fabsf(vx) + ::fabsf(vy) + ::fabsf(vz));
 		ox = vx * d;

@@ -40,6 +40,12 @@ void test_basic() {
 	cout << hashA.len << ":" << hashA.hash << endl;
 	cout << hashB.len << ":" << hashB.hash << endl;
 	cout << "=====================" << endl;
+
+	float orig = -12.1f;
+	float dec = 0.0f;
+	uint16_t half;
+	GWBase::float_to_half(&half, &orig, 1);
+	GWBase::half_to_float(&dec, &half, 1);
 }
 
 void test_list() {

@@ -58,6 +58,7 @@ namespace GWBase {
 	extern const long double pi;
 
 	void half_to_float(float* pDst, const uint16_t* pSrc, int n);
+	void float_to_half(uint16_t* pDst, const float* pSrc, int n);
 	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy);
 	void oct_to_vec(float ox, float oy, float& vx, float& vy, float& vz);
 
