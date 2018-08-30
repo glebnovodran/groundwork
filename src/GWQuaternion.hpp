@@ -103,12 +103,12 @@ public:
 	}
 	void conjugate() { conjugate(*this); }
 
-	void inv(const GWQuaternionBase& q) {
+	void invert(const GWQuaternionBase& q) {
 		conjugate(q);
 		T mag = GWTuple::inner(q.mQ, q.mQ);
 		scl(T(1) / mag);
 	}
-	void inv() {
+	void invert() {
 		invert(*this);
 	}
 
