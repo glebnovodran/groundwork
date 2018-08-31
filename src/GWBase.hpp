@@ -549,6 +549,18 @@ template<typename T> struct GWColorTuple4 {
 	}
 };
 
+struct GWHalf {
+	uint16_t x;
+	float get() const {
+		float f;
+		GWBase::half_to_float(&f, &x, 1);
+		return f;
+	}
+	void set(float f) {
+		GWBase::float_to_half(&x, &f, 1);
+	}
+};
+
 typedef GWTuple2<float> GWTuple2f;
 typedef GWTuple3<float> GWTuple3f;
 typedef GWTuple4<float> GWTuple4f;
@@ -563,4 +575,41 @@ typedef GWColorTuple4<float> GWColorTuple4f;
 typedef GWTuple2<int> GWTuple2i;
 typedef GWTuple3<int> GWTuple3i;
 typedef GWTuple4<int> GWTuple4i;
+
+typedef GWTuple2<GWHalf> GWTuple2h;
+typedef GWTuple3<GWHalf> GWTuple3h;
+typedef GWTuple4<GWHalf> GWTuple4h;
+
+struct GWHalf2 : GWTuple2h {
+	GWTuple2f get() const {
+		GWTuple2f tuple;
+		GWBase::half_to_float((float*)tuple.elems, (uint16_t*)elems, ELEMS_NUM);
+		return tuple;
+	}
+	void set(const GWTuple2f& tuple) {
+		GWBase::float_to_half((uint16_t*)elems, (float*)tuple.elems, ELEMS_NUM);
+	}
+};
+
+struct GWHalf3 : GWTuple3h {
+	GWTuple3f get() const {
+		GWTuple3f tuple;
+		GWBase::half_to_float((float*)tuple.elems, (uint16_t*)elems, ELEMS_NUM);
+		return tuple;
+	}
+	void set(const GWTuple3f& tuple) {
+		GWBase::float_to_half((uint16_t*)elems, (float*)tuple.elems, ELEMS_NUM);
+	}
+};
+
+struct GWHalf4 : GWTuple4h {
+	GWTuple4f get() const {
+		GWTuple4f tuple;
+		GWBase::half_to_float((float*)tuple.elems, (uint16_t*)elems, ELEMS_NUM);
+		return tuple;
+	}
+	void set(const GWTuple4f& tuple) {
+		GWBase::float_to_half((uint16_t*)elems, (float*)tuple.elems, ELEMS_NUM);
+	}
+};
 

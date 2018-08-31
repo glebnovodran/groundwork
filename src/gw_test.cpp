@@ -46,6 +46,16 @@ void test_basic() {
 	uint16_t half;
 	GWBase::float_to_half(&half, &orig, 1);
 	GWBase::half_to_float(&dec, &half, 1);
+
+	GWHalf h;
+	GWHalf3 h3;
+	h3.set((GWTuple3f)v);
+	GWVectorF v1 = h3.get();
+	cout << v.x << v.y << v.z << endl;
+	cout << v1.x << v1.y << v1.z << endl;
+	GWHalf4 h4;
+
+	cout << "=====================" << endl;
 }
 
 void test_list() {
