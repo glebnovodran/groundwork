@@ -56,6 +56,11 @@ public:
 
 	void clip_negative() { GWTuple::clip_low(*this, 0.0f); }
 	void zero() { GWTuple::fill(*this, 0.0f); }
+
+	template<typename TUPLE_T> GWColorF& operator = (const TUPLE_T& tuple) {
+		GWTuple::copy(*this, tuple);
+		return *this;
+	}
 };
 
 std::ostream& operator << (std::ostream& os, const GWColorF& color);
