@@ -58,16 +58,14 @@ struct GWModelResource : public GWResource {
 	/* +60 */ uint32_t mOffsExtInfo;
 
 	struct Attr {
-		typedef uint16_t HalfVec4[4];
-
-		HalfVec4 mNrmTgtEnc;
-		HalfVec4 mColor;
-		HalfVec4 mTex;
+		GWHalf4 mNrmTgtEnc;
+		GWHalf4 mColor;
+		GWHalf4 mTex;
 
 		GWVectorF get_normal() const {
 			GWVectorF vec;
 			float oct[2];
-			GWBase::half_to_float(oct, &mNrmTgtEnc[0], 2);
+			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc[0], 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
 			return vec;
 		}
@@ -75,38 +73,36 @@ struct GWModelResource : public GWResource {
 		GWVectorF get_tangent() const {
 			GWVectorF vec;
 			float oct[2];
-			GWBase::half_to_float(oct, &mNrmTgtEnc[2], 2);
+			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc[2], 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
 			return vec;
 		}
 
 		GWColorF get_color() const {
 			GWColorF clr;
-			GWBase::half_to_float(&clr.elems[0], &mColor[0], 4);
+			clr.from_tuple(mColor.get());
 			return clr;
 		}
 
 		GWColorTuple3f get_rgb() const {
 			GWColorTuple3f rgb;
-			GWBase::half_to_float(&rgb.elems[0], &mColor[0], 3);
+			GWBase::half_to_float(&rgb.elems[0], (uint16_t*)&mColor[0], 3);
 			return rgb;
 		}
 
 		GWTuple4f get_tex() const {
-			GWTuple4f tex;
-			GWBase::half_to_float(&tex.elems[0], &mTex[0], 4);
-			return tex;
+			return mTex.get();
 		}
 
 		GWTuple2f get_uv() const {
 			GWTuple2f uv;
-			GWBase::half_to_float(&uv.elems[0], &mTex[0], 2);
+			GWBase::half_to_float(&uv.elems[0], (uint16_t*)&mTex[0], 2);
 			return uv;
 		}
 
 		GWTuple2f get_uv2() const {
 			GWTuple2f uv2;
-			GWBase::half_to_float(&uv2.elems[0], &mTex[2], 2);
+			GWBase::half_to_float(&uv2.elems[0], (uint16_t*)&mTex[2], 2);
 			return uv2;
 		}
 	};
@@ -189,7 +185,7 @@ struct GWModelResource : public GWResource {
 		if (valid_alpha()) {
 			Attr* pAttr = get_attr(idx);
 			if (pAttr) {
-				GWBase::half_to_float(&alpha, &pAttr->mColor[3], 1);
+				alpha = pAttr->mColor[3].get();
 			}
 		}
 		return alpha;
@@ -200,7 +196,7 @@ struct GWModelResource : public GWResource {
 		if (valid_ao()) {
 			Attr* pAttr = get_attr(idx);
 			if (pAttr) {
-				GWBase::half_to_float(&occl, &pAttr->mColor[3], 1);
+				occl = pAttr->mColor[3].get();
 			}
 		}
 		return occl;
