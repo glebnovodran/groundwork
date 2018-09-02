@@ -291,21 +291,21 @@ void GWModelResource::write_geo(std::ostream& os) {
 	os << "Run " << mNumTri << " Poly" << endl;
 	for (uint32_t i = 0; i < mNumMtl; ++i) {
 		Material* pMtl = get_mtl(i);
-		for (uint32_t j = 0; j < pMtl->mNumTri; ++j) {
+		for (uint32_t j = 0; j < pMtl->mIdx.mNumTri; ++j) {
 			uint32_t idx[3];
-			if (pMtl->is_idx16()) {
-				uint16_t* pIdx16 = reinterpret_cast<uint16_t*>(get_ptr(mOffsIdx16)) + pMtl->mIdxOrg;
+			if (pMtl->mIdx.is_idx16()) {
+				uint16_t* pIdx16 = reinterpret_cast<uint16_t*>(get_ptr(mOffsIdx16)) + pMtl->mIdx.mOrg;
 				for (int k = 0; k < 3; ++k) {
 					idx[k] = pIdx16[(j * 3) + k];
 				}
 			} else {
-				uint32_t* pIdx32 = reinterpret_cast<uint32_t*>(get_ptr(mOffsIdx32)) + pMtl->mIdxOrg;
+				uint32_t* pIdx32 = reinterpret_cast<uint32_t*>(get_ptr(mOffsIdx32)) + pMtl->mIdx.mOrg;
 				for (int k = 0; k < 3; ++k) {
 					idx[k] = pIdx32[(j * 3) + k];
 				}
 			}
 			for (int k = 0; k < 3; ++k) {
-				idx[k] += pMtl->mMinIdx;
+				idx[k] += pMtl->mIdx.mMin;
 			}
 			os << " 3 < " << idx[0] << " " << idx[1] << " " << idx[2] << endl;
 		}
@@ -319,7 +319,7 @@ void GWModelResource::write_geo(std::ostream& os) {
 		os << mNumTri << " ";
 		int cnt = 0;
 		for (uint32_t j = 0; j < mNumTri; ++j) {
-			char cflg = j >= triOrg && j < triOrg + pMtl->mNumTri ? '1' : '0';
+			char cflg = j >= triOrg && j < triOrg + pMtl->mIdx.mNumTri ? '1' : '0';
 			os << cflg;
 			++cnt;
 			if (cnt > 64) {
@@ -327,7 +327,7 @@ void GWModelResource::write_geo(std::ostream& os) {
 				cnt = 0;
 			}
 		}
-		triOrg += pMtl->mNumTri;
+		triOrg += pMtl->mIdx.mNumTri;
 		os << endl;
 	}
 	os << "beginExtra" << endl;

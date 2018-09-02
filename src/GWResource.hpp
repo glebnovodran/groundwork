@@ -65,7 +65,7 @@ struct GWModelResource : public GWResource {
 		GWVectorF get_normal() const {
 			GWVectorF vec;
 			float oct[2];
-			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc[0], 2);
+			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc, 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
 			return vec;
 		}
@@ -73,7 +73,7 @@ struct GWModelResource : public GWResource {
 		GWVectorF get_tangent() const {
 			GWVectorF vec;
 			float oct[2];
-			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc[2], 2);
+			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc.elems[2], 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
 			return vec;
 		}
@@ -86,7 +86,7 @@ struct GWModelResource : public GWResource {
 
 		GWColorTuple3f get_rgb() const {
 			GWColorTuple3f rgb;
-			GWBase::half_to_float(&rgb.elems[0], (uint16_t*)&mColor[0], 3);
+			GWBase::half_to_float(&rgb.elems[0], (uint16_t*)&mColor, 3);
 			return rgb;
 		}
 
@@ -96,38 +96,47 @@ struct GWModelResource : public GWResource {
 
 		GWTuple2f get_uv() const {
 			GWTuple2f uv;
-			GWBase::half_to_float(&uv.elems[0], (uint16_t*)&mTex[0], 2);
+			GWBase::half_to_float(&uv.elems[0], (uint16_t*)&mTex, 2);
 			return uv;
 		}
 
 		GWTuple2f get_uv2() const {
 			GWTuple2f uv2;
-			GWBase::half_to_float(&uv2.elems[0], (uint16_t*)&mTex[2], 2);
+			GWBase::half_to_float(&uv2.elems[0], (uint16_t*)&mTex.elems[2], 2);
 			return uv2;
 		}
 	};
 
+	struct MtlFlags {
+		uint32_t val;
+
+		bool get(int idx) const { return !!(val & (1 << idx)); }
+		bool is_double_sided() const { return get(0); }
+		bool is_semi_transparent() const { return get(1); }
+		bool get_tangent_flip_flag() const { return get(2); }
+		bool get_bitangent_flip_flag() const { return get(3); }
+	};
+
+	struct IdxInfo {
+		int32_t mOrg;
+		uint32_t mNumTri;
+		int32_t mMin;
+		int32_t mMax;
+
+		bool is_idx16() const { return (mMax - mMin) < (1 << 16); }
+	};
+
 	struct Material {
 		uint32_t mPathOffs;
-		uint32_t mFlags;
+		MtlFlags mFlags;
 		uint32_t mBaseMapPathOffs;
 		uint32_t mExtParamsOffs;
-		int32_t mIdxOrg;
-		uint32_t mNumTri;
-		int32_t mMinIdx;
-		int32_t mMaxIdx;
+		IdxInfo mIdx;
 		GWColorTuple3f mBaseColor;
 		GWColorTuple3f mSpecColor;
 		float mRoughness;
 		float mFresnel;
 		float mBumpScale;
-
-		bool get_flag(int idx) const { return !!(mFlags & (1 << idx)); }
-		bool is_idx16() const { return (mMaxIdx - mMinIdx) < (1 << 16); }
-		bool is_double_sided() const { return get_flag(0); }
-		bool is_semi_transparent() const { return get_flag(1); }
-		bool get_tangent_flip_flag() const { return get_flag(2); }
-		bool get_bitangent_flip_flag() const { return get_flag(3); }
 	};
 
 	static const uint32_t NONE = (uint32_t)-1;
@@ -159,6 +168,13 @@ struct GWModelResource : public GWResource {
 			p = reinterpret_cast<float*>(get_ptr(mOffsPnts)) + (idx * 3);
 		}
 		return p;
+	}
+
+	uint16_t* get_idx16() {
+		return mNumIdx16 > 0 ? reinterpret_cast<uint16_t*>(get_ptr(mOffsIdx16)) : nullptr;
+	}
+	uint32_t* get_idx32() {
+		return mNumIdx32 > 0 ? reinterpret_cast<uint32_t*>(get_ptr(mOffsIdx32)) : nullptr;
 	}
 
 	GWVectorF get_pnt(uint32_t idx) {
