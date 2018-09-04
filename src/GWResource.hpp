@@ -237,6 +237,16 @@ struct GWModelResource : public GWResource {
 
 	const char* get_mtl_name(uint32_t idx);
 
+	const char* get_mtl_basemap_name(uint32_t idx) {
+		Material* pMtl = get_mtl(idx);
+		if (pMtl != nullptr) {
+			if (pMtl->mPathOffs != NONE) {
+				return get_str(pMtl->mBaseMapPathOffs);
+			}
+		}
+		return nullptr;
+	}
+
 	char* get_mtl_ext_params(uint32_t idx) {
 		Material* pMtl = get_mtl(idx);
 		uint32_t offs = pMtl->mExtParamsOffs;
