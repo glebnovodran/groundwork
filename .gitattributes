@@ -14,5 +14,8 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
+*.clip text eol=auto
 
 *.png binary
+*.dds binary
+*.gwmdl binary
