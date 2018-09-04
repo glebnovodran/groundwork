@@ -103,7 +103,7 @@ GWImage* GWImage::read_dds(std::ifstream& ifs) {
 	return pImg;
 }
 
-GWImage* GWImage::read_dds(std::string& path) {
+GWImage* GWImage::read_dds(const std::string& path) {
 	using namespace std;
 	GWImage* pImg = nullptr;
 	ifstream ifs(path, ios::binary);

@@ -34,6 +34,6 @@ public:
 	static GWImage* alloc(int w, int h);
 	static void free(GWImage* pImg);
 	static GWImage* read_dds(std::ifstream& ifs);
-	static GWImage* read_dds(std::string& path);
+	static GWImage* read_dds(const std::string& path);
 
 };
