@@ -33,7 +33,11 @@ public:
 	}
 
 	GWColorF* get_pixels() { return mPixels; }
+	const GWColorF* get_pixels() const { return &mPixels[0]; }
+
 	GWColorF get_pixel(int x, int y) const { return mPixels[(y * mWidth) + x]; }
+	GWColorF get_pixel(int i) const { return mPixels[i]; }
+
 	void set_pixel(int x, int y, const GWColorF& clr) { mPixels[(y * mWidth) + x] = clr; };
 
 	void update();
