@@ -23,3 +23,5 @@ CMakeCache.txt
 *.cmake
 **/Makefile
 .vscode
+.vs
+*.pyc

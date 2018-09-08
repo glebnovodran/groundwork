@@ -90,7 +90,7 @@ def encodeMtx(mtx):
 	return s
 
 class Strings:
-        def __init__(self):
+	def __init__(self):
 		self.data = ""
 		self.strToOffs = {}
 		self.offs = 0
