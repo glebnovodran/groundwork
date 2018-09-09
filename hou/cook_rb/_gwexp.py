@@ -13,6 +13,11 @@ libFile, libFname, libDescr = imp.find_module(libName, [libPath])
 imp.load_module(libName, libFile, libFname, libDescr)
 from gwmdl import *
 
+libName = "gwcat"
+libFile, libFname, libDescr = imp.find_module(libName, [libPath])
+imp.load_module(libName, libFile, libFname, libDescr)
+from gwcat import *
+
 libName = "copdds"
 libFile, libFname, libDescr = imp.find_module(libName, [libPath])
 imp.load_module(libName, libFile, libFname, libDescr)
@@ -30,12 +35,16 @@ expMdl = True
 expTex = True
 expMot = True
 
+cat = GWCatalog()
+
 if expMdl:
 	sop = hou.node("/obj/cook_rb/EXP")
 	if sop:
+		mdlName = "cook_rb.gwmdl"
 		dbgmsg("Exporting model: " + sop.path())
 		mdr = GWModelResource(sop)
-		mdr.save(expDir + "/cook_rb.gwmdl")
+		mdr.save(expDir + "/" + mdlName)
+		cat.add(mdlName, GWResKind.MODEL)
 
 if expTex:
 	texNet = hou.node("/obj/cook_rb/TEX")
@@ -44,8 +53,10 @@ if expTex:
 		for node in texNet.children():
 			if node.type().name() == "null": texs.append(node)
 		for cop in texs:
+			texName = cop.name() + ".dds";
 			dbgmsg("Exporting texture: " + cop.path())
-			saveDDS(expDir + "/" + cop.name() + ".dds", cop)
+			saveDDS(expDir + "/" + texName, cop)
+			cat.add(texName, GWResKind.DDS)
 
 if expMot:
 	motNet = hou.node("/obj/MOTION")
@@ -55,4 +66,8 @@ if expMot:
 			if node.type().name() == "null" and not node.isBypassed(): clips.append(node)
 		for chop in clips:
 			dbgmsg("Exporting motion: " + chop.path())
-			saveTDMot(expDir + "/" + chop.name() + ".txt", chop)
+			motName = chop.name() + ".txt"
+			saveTDMot(expDir + "/" + motName, chop)
+			cat.add(motName, GWResKind.TDMOT)
+
+cat.save(expDir + "/" + "cook_rb.gwcat")
