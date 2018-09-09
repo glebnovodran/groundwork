@@ -19,3 +19,4 @@
 *.png binary
 *.dds binary
 *.gwmdl binary
+*.gwcat binary

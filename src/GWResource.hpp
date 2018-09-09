@@ -9,6 +9,17 @@ namespace GWResourceUtil {
 	const char* name_from_path(const char* pPath, char sep = '/');
 }
 
+enum class GWResourceKind {
+	UNKNOWN = -1,
+	// native
+	CATALOG = 0,
+	MODEL = 1,
+	// foreign
+	DDS = 0x100,
+	TDMOT = 0x101,
+	TDGEO = 0x102
+};
+
 struct GWResource {
 	/* +00*/ char mSignature[0x10];
 	/* +10*/ uint32_t mVersion;
@@ -326,5 +337,38 @@ struct GWModelResource : public GWResource {
 		if (os.bad()) return;
 		write_skel(os);
 		os.close();
+	}
+};
+
+struct GWCatalog : public GWResource {
+	uint32_t mNum;
+	struct Entry {
+		uint32_t mKind;
+		int32_t mNameOffs;
+	} mList[1];
+
+	bool ck_idx(uint32_t idx) const { return idx < mNum; }
+	const char* get_file_name(uint32_t idx) const { return ck_idx(idx) ? get_str(mList[idx].mNameOffs) : nullptr; }
+	GWResourceKind get_file_kind(uint32_t idx) const { return ck_idx(idx) ? (GWResourceKind)mList[idx].mKind : GWResourceKind::UNKNOWN; }
+
+	static GWCatalog* load(const std::string& path) {
+		GWCatalog* pCat = nullptr;
+		GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID("GWCatalog"));
+		if (pRsrc) {
+			pCat = reinterpret_cast<GWCatalog*>(pRsrc);
+		}
+		return pCat;
+	}
+
+	static const char* get_kind_string(GWResourceKind kind) {
+		const char* pStr = "UNKNOWN";
+		switch (kind) {
+		case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
+		case GWResourceKind::MODEL: pStr = "Model"; break;
+		case GWResourceKind::DDS: pStr = "DDS"; break;
+		case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
+		case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;
+		}
+		return pStr;
 	}
 };

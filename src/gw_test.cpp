@@ -395,6 +395,17 @@ void test_model_recource(const std::string& mdlPath) {
 	pMdlRsc->save_geo("out.geo");
 }
 
+void test_gwcat(const char* pPath) {
+	GWCatalog* pCat = GWCatalog::load(pPath);
+	if (!pCat) return;
+	int n = pCat->mNum;
+	for (int i = 0; i < n; ++i) {
+		const char* pName = pCat->get_file_name(i);
+		GWResourceKind kind = pCat->get_file_kind(i);
+		std::cout << i << ": " << pName << ", " << GWCatalog::get_kind_string(kind) << std::endl;
+	}
+}
+
 int main(int argc, char* argv[]) {
 
 	test_basic();
@@ -408,6 +419,7 @@ int main(int argc, char* argv[]) {
 
 	test_image("../../data/pano_test1_h.dds");
 	test_model_recource("../../data/cook_rb.gwmdl");
+	test_gwcat("../../data/cook_rb.gwcat");
 
 	return 0;
 }
