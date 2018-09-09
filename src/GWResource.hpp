@@ -6,7 +6,7 @@
 #define GW_RSRC_ID(_name) GW_RSRC_SIG _name
 
 namespace GWResourceUtil {
-	const char* name_from_path(const char* pPath);
+	const char* name_from_path(const char* pPath, char sep = '/');
 }
 
 struct GWResource {
@@ -302,7 +302,7 @@ struct GWModelResource : public GWResource {
 		return &reinterpret_cast<uint32_t*>(get_ptr(mOffsSkin))[mNumSkinNodes * 2];
 	}
 
-	GWTuple4i get_pnt_skin_joints(uint32_t pntIdx);
+	GWTuple4u get_pnt_skin_joints(uint32_t pntIdx);
 	GWTuple4f get_pnt_skin_weights(uint32_t pntIdx);
 	uint32_t get_pnt_skin_joints_count(uint32_t pntIdx);
 

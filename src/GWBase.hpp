@@ -576,6 +576,10 @@ typedef GWTuple2<int> GWTuple2i;
 typedef GWTuple3<int> GWTuple3i;
 typedef GWTuple4<int> GWTuple4i;
 
+typedef GWTuple2<uint32_t> GWTuple2u;
+typedef GWTuple3<uint32_t> GWTuple3u;
+typedef GWTuple4<uint32_t> GWTuple4u;
+
 typedef GWTuple2<GWHalf> GWTuple2h;
 typedef GWTuple3<GWHalf> GWTuple3h;
 typedef GWTuple4<GWHalf> GWTuple4h;

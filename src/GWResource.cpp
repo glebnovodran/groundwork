@@ -6,12 +6,12 @@
 #include <cstddef>
 #include "groundwork.hpp"
 
-const char* GWResourceUtil::name_from_path(const char* pPath) {
+const char* GWResourceUtil::name_from_path(const char* pPath, char sep) {
 	const char* pName = nullptr;
 	if (pPath) {
 		const char* p = pPath + ::strlen(pPath);
 		for (; --p >= pPath;) {
-			if (*p == '/') {
+			if (*p == sep) {
 				pName = p + 1;
 				break;
 			}
@@ -92,7 +92,7 @@ GWTransformF GWModelResource::calc_skel_node_world_mtx(uint32_t idx, const GWTra
 }
 
 uint32_t GWModelResource::find_skel_node_skin_idx(uint32_t skelIdx) {
-	uint32_t skinIdx = (uint32_t)-1;
+	uint32_t skinIdx = NONE;
 	if (check_skel_node_idx(skelIdx)) {
 		if (has_skin()) {
 			uint32_t* pSkinToSkel = get_skin_to_skel_map();
@@ -116,9 +116,9 @@ const char* GWModelResource::get_skin_node_name(uint32_t skinIdx) {
 	return pName;
 }
 
-GWTuple4i GWModelResource::get_pnt_skin_joints(uint32_t pntIdx) {
-	GWTuple4i jnt;
-	GWTuple::fill(jnt, -1);
+GWTuple4u GWModelResource::get_pnt_skin_joints(uint32_t pntIdx) {
+	GWTuple4u jnt;
+	GWTuple::fill(jnt, 0);
 	if (has_skin() && check_pnt_idx(pntIdx)) {
 		void* pData = get_skin_data();
 		bool byteIdxFlg = mNumSkinNodes <= (1 << 8);
@@ -181,7 +181,7 @@ GWSphereF GWModelResource::calc_skin_node_sphere_of_influence(uint32_t skinIdx, 
 		uint32_t k = 0;
 		for (uint32_t i = 0; i < mNumPnt; ++i) {
 			uint32_t numJnt = get_pnt_skin_joints_count(i);
-			GWTuple4i ptJnts = get_pnt_skin_joints(i);
+			GWTuple4u ptJnts = get_pnt_skin_joints(i);
 			for (uint32_t j = 0; j < numJnt; ++j) {
 				if (ptJnts[j] == skinIdx) {
 					pPts[k] = pMdlPts[i];
