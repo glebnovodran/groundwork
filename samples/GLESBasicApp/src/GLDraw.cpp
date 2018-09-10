@@ -81,6 +81,7 @@ static struct GLESApp {
 
 	GWColorF mClearColor;
 
+	void init_sys();
 	void init_wnd();
 	void init_egl();
 	void init_gpu();
@@ -114,6 +115,7 @@ void GLESApp::init(const GLDrawCfg& cfg) {
 
 	mClearColor.set(0.33f, 0.44f, 0.55f);
 
+	init_sys();
 	init_wnd();
 	init_egl();
 	init_gpu();
@@ -217,16 +219,17 @@ static LRESULT CALLBACK drwWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	return res;
 }
 
+void GLESApp::init_sys() {
+	if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)drwWndProc, &mhInstance)) {
+		GWSys::dbg_msg("Can't obtain instance handle");
+	}
+}
+
 void GLESApp::init_wnd() {
 	WNDCLASSEX wc;
 	ZeroMemory(&wc, sizeof(WNDCLASSEX));
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = CS_VREDRAW | CS_HREDRAW;
-
-	if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCSTR)drwWndProc, &mhInstance)) {
-		GWSys::dbg_msg("Can't obtain instance handle");
-		return;
-	}
 
 	wc.hInstance = mhInstance;
 	wc.hCursor = LoadCursor(0, IDC_ARROW);
@@ -269,6 +272,8 @@ static int wait_for_MapNotify(Display* pDisp, XEvent* pEvt, char* pArg) {
 	}
 	return 0;
 }
+
+void GLESApp::init_sys() {}
 
 void GLESApp::init_wnd() {
 	using namespace std;
@@ -331,6 +336,17 @@ void GLESApp::reset_wnd() {
 #endif
 
 namespace GLDraw {
+
+	bool gl_error() {
+#ifdef _DEBUG
+		GLenum lastError = glGetError();
+		if (lastError != GL_NO_ERROR) {
+			GWSys::dbg_msg("GLES failed with (%x).\n", lastError);
+			return true;
+		}
+#endif
+		return false;
+	}
 
 	void init(const GLDrawCfg& cfg) {
 		if (s_initFlg) return;

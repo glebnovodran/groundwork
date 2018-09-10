@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GLDraw.cpp" />
+    <ClCompile Include="src\GLDrawMdl.cpp" />
     <ClCompile Include="src\GLESBasicApp.cpp" />
   </ItemGroup>
   <ItemGroup>
