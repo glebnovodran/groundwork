@@ -345,11 +345,13 @@ struct GWCatalog : public GWResource {
 	struct Entry {
 		uint32_t mKind;
 		int32_t mNameOffs;
+		int32_t mFileNameOffs;
 	} mList[1];
 
-	bool ck_idx(uint32_t idx) const { return idx < mNum; }
-	const char* get_file_name(uint32_t idx) const { return ck_idx(idx) ? get_str(mList[idx].mNameOffs) : nullptr; }
-	GWResourceKind get_file_kind(uint32_t idx) const { return ck_idx(idx) ? (GWResourceKind)mList[idx].mKind : GWResourceKind::UNKNOWN; }
+	bool check_idx(uint32_t idx) const { return idx < mNum; }
+	const char* get_name(uint32_t idx) const { return check_idx(idx) ? get_str(mList[idx].mNameOffs) : nullptr; }
+	const char* get_file_name(uint32_t idx) const { return check_idx(idx) ? get_str(mList[idx].mFileNameOffs) : nullptr; }
+	GWResourceKind get_file_kind(uint32_t idx) const { return check_idx(idx) ? (GWResourceKind)mList[idx].mKind : GWResourceKind::UNKNOWN; }
 
 	static GWCatalog* load(const std::string& path) {
 		GWCatalog* pCat = nullptr;

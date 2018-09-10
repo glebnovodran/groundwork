@@ -42,7 +42,7 @@ GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	if (fs.bad()) { return nullptr; }
 
 	fs.read(sig, 0x10);
-	if (::memcmp(sig, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) != 0) return nullptr;
+	if (::memcmp(sig, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) != 0) { return nullptr; }
 	if (pSig) {
 		if (::strcmp(sig, pSig) != 0) { return nullptr; }
 	}

@@ -57,19 +57,24 @@ GWResKind.TDMOT = 0x101
 GWResKind.TDGEO = 0x102
 
 class GWResFile:
-	def __init__(self, fname, kind):
+	def __init__(self, name, fname, kind):
+		self.name = name
 		self.fname = fname
 		self.kind = kind
 		self.nameOffs = -1
+		self.fnameOffs = -1
 
 class GWCatalog:
 	def __init__(self):
 		self.strs = Strings()
 		self.files = []
 
-	def add(self, fname, kind):
-		rf = GWResFile(fname, kind)
-		rf.nameOffs = self.strs.add(fname)
+	def add(self, fname, kind, name = None):
+		if (name == None):
+			(name, ext) = os.path.splitext(fname)
+		rf = GWResFile(name, fname, kind)
+		rf.nameOffs = self.strs.add(name)
+		rf.fnameOffs = self.strs.add(fname)
 		self.files.append(rf)
 
 	def write(self, f):
@@ -84,6 +89,7 @@ class GWCatalog:
 		for rf in self.files:
 			f.write(struct.pack("i", rf.kind))
 			f.write(struct.pack("i", rf.nameOffs))
+			f.write(struct.pack("i", rf.fnameOffs))
 
 		fpatch(f, 0x18, f.tell()) # -> strs
 		f.write(self.strs.data)

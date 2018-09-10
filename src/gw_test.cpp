@@ -400,9 +400,10 @@ void test_gwcat(const char* pPath) {
 	if (!pCat) return;
 	int n = pCat->mNum;
 	for (int i = 0; i < n; ++i) {
-		const char* pName = pCat->get_file_name(i);
+		const char* pName = pCat->get_name(i);
+		const char* pFileName = pCat->get_file_name(i);
 		GWResourceKind kind = pCat->get_file_kind(i);
-		std::cout << i << ": " << pName << ", " << GWCatalog::get_kind_string(kind) << std::endl;
+		std::cout << i << ": " << pName << " : " << pFileName << " , " << GWCatalog::get_kind_string(kind) << std::endl;
 	}
 }
 
@@ -418,8 +419,8 @@ int main(int argc, char* argv[]) {
 	test_motion();
 
 	test_image("../../data/pano_test1_h.dds");
-	test_model_recource("../../data/cook_rb.gwmdl");
-	test_gwcat("../../data/cook_rb.gwcat");
+	test_model_recource("../../data/cook_rb/cook_rb.gwmdl");
+	test_gwcat("../../data/cook_rb/cook_rb.gwcat");
 
 	return 0;
 }
