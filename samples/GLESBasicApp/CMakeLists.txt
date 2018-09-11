@@ -36,6 +36,7 @@ set(GW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../groundwork/src")
 
 add_executable(GLESBasicApp
 	src/GLDraw.cpp
+	src/GLDrawMdl.cpp
 	src/GLESBasicApp.cpp
 )
 
