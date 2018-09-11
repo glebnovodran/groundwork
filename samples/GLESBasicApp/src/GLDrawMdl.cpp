@@ -28,7 +28,7 @@ namespace GLDraw {
 		mIdx = mtlRsc.mIdx;
 	}
 
-	Model* GLDraw::create_model(GWModelResource& mdlRsc, const char* pName) {
+	Model* create_model(GWModelResource& mdlRsc, const char* pName) {
 		uint32_t vtxNum = mdlRsc.mNumPnt;
 		if (vtxNum == 0) { return nullptr; }
 		uint32_t triNum = mdlRsc.mNumTri;
@@ -114,12 +114,12 @@ namespace GLDraw {
 		return pMdl;
 	}
 
-	Model* GLDraw::find_model(const std::string& name) {
+	Model* find_model(const std::string& name) {
 		ModelItem* pItem = s_models.find_first(name.c_str());
 		return pItem == nullptr ? nullptr : pItem->mpVal;
 	}
 
-	void GLDraw::free_model(Model* pMdl) {
+	void free_model(Model* pMdl) {
 		s_models.remove(&pMdl->mItem);
 		delete pMdl;
 	}
