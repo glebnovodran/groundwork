@@ -28,7 +28,7 @@ libFile, libFname, libDescr = imp.find_module(libName, [libPath])
 imp.load_module(libName, libFile, libFname, libDescr)
 from tdmot import *
 
-expDir = hou.expandString("$HIP/EXP")
+expDir = hou.expandString("$HIP/../../data/cook_rb")
 if not os.path.exists(expDir): os.makedirs(expDir)
 
 expMdl = True
