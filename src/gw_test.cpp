@@ -403,7 +403,7 @@ void test_gwcat(const char* pPath) {
 		const char* pName = pCat->get_name(i);
 		const char* pFileName = pCat->get_file_name(i);
 		GWResourceKind kind = pCat->get_file_kind(i);
-		std::cout << i << ": " << pName << " : " << pFileName << " , " << GWCatalog::get_kind_string(kind) << std::endl;
+		std::cout << i << ": " << pName << " : " << pFileName << " , " << GWResourceUtil::get_kind_string(kind) << std::endl;
 	}
 }
 

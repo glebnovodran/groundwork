@@ -5,10 +5,6 @@
 #define GW_RSRC_SIG "rsrc:"
 #define GW_RSRC_ID(_name) GW_RSRC_SIG _name
 
-namespace GWResourceUtil {
-	const char* name_from_path(const char* pPath, char sep = '/');
-}
-
 enum class GWResourceKind {
 	UNKNOWN = -1,
 	// native
@@ -19,6 +15,11 @@ enum class GWResourceKind {
 	TDMOT = 0x101,
 	TDGEO = 0x102
 };
+
+namespace GWResourceUtil {
+	const char* name_from_path(const char* pPath, char sep = '/');
+	const char* get_kind_string(GWResourceKind kind);
+}
 
 struct GWResource {
 	/* +00*/ char mSignature[0x10];
@@ -360,17 +361,5 @@ struct GWCatalog : public GWResource {
 			pCat = reinterpret_cast<GWCatalog*>(pRsrc);
 		}
 		return pCat;
-	}
-
-	static const char* get_kind_string(GWResourceKind kind) {
-		const char* pStr = "UNKNOWN";
-		switch (kind) {
-		case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
-		case GWResourceKind::MODEL: pStr = "Model"; break;
-		case GWResourceKind::DDS: pStr = "DDS"; break;
-		case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
-		case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;
-		}
-		return pStr;
 	}
 };

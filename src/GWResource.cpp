@@ -21,6 +21,18 @@ const char* GWResourceUtil::name_from_path(const char* pPath, char sep) {
 	return pName;
 }
 
+const char* GWResourceUtil::get_kind_string(GWResourceKind kind) {
+	const char* pStr = "UNKNOWN";
+	switch (kind) {
+	case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
+	case GWResourceKind::MODEL: pStr = "Model"; break;
+	case GWResourceKind::DDS: pStr = "DDS"; break;
+	case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
+	case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;
+	}
+	return pStr;
+}
+
 void write_py_mtx(std::ostream& os, const GWTransformF& xform) {
 	os << "[";
 	for (int i = 0; i < 4; ++i) {

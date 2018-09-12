@@ -39,7 +39,7 @@ static bool data_init(const std::string& catPath) {
 			const char* pFileName = pCat->get_file_name(i);
 			const char* pName = pCat->get_name(i);
 			GWResourceKind kind = pCat->get_file_kind(i);
-			GWSys::dbg_msg("%s : %s\n", pName, GWCatalog::get_kind_string(kind));
+			GWSys::dbg_msg("%s : %s\n", pName, GWResourceUtil::get_kind_string(kind));
 
 			switch (kind) {
 			case GWResourceKind::MODEL: {
