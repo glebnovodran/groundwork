@@ -229,6 +229,29 @@ namespace GWTuple {
 		GWTuple::clip_high(dst, dst, val);
 	}
 
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename SCALAR_T>
+	inline void clamp(TUPLE_DST_T& dst, const TUPLE_SRC_T& src, SCALAR_T low, SCALAR_T high) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = std::max(std::min(src.elems[i], high), low);
+		}
+	}
+
+	template<typename TUPLE_DST_T, typename SCALAR_T>
+	inline void clamp(TUPLE_DST_T& dst, SCALAR_T low, SCALAR_T high) {
+		GWTuple::clamp(dst, dst, low, high);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void saturate(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+		clamp(dst, src, 0.0f, 1.0f);
+	}
+
+	template<typename TUPLE_DST_T>
+	inline void saturate(TUPLE_DST_T& dst) {
+		clamp(dst, dst, 0.0f, 1.0f);
+	}
+
 	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>
 	inline void add(TUPLE_DST_T& dst, const TUPLE_SRC0_T& src0, const TUPLE_SRC1_T& src1) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, std::min(TUPLE_SRC0_T::ELEMS_NUM, TUPLE_SRC1_T::ELEMS_NUM));

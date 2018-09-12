@@ -106,8 +106,9 @@ void test_tuple() {
 	clr4 = clr3;
 	GWTuple::fill(clr4, 0.0f);
 	clr3 = clr4;
-	GWVectorF v(1.0, 0.8, 0.7);
+	GWVectorF v(1.5, 0.8, -0.2);
 	clr4 = v;
+	GWTuple::saturate(clr4);
 	cout << "=====================" << endl;
 }
 
