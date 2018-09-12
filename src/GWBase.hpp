@@ -57,6 +57,13 @@ enum class GWTrackKind : uint8_t {
 namespace GWBase {
 	extern const long double pi;
 
+	union Cvt32 {
+		float f;
+		int32_t i;
+		uint32_t u;
+		uint8_t b[4];
+	};
+
 	void half_to_float(float* pDst, const uint16_t* pSrc, int n);
 	void float_to_half(uint16_t* pDst, const float* pSrc, int n);
 	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy);
