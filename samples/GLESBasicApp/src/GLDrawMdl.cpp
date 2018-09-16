@@ -140,30 +140,38 @@ namespace GLDraw {
 		glGenTextures(1, &texId);
 		if (0 != texId) {
 			pTex = new Texture();
-			int w = img.get_width();
-			int h = img.get_height();
-			int n = h * w;
+			uint32_t w = img.get_width();
+			uint32_t h = img.get_height();
+			uint32_t n = h * w;
 
 			pTex->mId = texId;
 			pTex->mWidth = w;
 			pTex->mHeight = h;
 
-			const GWColorF* pClr = img.get_pixels();
-			const float* pClrBuf = reinterpret_cast<const float*>(img.get_pixels());
+			glBindTexture(GL_TEXTURE_2D, texId);
 			if (img.is_hdr()) {
+				const float* pClrBuf = reinterpret_cast<const float*>(img.get_pixels());
 				GWHalf4* pEnc = new GWHalf4[n];
 				// RFU: Don't encode to half-float through glTexImage2D
 				GWBase::float_to_half((uint16_t*)pEnc, pClrBuf, n * 4);
-
-				glBindTexture(GL_TEXTURE_2D, texId);
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, w, h, 0, GL_RGBA, GL_HALF_FLOAT, pEnc);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-				glGenerateMipmap(texId);
-
 				delete[] pEnc;
 			} else {
+				const GWColorF* pClr = img.get_pixels();
+				GWBase::Cvt32* pEnc = new GWBase::Cvt32[n];
+				for (uint32_t i = 0; i < n; ++i) {
+					GWColorF clr = pClr[i];
+					clr.scl(255.0f);
+					for (uint32_t j = 0; j < 4; ++j) {
+						pEnc[i].b[j] = uint8_t(clr[j]);
+					}
+				}
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, pEnc);
 			}
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glGenerateMipmap(texId);
+
 			pTex->mItem.set_name_val(pName, pTex);
 			s_textures.add(&pTex->mItem);
 		} else {
