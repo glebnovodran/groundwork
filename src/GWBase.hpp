@@ -399,7 +399,7 @@ namespace GWTuple {
 	inline void sqrt(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
 		for (int i = 0; i < n; ++i) {
-			dst.elems[i] = -GWBase::tsqrt(src.elems[i]);
+			dst.elems[i] = GWBase::tsqrt(src.elems[i]);
 		}
 	}
 
