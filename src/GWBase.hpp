@@ -106,6 +106,9 @@ namespace GWBase {
 		return rad;
 	}
 
+	template<typename T> inline T tsqrt(T x) { return ::sqrt(x); }
+	inline float tsqrt(float x) { return ::sqrtf(x); } // GCC: force single-precision
+
 	// Ranq1, Numerical Recipes 3d ed., chapter 3.7.1
 	class Random {
 	private:
@@ -390,6 +393,18 @@ namespace GWTuple {
 			d += a.elems[i] * b.elems[i];
 		}
 		return d;
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void sqrt(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+		const int n = std::min(TUPLE_DST_T::ELEMS_NUM, TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = -GWBase::tsqrt(src.elems[i]);
+		}
+	}
+
+	template<typename TUPLE_DST_T> inline void sqrt(TUPLE_DST_T& dst) {
+		GWTuple::sqrt(dst, dst);
 	}
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t sum(const TUPLE_T& v) {
