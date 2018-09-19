@@ -34,4 +34,20 @@ namespace GWMatrix {
 	inline void mul_mv(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int M, int N) {
 		mul_mm(pDst, pMtx, pVec, M, N, 1);
 	}
+
+	template<typename DST_T, typename SRC_T> void transpose(DST_T* pDst, SRC_T* pSrc, int N) {
+		for (int i = 0; i < N - 1; ++i) {
+			for (int j = i + 1; j < N; ++j) {
+				int ij = i * N + j;
+				int ji = j * N + i;
+				DST_T t = pSrc[ij];
+				pDst[ij] = pSrc[ji];
+				pDst[ji] = t;
+			}
+		}
+	}
+	template<typename DST_T> void transpose(DST_T* pMtx, int N) {
+		transpose(pMtx, pMtx, N);
+	}
+
 } // namespace
