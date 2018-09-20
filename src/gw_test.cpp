@@ -6,6 +6,20 @@
 #include <iostream>
 #include "groundwork.hpp"
 
+inline int f32_ulp_diff(float a, float b) {
+	if (a == b) return 0;
+	const float e = 1.0e-6f;
+	if (::fabs(a) < e && ::fabs(b) < e) return 0;
+	GWBase::Cvt32 ua;
+	ua.f = a;
+	GWBase::Cvt32 ub;
+	ub.f = b;
+	const int32_t sm = 0x7FFFFFFF;
+	if (ua.i < 0) ua.i &= sm;
+	if (ub.i < 0) ub.i &= sm;
+	return ua.u > ub.u ? ua.u - ub.u : ub.u - ua.u;
+}
+
 void test_basic() {
 	using namespace std;
 	float rad = GWBase::radians(271.0f);
@@ -22,12 +36,12 @@ void test_basic() {
 	GWVectorF v(-2.0f, 2.5f, -1.5f);
 	v.normalize();
 	float mag = GWTuple::magnitude(v);
-	
+
 	float ox, oy;
 	GWVectorF decoded;
 	GWBase::vec_to_oct(v.x, v.y, v.z, ox, oy);
 	GWBase::oct_to_vec(ox, oy, decoded.x, decoded.y, decoded.z);
-	
+
 	if (!GWTuple::compare(v, decoded, 0.001f)) {
 		cout << "octo encoding diff test failed" << endl;
 	}
@@ -86,6 +100,81 @@ void test_list() {
 	list.remove(&item1);
 	pFound = list.find_first("item1");
 	if (pFound != nullptr) { cout << "GWNamedObjist::remove failed" << endl;}
+}
+
+bool test_solve3() {
+	static float A[] = {
+		2, -1, 2,
+		1, -2, 1,
+		3, -1, 2
+	};
+	static float b[] = {
+		10, 8, 11
+	};
+
+	float tmp[3];
+	int perm[3];
+	float LU[3 * 3];
+	GWMatrix::lu_decomp(LU, A, 3, tmp, perm);
+	float ans[3];
+	GWMatrix::lu_solve(ans, LU, 3, perm, b);
+
+	static float expected[] = { 1, -2, 3 }; // A \ b
+	for (int i = 0; i < 3; ++i) {
+		int d = f32_ulp_diff(ans[i], expected[i]);
+		if (d > 200) return false;
+	}
+
+	float inv[3 * 3];
+	for (int i = 0; i < 3; ++i) {
+		float v[3];
+		for (int j = 0; j < 3; ++j) {
+			v[j] = float(i == j ? 1 : 0);
+		}
+		GWMatrix::lu_solve(&inv[i * 3], LU, 3, perm, v);
+	}
+	GWMatrix::transpose(inv, 3);
+
+	float invExpected[] = { // inv(A)
+		-1, 0, 1,
+		0.33333f, -0.66667f, 0,
+		1.66667, -0.33333, -1
+	};
+	for (int i = 0; i < 3*3; ++i) {
+		int d = f32_ulp_diff(inv[i], invExpected[i]);
+		if (d > 200) return false;
+	}
+
+	return true;
+}
+
+bool test_distmtx() {
+	const int N = 1000;
+	float* pMtx = new float[N * N];
+	float* pLU = new float[N * N];
+	int* pPerm = new int[N];
+	float* pTmpVec = new float[N];
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < N; ++j) {
+			int offs = i*N + j;
+			pMtx[offs] = ::sqrt(float(i*i) + float(j*j));
+		}
+	}
+	int dsgn = 0;
+	bool res = GWMatrix::lu_decomp(pLU, pMtx, N, pTmpVec, pPerm, &dsgn);
+	return res;
+}
+
+void test_mtx() {
+	using namespace std;
+
+	cout << "test_solve3...";
+	bool res = test_solve3();
+	cout << (res ? " OK " : "Failed") << endl;
+
+	cout << "test_distmtx...";
+	res = test_distmtx();
+	cout << (res ? " OK " : "Failed") << endl;
 }
 
 void test_tuple() {
@@ -417,6 +506,7 @@ int main(int argc, char* argv[]) {
 	test_basic();
 	test_list();
 	test_tuple();
+	test_mtx();
 	test_vec();
 	test_ray();
 	test_xform();
