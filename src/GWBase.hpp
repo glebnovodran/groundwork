@@ -77,7 +77,8 @@ namespace GWBase {
 		if (ub.i < 0) ub.i &= sm;
 		return ua.u > ub.u ? ua.u - ub.u : ub.u - ua.u;
 	}
-	inline bool f32_compare(float a, float b, float eps = 0.0001f) {
+
+	template<typename T> inline bool almost_equal(T a, T b, T eps = T(0.0001f)) {
 		return (::fabs(a - b) <= eps);
 	}
 
