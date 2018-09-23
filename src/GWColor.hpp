@@ -57,16 +57,7 @@ public:
 	void clip_negative() { GWTuple::clip_low(*this, 0.0f); }
 	void zero() { GWTuple::fill(*this, 0.0f); }
 
-	uint32_t encode_rgba8() const {
-		GWColorTuple4f c;
-		GWTuple::saturate(c, *this);
-		GWTuple::scl(c, 255.0f);
-		GWBase::Cvt32 val;
-		for (int i = 0; i < 4; ++i) {
-			val.b[i] = (uint8_t)c[i];
-		}
-		return val.u;
-	}
+	uint32_t encode_rgba8() const;
 
 	template<typename TUPLE_T> GWColorF& operator = (const TUPLE_T& tuple) {
 		GWTuple::copy(*this, tuple);

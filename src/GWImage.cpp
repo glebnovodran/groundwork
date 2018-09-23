@@ -2,6 +2,7 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 #include <cstring>
+#include "GWSys.hpp"
 #include "GWBase.hpp"
 #include "GWVector.hpp"
 #include "GWColor.hpp"

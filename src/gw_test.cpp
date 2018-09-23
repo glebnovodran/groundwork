@@ -6,20 +6,6 @@
 #include <iostream>
 #include "groundwork.hpp"
 
-inline int f32_ulp_diff(float a, float b) {
-	if (a == b) return 0;
-	const float e = 1.0e-6f;
-	if (::fabs(a) < e && ::fabs(b) < e) return 0;
-	GWBase::Cvt32 ua;
-	ua.f = a;
-	GWBase::Cvt32 ub;
-	ub.f = b;
-	const int32_t sm = 0x7FFFFFFF;
-	if (ua.i < 0) ua.i &= sm;
-	if (ub.i < 0) ub.i &= sm;
-	return ua.u > ub.u ? ua.u - ub.u : ub.u - ua.u;
-}
-
 void test_basic() {
 	using namespace std;
 	float rad = GWBase::radians(271.0f);
@@ -121,7 +107,7 @@ bool test_solve3() {
 
 	static float expected[] = { 1, -2, 3 }; // A \ b
 	for (int i = 0; i < 3; ++i) {
-		int d = f32_ulp_diff(ans[i], expected[i]);
+		int d = GWBase::f32_ulp_diff(ans[i], expected[i]);
 		if (d > 200) return false;
 	}
 
@@ -141,7 +127,7 @@ bool test_solve3() {
 		1.66667, -0.33333, -1
 	};
 	for (int i = 0; i < 3*3; ++i) {
-		int d = f32_ulp_diff(inv[i], invExpected[i]);
+		int d = GWBase::f32_ulp_diff(inv[i], invExpected[i]);
 		if (d > 200) return false;
 	}
 
