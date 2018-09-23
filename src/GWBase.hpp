@@ -77,6 +77,9 @@ namespace GWBase {
 		if (ub.i < 0) ub.i &= sm;
 		return ua.u > ub.u ? ua.u - ub.u : ub.u - ua.u;
 	}
+	inline bool f32_compare(float a, float b, float eps = 0.0001f) {
+		return (::fabs(a - b) <= eps);
+	}
 
 	void half_to_float(float* pDst, const uint16_t* pSrc, int n);
 	void float_to_half(uint16_t* pDst, const float* pSrc, int n);
