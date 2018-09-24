@@ -26,6 +26,7 @@ static bool test_apply() {
 	GWVectorF rotated = q.apply(vx);
 	return COMPARE_VEC(rotated, v, 0.001f);
 }
+
 static bool test_quat_expmap() {
 	GWQuaternionF q;
 	GWQuaternionF p(1.0f, 2.0f, 3.0f, 0.5f);
