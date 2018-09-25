@@ -87,7 +87,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_scl(T* pDst, int n, float s) {
+	inline void tup_scl(T* pDst, int n, T s) {
 		tup_scl(pDst, pDst, 0, n - 1, s);
 	}
 
@@ -158,7 +158,7 @@ namespace GWMatrix {
 	/* inner products */
 
 	template<typename T>
-	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const float* pVec, const int iorg, const int iend) {
+	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec, const int iorg, const int iend) {
 		T s = T(0);
 		const T* pRow = pMtx + (irow * ncol);
 		for (int i = iorg; i <= iend; ++i) {
@@ -168,12 +168,12 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const float* pVec) {
+	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec) {
 		return inner_row_vec(pMtx, ncol, irow, pVec, 0, ncol - 1);
 	}
 
 	template<typename T>
-	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const float* pVec, const int iorg, const int iend) {
+	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec, const int iorg, const int iend) {
 		T s = T(0);
 		for (int i = iorg; i <= iend; ++i) {
 			const T* pCol = pMtx + (i * ncol) + icol;
@@ -183,7 +183,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const float* pVec) {
+	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec) {
 		return inner_col_vec(pMtx, ncol, icol, pVec, 0, ncol - 1);
 	}
 
