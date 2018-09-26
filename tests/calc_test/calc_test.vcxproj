@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\test.cpp" />
+    <ClCompile Include="src\test_mtx.cpp" />
     <ClCompile Include="src\test_quat.cpp" />
   </ItemGroup>
   <ItemGroup>
