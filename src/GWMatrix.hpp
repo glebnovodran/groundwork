@@ -36,6 +36,23 @@ namespace GWMatrix {
 		mul_mm(pDst, pMtx, pVec, M, N, 1);
 	}
 
+	template<typename T>
+	inline void scl(T* pMtx, int n, T s) {
+		for (int i = 0; i < n*n; ++i) {
+			pMtx[i] *= s;
+		}
+	}
+
+	template<typename T>
+	inline void set_identity(T* pMtx, int n) {
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; j < n; ++j) {
+				int offs = i*n + j;
+				pMtx[offs] = T((i == j) ? 1 : 0);
+			}
+		}
+	}
+
 	/* transpose */
 
 	template<typename DST_T, typename SRC_T> void transpose(DST_T* pDst, SRC_T* pSrc, int N) {
@@ -87,7 +104,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_scl(T* pDst, int n, float s) {
+	inline void tup_scl(T* pDst, int n, T s) {
 		tup_scl(pDst, pDst, 0, n - 1, s);
 	}
 
@@ -158,7 +175,7 @@ namespace GWMatrix {
 	/* inner products */
 
 	template<typename T>
-	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const float* pVec, const int iorg, const int iend) {
+	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec, const int iorg, const int iend) {
 		T s = T(0);
 		const T* pRow = pMtx + (irow * ncol);
 		for (int i = iorg; i <= iend; ++i) {
@@ -168,12 +185,12 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const float* pVec) {
+	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec) {
 		return inner_row_vec(pMtx, ncol, irow, pVec, 0, ncol - 1);
 	}
 
 	template<typename T>
-	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const float* pVec, const int iorg, const int iend) {
+	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec, const int iorg, const int iend) {
 		T s = T(0);
 		for (int i = iorg; i <= iend; ++i) {
 			const T* pCol = pMtx + (i * ncol) + icol;
@@ -183,7 +200,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const float* pVec) {
+	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec) {
 		return inner_col_vec(pMtx, ncol, icol, pVec, 0, ncol - 1);
 	}
 
@@ -318,4 +335,52 @@ namespace GWMatrix {
 		}
 	}
 
+	template<typename T>
+	inline T lu_det(const T* pLU, const int n, int sgn) {
+		T det = 1;
+		for (int i = 0; i < n; ++i) {
+			det *= pLU[i*n + i];
+		}
+		det = ::fabs(det);
+		if (sgn < 0) {
+			det = -det;
+		}
+		return det;
+	}
+
+	template<typename T>
+	inline void lu_inv(T* pInv, const T* pLU, const int n, const int* pPerm, T* pTmpVec /* [n] */) {
+		if (pInv == pLU) {
+			for (int j = n; --j >= 0;) {
+				for (int i = n; --i >= j + 1;) {
+					pInv[i*n + (j + 1)] = pTmpVec[i];
+					pTmpVec[i] = -inner_row_col(pInv, n, j, pInv, n, i, j + 1, n - 1);
+				}
+				T s = T(1) / pInv[j*n + j];
+				for (int i = n; --i >= j + 1;) {
+					pInv[j*n + i] = pTmpVec[i];
+					pTmpVec[i] = -inner_row_col(pInv, n, i, pInv, n, j, j + 1, n - 1);
+				}
+				pTmpVec[j] = T(1) - inner_row_col(pInv, n, j, pInv, n, j, j + 1, n - 1);
+				tup_scl(pTmpVec, pTmpVec, j, n - 1, s);
+			}
+			for (int i = 0; i < n; ++i) {
+				pInv[i*n] = pTmpVec[i];
+			}
+			for (int i = n - 1; --i >= 0;) {
+				int idx = pPerm[i];
+				if (idx != i) {
+					swap_cols(pInv, n, i, idx, 0, n - 1);
+				}
+			}
+		} else {
+			for (int i = 0; i < n; ++i) {
+				for (int j = 0; j < n; ++j) {
+					pTmpVec[j] = T(i == j ? 1 : 0);
+				}
+				lu_solve(&pInv[i * n], pLU, n, pPerm, pTmpVec);
+			}
+			transpose(pInv, n);
+		}
+	}
 } // namespace
