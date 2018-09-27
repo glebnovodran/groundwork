@@ -64,7 +64,14 @@ namespace GWBase {
 		uint8_t b[4];
 	};
 
-	inline int f32_ulp_diff(float a, float b) {
+	union Cvt64 {
+		int64_t i;
+		uint64_t u;
+		double d;
+		uint8_t b[8];
+	};
+
+	inline int32_t f32_ulp_diff(float a, float b) {
 		if (a == b) return 0;
 		const float e = 1.0e-6f;
 		if (::fabs(a) < e && ::fabs(b) < e) return 0;
@@ -78,10 +85,32 @@ namespace GWBase {
 		return ua.u > ub.u ? ua.u - ub.u : ub.u - ua.u;
 	}
 
-	template<typename T> inline bool almost_equal(T a, T b, T eps = T(0.0001f)) {
-		return (::fabs(a - b) <= eps);
+	inline int64_t f64_ulp_diff(double a, double b, double nearz = 1.0e-12f) {
+		if (a == b) return 0;
+		if (::fabs(a) < nearz && ::fabs(b) < nearz) return 1;
+		Cvt64 ua;
+		ua.d = a;
+		Cvt64 ub;
+		ub.d = b;
+		if (ua.i < 0) ua.i = (1ULL << 63) - ua.i;
+		if (ub.i < 0) ub.i = (1ULL << 63) - ub.i;
+		return ua.u > ub.u ? ua.u - ub.u : ub.u - ua.u;
 	}
 
+	template<typename T> inline bool almost_equal(T a, T b, T eps = T(0.0001f)) {
+		return (T(::fabs(a - b)) <= eps);
+	}
+
+	static int64_t factorial(int64_t x) {
+		int64_t res = 1;
+		if (x > 1) {
+			res = x;
+			while (--x > 1) {
+				res *= x;
+			}
+		}
+		return res;
+	}
 	void half_to_float(float* pDst, const uint16_t* pSrc, int n);
 	void float_to_half(uint16_t* pDst, const float* pSrc, int n);
 	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy);
