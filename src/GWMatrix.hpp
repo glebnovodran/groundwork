@@ -190,7 +190,7 @@ namespace GWMatrix {
 	/* inner products */
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec, const int iorg, const int iend) {
+	inline CALC_T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec, const int iorg, const int iend) {
 		CALC_T s = CALC_T(0);
 		const T* pRow = pMtx + (irow * ncol);
 		for (int i = iorg; i <= iend; ++i) {
@@ -198,16 +198,16 @@ namespace GWMatrix {
 			CALC_T b = pVec[i];
 			s += a * b;
 		}
-		return T(s);
+		return s;
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec) {
+	inline CALC_T inner_row_vec(const T* pMtx, const int ncol, const int irow, const T* pVec) {
 		return inner_row_vec<T, CALC_T>(pMtx, ncol, irow, pVec, 0, ncol - 1);
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec, const int iorg, const int iend) {
+	inline CALC_T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec, const int iorg, const int iend) {
 		CALC_T s = CALC_T(0);
 		for (int i = iorg; i <= iend; ++i) {
 			const T* pCol = pMtx + (i * ncol) + icol;
@@ -215,16 +215,16 @@ namespace GWMatrix {
 			CALC_T b = pVec[i];
 			s += a * b;
 		}
-		return T(s);
+		return s;
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec) {
+	inline CALC_T inner_col_vec(const T* pMtx, const int ncol, const int icol, const T* pVec) {
 		return inner_col_vec<T, CALC_T>(pMtx, ncol, icol, pVec, 0, ncol - 1);
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_row_row(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int irowB, int iorg, int iend) {
+	inline CALC_T inner_row_row(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int irowB, int iorg, int iend) {
 		CALC_T s = CALC_T(0);
 		const T* pRowA = pMtxA + (irowA * ncolA);
 		const T* pRowB = pMtxB + (irowB * ncolB);
@@ -233,21 +233,21 @@ namespace GWMatrix {
 			CALC_T b = pRowB[i];
 			s += a * b;
 		}
-		return T(s);
+		return s;
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_row_row(const T* pMtxA, const int ncol, const int irowA, const T* pMtxB, const int irowB) {
+	inline CALC_T inner_row_row(const T* pMtxA, const int ncol, const int irowA, const T* pMtxB, const int irowB) {
 		return inner_row_row<T, CALC_T>(pMtxA, ncol, irowA, pMtxB, ncol, irowB, 0, ncol - 1);
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_row_row(const T* pMtx, const int ncol, const int irow1, const int irow2) {
+	inline CALC_T inner_row_row(const T* pMtx, const int ncol, const int irow1, const int irow2) {
 		return inner_row_row<T, CALC_T>(pMtx, ncol, irow1, pMtx, irow2);
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_row_col(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int icolB, int iorg, int iend) {
+	inline CALC_T inner_row_col(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int icolB, int iorg, int iend) {
 		CALC_T s = CALC_T(0);
 		const T* pRowA = pMtxA + (irowA * ncolA);
 		for (int i = iorg; i <= iend; ++i) {
@@ -256,11 +256,11 @@ namespace GWMatrix {
 			CALC_T b = *pColB;
 			s += a * b;
 		}
-		return T(s);
+		return s;
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline T inner_col_col(const T* pMtxA, const int ncolA, const int icolA, const T* pMtxB, const int ncolB, const int icolB, int iorg, int iend) {
+	inline CALC_T inner_col_col(const T* pMtxA, const int ncolA, const int icolA, const T* pMtxB, const int ncolB, const int icolB, int iorg, int iend) {
 		CALC_T s = CALC_T(0);
 		for (int i = iorg; i <= iend; ++i) {
 			const T* pColA = pMtxA + (i * ncolA) + icolA;
@@ -269,7 +269,7 @@ namespace GWMatrix {
 			CALC_T b = *pColB;
 			s += a * b;
 		}
-		return T(s);
+		return s;
 	}
 
 
