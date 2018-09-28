@@ -109,9 +109,68 @@ static bool test_distmtx() {
 	return res;
 }
 
+static bool test_pascal() {
+	using namespace GWBase;
+
+	const int n = 4;
+	float A[n * n];
+	float tmp[n];
+	int perm[n];
+	float LU[n * n];
+	float inv[n * n];
+	int ds = 0;
+
+	float k = 1.0f / 7;
+
+	GWMatrix::gen_Pascal_mtx(A, n);
+	GWMatrix::scl(A, n, k);
+
+	bool res = GWMatrix::lu_decomp(LU, A, n, tmp, perm, &ds);
+	if (res) {
+		float det = GWMatrix::lu_det(LU, n, ds);
+		float dref = ::pow(k, n); // k^n
+		if (!almost_equal(det, dref)) {
+			res = false;
+		}
+	}
+
+	if (res) {
+		GWMatrix::lu_inv(inv, LU, n, perm, tmp);
+
+		// sign pattern test
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; j < n; ++j) {
+				int sref = int(::powf(-1.0f, float(i + j)));
+				int stst = inv[i*n + j] < 0 ? -1 : 1;
+				if (sref != stst) {
+					res = false;
+					break;
+				}
+			}
+		}
+	}
+
+	if (res) {
+		for (int i = 0; i < n*n; ++i) {
+			// check if inv(A) elements are (nearly) integers
+			float val = inv[i];
+			float ival = ::round(val);
+			int d = f32_ulp_diff(val, ival);
+			if (d > 50) {
+				std::cout << "ulp diff = " << d << std::endl;
+				res = false;
+				break;
+			}
+		}
+	}
+
+	return res;
+}
+
 static TEST_ENTRY s_mtx_tests[] = {
 	TEST_DECL(test_solve3),
-	TEST_DECL(test_distmtx)
+	TEST_DECL(test_distmtx),
+	TEST_DECL(test_pascal)
 };
 
 bool test_mtx() {
