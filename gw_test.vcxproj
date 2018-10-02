@@ -153,6 +153,7 @@
       <SDLCheck>
       </SDLCheck>
       <DisableSpecificWarnings>4244</DisableSpecificWarnings>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
