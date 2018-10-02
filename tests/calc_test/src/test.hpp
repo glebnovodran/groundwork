@@ -39,5 +39,6 @@ inline int exec_tests(TEST_ENTRY* pTests, int n) {
 
 bool test_quat();
 bool test_mtx();
+bool test_inner();
 
 int run_all_tests();

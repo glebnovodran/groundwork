@@ -117,3 +117,61 @@ static TEST_ENTRY s_mtx_tests[] = {
 bool test_mtx() {
 	return 0 == EXEC_TESTS(s_mtx_tests);
 }
+
+
+static float s_m6x5_1[] = {
+	1,   2,  3,  4,  5,
+	11, 12, 13, 14, 15,
+	21, 22, 23, 24, 25,
+	31, 32, 33, 34, 35,
+	41, 42, 43, 44, 45,
+	51, 52, 53, 54, 55
+};
+
+static float s_m6x5_2[] = {
+	201, 202, 203, 204, 205,
+	211, 212, 213, 214, 215,
+	221, 222, 223, 224, 225,
+	231, 232, 233, 234, 235,
+	241, 242, 243, 244, 245,
+	251, 252, 253, 254, 255
+};
+
+static float s_v5_1[] = { -101, -102, -103, -104, -105 };
+
+static bool test_inner_row_vec() {
+	float d = GWMatrix::inner_row_vec(s_m6x5_1, 5, 1, s_v5_1, 1, 3); // dot([12, 13, 14], [-102, -103, -104])
+	return (d == -4019);
+}
+
+static bool test_inner_col_vec() {
+	float d = GWMatrix::inner_col_vec(s_m6x5_1, 5, 3, s_v5_1, 1, 3); // dot([14, 24, 34], [-102, -103, -104])
+	return (d == -7436);
+}
+
+static bool test_inner_row_row() {
+	float d = GWMatrix::inner_row_row(s_m6x5_1, 5, 1, s_m6x5_2, 5, 2, 1, 3); // dot([12, 13, 14], [222, 223, 224])
+	return (d == 8699);
+}
+
+static bool test_inner_row_col() {
+	float d = GWMatrix::inner_row_col(s_m6x5_1, 5, 1, s_m6x5_2, 5, 2, 1, 3); // dot([12, 13, 14], [213, 223, 233])
+	return (d == 8717);
+}
+
+static bool test_inner_col_col() {
+	float d = GWMatrix::inner_col_col(s_m6x5_1, 5, 1, s_m6x5_2, 5, 2, 1, 4); // dot([12, 22, 32, 42], [213, 223, 233, 243])
+	return (d == 25124);
+}
+
+static TEST_ENTRY s_inner_tests[] = {
+	TEST_DECL(test_inner_row_vec),
+	TEST_DECL(test_inner_col_vec),
+	TEST_DECL(test_inner_row_row),
+	TEST_DECL(test_inner_row_col),
+	TEST_DECL(test_inner_col_col)
+};
+
+bool test_inner() {
+	return 0 == EXEC_TESTS(s_inner_tests);
+}
