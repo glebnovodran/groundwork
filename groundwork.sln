@@ -27,6 +27,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLESBasicApp", "samples\GLE
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "calc_test", "tests\calc_test\calc_test.vcxproj", "{4CD58FA1-E95A-452D-8D16-6D4DFEF1B8E9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B14C7422-48E2-444E-AE5C-6D2D6FE6442E} = {B14C7422-48E2-444E-AE5C-6D2D6FE6442E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
