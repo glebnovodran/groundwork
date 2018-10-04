@@ -25,7 +25,11 @@ void GWSys::dbg_msg(const char* pFmt, ...) {
 	vsprintf(buf, pFmt, lst);
 #endif
 	va_end(lst);
-	std::cout << buf;
+#ifdef _WIN32
+	OutputDebugStringA(buf);
+#elif defined(UNIX)
+	std::cout << buf << std::endl;
+#endif
 }
 
 double GWSys::time_micros() {

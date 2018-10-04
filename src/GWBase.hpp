@@ -116,8 +116,8 @@ namespace GWBase {
 	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy);
 	void oct_to_vec(float ox, float oy, float& vx, float& vy, float& vz);
 
-	template<typename T> inline T radians(T deg) { return (T)(deg * (pi / 180)); }
-	template<typename T> inline T degrees(T rad) { return (T)(rad * (180 / pi)); }
+	template<typename T> inline T radians(T deg) { return T(deg * (pi / 180)); }
+	template<typename T> inline T degrees(T rad) { return T(rad * (180 / pi)); }
 
 	inline GWRotationOrder rord_from_int(int ival) {
 		return ival > (int)GWRotationOrder::MAX ? GWRotationOrder::XYZ : GWRotationOrder(ival);
