@@ -250,11 +250,12 @@ namespace GWMatrix {
 	inline CALC_T inner_row_col(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int icolB, int iorg, int iend) {
 		CALC_T s = CALC_T(0);
 		const T* pRowA = pMtxA + (irowA * ncolA);
+		const T* pColB = pMtxB + (iorg * ncolB) + icolB;
 		for (int i = iorg; i <= iend; ++i) {
-			const T* pColB = pMtxB + (i * ncolB) + icolB;
 			CALC_T a = pRowA[i];
 			CALC_T b = *pColB;
 			s += a * b;
+			pColB += ncolB;
 		}
 		return s;
 	}
