@@ -101,6 +101,10 @@ namespace GWBase {
 		return (T(::fabs(a - b)) <= eps);
 	}
 
+	template<typename T> inline bool almost_equal_rel(T a, T b, T eps = T(0.001f)) {
+		return (T(::fabs(a - b)) <= ::fmax(::fabs(a), ::fabs(b)) * eps);
+	}
+
 	static int64_t factorial(int64_t x) {
 		int64_t res = 1;
 		if (x > 1) {
