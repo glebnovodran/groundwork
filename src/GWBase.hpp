@@ -570,7 +570,7 @@ namespace GWTuple {
 		const int n = TUPLE_SRC_T::ELEMS_NUM;
 		bool res = true;
 		for (int i = 0; i < n; ++i) {
-			if (::fabs(a.elems[i] - b.elems[i]) > eps) { res = false; break; }
+			if (!GWBase::almost_equal(a.elems[i], b.elems[i], eps)) { res = false; break; }
 		}
 		return res;
 	}
