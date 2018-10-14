@@ -120,8 +120,13 @@ public:
 	void invert() { invert(*this); }
 	GWTransform get_inverted() const;
 
-	void transpose(const GWTransform& m0);
-	void transpose() { transpose(*this); }
+	void transpose(const GWTransform& x0) {
+		GWMatrix::transpose((T*)m, (T*)x0.m, 4);
+	}
+	void transpose() {
+		GWMatrix::transpose((T*)m, 4);
+		//transpose(*this);
+	}
 
 	void transpose_sr(const GWTransform& m0);
 	void transpose_sr() { transpose(*this); }

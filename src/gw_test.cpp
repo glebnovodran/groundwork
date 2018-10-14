@@ -14,7 +14,7 @@ void test_basic() {
 
 	GWBase::Random rnd;
 	rnd.set_seed(32);
-	int64_t rndVal = GWBase::random_u64();
+	uint64_t rndVal = GWBase::random_u64();
 	for (int i = 0; i < 100; ++i) {
 		rndVal = rnd.u64();
 	}
@@ -56,6 +56,7 @@ void test_basic() {
 	GWHalf4 h4;
 
 	cout << "=====================" << endl;
+
 }
 
 void test_list() {
@@ -241,6 +242,8 @@ void test_xform() {
 		0, 0, 1, 0,
 		1, 1, 1, 1
 	};
+	GWTransformF xform0;
+	xform0.transpose(xform);
 	GWVectorF v(1.0f, 1.0f, 1.0f);
 	GWVectorF res = xform.calc_vec(v);
 	res = xform.calc_pnt(v);
