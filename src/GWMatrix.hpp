@@ -286,7 +286,7 @@ namespace GWMatrix {
 	/* solvers */
 
 	template<typename T>
-	inline bool lu_decomp(T* pLU, const T* pMtx, int n, T* pTmpVec /*[n]*/, int* pPerm /*[n]*/, int* pDetSgn = nullptr, T tolerance = T(1.0e-16)) {
+	inline bool lu_decomp(T* pLU, const T* pMtx, int n, T* pTmpVec /*[n]*/, int* pPerm /*[n]*/, int* pDetSgn = nullptr, T tolerance = T(0)) {
 		if (pLU != pMtx) {
 			for (int i = 0; i < n * n; ++i) {
 				pLU[i] = pMtx[i];
@@ -296,7 +296,11 @@ namespace GWMatrix {
 			pTmpVec[i] = inner_row_row(pMtx, n, i, i);
 		}
 		tup_sqrt(pTmpVec, n);
-		T eps = tup_max(pTmpVec, n) * tolerance;
+		const T epsMin = std::numeric_limits<T>::epsilon();
+		T eps = epsMin;
+		if (tolerance > T(0)) {
+			eps = tup_max(pTmpVec, n) * tolerance;
+		}
 		tup_rcp(pTmpVec, n);
 		int dsgn = 1;
 		int offs;
