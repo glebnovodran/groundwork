@@ -72,12 +72,10 @@ namespace GWMatrix {
 	template<typename DST_T, typename SRC_T>
 	inline void transpose(DST_T* pDst, SRC_T* pSrc, int N) {
 		for (int i = 0; i < N; ++i) {
-			for (int j = i; j < N; ++j) {
+			for (int j = 0; j < N; ++j) {
 				int ij = i * N + j;
 				int ji = j * N + i;
-				DST_T t = DST_T(pSrc[ij]);
 				pDst[ij] = pSrc[ji];
-				pDst[ji] = t;
 			}
 		}
 	}
