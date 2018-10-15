@@ -125,7 +125,6 @@ public:
 	}
 	void transpose() {
 		GWMatrix::transpose((T*)m, 4);
-		//transpose(*this);
 	}
 
 	void transpose_sr(const GWTransform& m0);
