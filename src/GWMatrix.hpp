@@ -4,6 +4,10 @@
 #include <cmath>
 
 namespace GWMatrix {
+
+
+	/* matrices */
+
 	// Based on https://blogs.msdn.microsoft.com/nativeconcurrency/2014/09/04/raking-through-the-parallelism-tool-shed-the-curious-case-of-matrix-matrix-multiplication/
 	// MxP = MxN * NxP
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
@@ -45,6 +49,13 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
+	inline void add(T* pDst, int n, const T* pSrc) {
+		for (int i = 0; i < n*n; ++i) {
+			pDst[i] += pSrc[i];
+		}
+	}
+
+	template<typename T>
 	inline void set_identity(T* pMtx, int n) {
 		for (int i = 0; i < n; ++i) {
 			for (int j = 0; j < n; ++j) {
@@ -66,8 +77,6 @@ namespace GWMatrix {
 			}
 		}
 	}
-
-	/* transpose */
 
 	template<typename DST_T, typename SRC_T>
 	inline void transpose(DST_T* pDst, SRC_T* pSrc, int N) {
@@ -93,7 +102,112 @@ namespace GWMatrix {
 		}
 	}
 
+	template<typename T>
+	inline T mtx_trace(T* pMtx, int n) {
+		T* p = pMtx;
+		T t = T(0);
+		for (int i = 0; i < n; ++i) {
+			t += *p;
+			p += n + 1;
+		}
+		return t;
+	}
+
+	/* rows */
+
+	template<typename T>
+	inline void row_scl(T* pMtx, const int ncol, const int irow, const int iorg, const int iend, T s) {
+		T* p = pMtx + (irow * ncol);
+		for (int i = iorg; i <= iend; ++i) {
+			p[i] *= s;
+		}
+	}
+
+	template<typename T>
+	inline void row_elim(T* pMtx, const int ncol, const int irow1, const int irow2, const int iorg, const int iend, T s) {
+		T* p1 = pMtx + (irow1 * ncol);
+		T* p2 = pMtx + (irow2 * ncol);
+		for (int i = iorg; i <= iend; ++i) {
+			p1[i] += p2[i] * s;
+		}
+	}
+
+	template<typename T>
+	inline T row_inf_norm(const T* pMtx, const int ncol, const int irow, const int iorg, const int iend, int* pIdx = nullptr) {
+		T* p = pMtx + (irow * ncol) + iorg;
+		T maxval = *p;
+		int idx = iorg;
+		for (int i = iorg; i <= iend; ++i) {
+			T val = ::fabs(*p);
+			if (val > maxval) {
+				maxval = val;
+				idx = i;
+			}
+			++p;
+		}
+		if (pIdx) {
+			*pIdx = idx;
+		}
+		return maxval;
+	}
+
+
+	/* colums */
+
+	template<typename T>
+	inline void col_scl(T* pMtx, const int ncol, const int icol, const int iorg, const int iend, T s) {
+		T* p = pMtx + (iorg * ncol) + icol;
+		for (int i = iorg; i <= iend; ++i) {
+			*p *= s;
+			p += ncol;
+		}
+	}
+
+	template<typename T>
+	inline void col_elim(T* pMtx, const int ncol, const int icol1, const int icol2, const int iorg, const int iend, T s) {
+		T* p = pMtx + (iorg * ncol);
+		T* p1 = p + icol1;
+		T* p2 = p + icol2;
+		for (int i = iorg; i <= iend; ++i) {
+			*p1 += *p2 * s;
+			p1 += ncol;
+			p2 += ncol;
+		}
+	}
+
+	template<typename T>
+	inline T col_inf_norm(const T* pMtx, const int ncol, const int icol, const int iorg, const int iend, int* pIdx = nullptr) {
+		T* p = pMtx + (iorg * ncol) + icol;
+		T maxval = *p;
+		int idx = iorg;
+		for (int i = iorg; i <= iend; ++i) {
+			T val = ::fabs(*p);
+			if (val > maxval) {
+				maxval = val;
+				idx = i;
+			}
+			p += ncol;
+		}
+		if (pIdx) {
+			*pIdx = idx;
+		}
+		return maxval;
+	}
+
+
 	/* tuples */
+
+	template<typename T>
+	inline void tup_zero(T* pDst, const int iorg, const int iend) {
+		for (int i = iorg; i <= iend; ++i) {
+			pDst[i] = T(0);
+		}
+	}
+
+	template<typename T>
+	inline void tup_zero(T* pDst, int n) {
+		tup_zero(pDst, 0, n - 1);
+	}
 
 	template<typename T>
 	inline void tup_sqrt(T* pDst, const T* pSrc, const int iorg, const int iend) {
@@ -152,6 +266,55 @@ namespace GWMatrix {
 
 
 	template<typename T>
+	inline void tup_add(T* pDst, const T* pSrc, const int iorg, const int iend) {
+		for (int i = iorg; i <= iend; ++i) {
+			pDst[i] += pSrc[i];
+		}
+	}
+
+	template<typename T>
+	inline void tup_add(T* pDst, const T* pSrc, int n) {
+		tup_add(pDst, pSrc, 0, n - 1);
+	}
+
+	template<typename T>
+	inline void tup_add(T* pDst, const T* pSrc1, const T* pSrc2, const int iorg, const int iend) {
+		for (int i = iorg; i <= iend; ++i) {
+			pDst[i] = pSrc1[i] + pSrc2[i];
+		}
+	}
+
+	template<typename T>
+	inline void tup_add(T* pDst, const T* pSrc1, const T* pSrc2, int n) {
+		tup_add(pDst, pSrc1, pSrc2, 0, n - 1);
+	}
+
+
+	template<typename T>
+	inline void tup_sub(T* pDst, const T* pSrc, const int iorg, const int iend) {
+		for (int i = iorg; i <= iend; ++i) {
+			pDst[i] -= pSrc[i];
+		}
+	}
+
+	template<typename T>
+	inline void tup_sub(T* pDst, const T* pSrc, int n) {
+		tup_sub(pDst, pSrc, 0, n - 1);
+	}
+
+	template<typename T, typename WT = T>
+	inline WT tup_inner(const T* pA, const T* pB, int n) {
+		WT s = WT(0);
+		for (int i = 0; i < n; ++i) {
+			WT a = pA[i];
+			WT b = pB[i];
+			s += a * b;
+		}
+		return s;
+	}
+
+
+	template<typename T>
 	inline T tup_max(const T* pTup, const int iorg, const int iend) {
 		T x = pTup[iorg];
 		for (int i = iorg + 1; i <= iend; ++i) {
@@ -164,6 +327,23 @@ namespace GWMatrix {
 	inline T tup_max(const T* pTup, const int n) {
 		return tup_max(pTup, 0, n - 1);
 	}
+
+	template<typename T>
+	inline T tup_max_abs(const T* pTup, const int n) {
+		return tup_max_abs(pTup, 0, n - 1);
+	}
+
+	template<typename T>
+	inline void tup_normalize(T* pDst, const T* pSrc, int n) {
+		T m = tup_max_abs(pSrc, n);
+		if (m > T(0)) {
+			tup_scl(pDst, pSrc, n, T(1) / m);
+			tup_scl(pDst, n, T(1) / T(::sqrt(tup_inner(pDst, pDst, n))));
+		} else {
+			tup_zero(pDst, n);
+		}
+	}
+
 
 	/* swap */
 
@@ -193,6 +373,7 @@ namespace GWMatrix {
 			*pCol2 = t;
 		}
 	}
+
 
 	/* inner products */
 
@@ -422,18 +603,15 @@ namespace GWMatrix {
 		return det;
 	}
 
-	template<typename T>
+	template<typename T, typename XT = long double>
 	inline void lu_improve(/* inout */ T* pAns, const T* pMtx, const T* pLU, const int n, const int* pPerm, const T* pRH, T* pTmpVec) {
 		for (int i = 0; i < n; ++i) {
-			long double r = -pRH[i];
-			r += inner_row_vec<T, long double>(pMtx, n, i, pAns);
+			XT r = XT(-pRH[i]);
+			r += inner_row_vec<T, XT>(pMtx, n, i, pAns);
 			pTmpVec[i] = T(r);
 		}
 		lu_solve(pTmpVec, pLU, n, pPerm, pTmpVec);
-
-		for (int i = 0; i < n; ++i) {
-			pAns[i] -= pTmpVec[i];
-		}
+		tup_sub(pAns, pTmpVec, n);
 	}
 
 	template<typename T>
