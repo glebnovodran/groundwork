@@ -79,7 +79,7 @@ namespace GWMatrix {
 	}
 
 	template<typename DST_T, typename SRC_T>
-	inline void transpose(DST_T* pDst, SRC_T* pSrc, int N) {
+	inline void transpose(DST_T* pDst, const SRC_T* pSrc, int N) {
 		for (int i = 0; i < N; ++i) {
 			for (int j = 0; j < N; ++j) {
 				int ij = i * N + j;
@@ -103,7 +103,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline T mtx_trace(T* pMtx, int n) {
+	inline T mtx_trace(const T* pMtx, int n) {
 		T* p = pMtx;
 		T t = T(0);
 		for (int i = 0; i < n; ++i) {
