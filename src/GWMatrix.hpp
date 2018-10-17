@@ -11,18 +11,18 @@ namespace GWMatrix {
 	// Based on https://blogs.msdn.microsoft.com/nativeconcurrency/2014/09/04/raking-through-the-parallelism-tool-shed-the-curious-case-of-matrix-matrix-multiplication/
 	// MxP = MxN * NxP
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
-	inline void mul_mm(DST_T* pDst, const SRC1_T* pSrc1, const SRC2_T* pSrc2, int M, int N, int P) {
-		const int nres = M * P;
+	inline void mul_mm(DST_T* pDst, const SRC1_T* pSrc1, const SRC2_T* pSrc2, int m, int n, int p) {
+		const int nres = m * p;
 		for (int i = 0; i < nres; ++i) {
 			pDst[i] = 0;
 		}
-		for (int i = 0; i < M; ++i) {
-			int ra = i * N;
-			int rr = i * P;
-			for (int j = 0; j < N; ++j) {
-				int rb = j * P;
+		for (int i = 0; i < m; ++i) {
+			int ra = i * n;
+			int rr = i * p;
+			for (int j = 0; j < n; ++j) {
+				int rb = j * p;
 				DST_T s = DST_T(pSrc1[ra + j]);
-				for (int k = 0; k < P; ++k) {
+				for (int k = 0; k < p; ++k) {
 					pDst[rr + k] += DST_T(pSrc2[rb + k]) * s;
 				}
 			}
@@ -31,14 +31,14 @@ namespace GWMatrix {
 
 	// 1xN = 1xM * MxN
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
-	inline void mul_vm(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int M, int N) {
-		mul_mm(pDst, pVec, pMtx, 1, M, N);
+	inline void mul_vm(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int m, int n) {
+		mul_mm(pDst, pVec, pMtx, 1, m, n);
 	}
 
 	// Mx1 = MxN * Nx1
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
-	inline void mul_mv(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int M, int N) {
-		mul_mm(pDst, pMtx, pVec, M, N, 1);
+	inline void mul_mv(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int m, int n) {
+		mul_mm(pDst, pMtx, pVec, m, n, 1);
 	}
 
 	template<typename T>
@@ -79,22 +79,22 @@ namespace GWMatrix {
 	}
 
 	template<typename DST_T, typename SRC_T>
-	inline void transpose(DST_T* pDst, const SRC_T* pSrc, int N) {
-		for (int i = 0; i < N; ++i) {
-			for (int j = 0; j < N; ++j) {
-				int ij = i * N + j;
-				int ji = j * N + i;
+	inline void transpose(DST_T* pDst, const SRC_T* pSrc, int n) {
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; j < n; ++j) {
+				int ij = i * n + j;
+				int ji = j * n + i;
 				pDst[ij] = pSrc[ji];
 			}
 		}
 	}
 
 	template<typename DST_T>
-	inline void transpose(DST_T* pMtx, int N) {
-		for (int i = 0; i < N - 1; ++i) {
-			for (int j = i + 1; j < N; ++j) {
-				int ij = i * N + j;
-				int ji = j * N + i;
+	inline void transpose(DST_T* pMtx, int n) {
+		for (int i = 0; i < n - 1; ++i) {
+			for (int j = i + 1; j < n; ++j) {
+				int ij = i * n + j;
+				int ji = j * n + i;
 				DST_T t = pMtx[ij];
 				pMtx[ij] = pMtx[ji];
 				pMtx[ji] = t;
