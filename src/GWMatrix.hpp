@@ -65,19 +65,6 @@ namespace GWMatrix {
 		}
 	}
 
-	// https://en.wikipedia.org/wiki/Pascal_matrix
-	template<typename T>
-	inline void gen_Pascal_mtx(T* pMtx, int n) {
-		using namespace GWBase;
-
-		for (int i = 0; i < n; ++i) {
-			for (int j = 0; j < n; ++j) {
-				int64_t x = factorial(i + j) / (factorial(i) * factorial(j));
-				pMtx[i*n + j] = T(x);
-			}
-		}
-	}
-
 	template<typename DST_T, typename SRC_T>
 	inline void transpose(DST_T* pDst, const SRC_T* pSrc, int n) {
 		for (int i = 0; i < n; ++i) {

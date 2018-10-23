@@ -6,6 +6,19 @@
 #include <groundwork.hpp>
 #include "test.hpp"
 
+// https://en.wikipedia.org/wiki/Pascal_matrix
+template<typename T>
+inline void gen_Pascal_mtx(T* pMtx, int n) {
+	using namespace GWBase;
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			int64_t x = factorial(i + j) / (factorial(i) * factorial(j));
+			pMtx[i*n + j] = T(x);
+		}
+	}
+}
+
 static bool test_solve3() {
 	using namespace GWBase;
 
@@ -122,7 +135,7 @@ static bool test_pascal() {
 
 	float k = 1.0f / 7;
 
-	GWMatrix::gen_Pascal_mtx(A, n);
+	gen_Pascal_mtx(A, n);
 	GWMatrix::scl(A, n, k);
 
 	bool res = GWMatrix::lu_decomp(LU, A, n, tmp, perm, &ds);
