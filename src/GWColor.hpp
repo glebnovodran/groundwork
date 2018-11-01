@@ -2,6 +2,7 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
+#include <ostream>
 class GWColorF : public GWColorTuple4f {
 public:
 
