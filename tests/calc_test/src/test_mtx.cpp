@@ -114,7 +114,7 @@ static bool test_distmtx() {
 	for (int i = 0; i < N; ++i) {
 		for (int j = 0; j < N; ++j) {
 			int offs = i*N + j;
-			pMtx[offs] = ::sqrt(float(i*i) + float(j*j));
+			pMtx[offs] = ::fabsf(float(i - j));
 		}
 	}
 	int dsgn = 0;
