@@ -19,6 +19,50 @@ inline void gen_Pascal_mtx(T* pMtx, int n) {
 	}
 }
 
+static bool test_gj3() {
+	using namespace GWBase;
+	static float A[] = {
+		2, -1, 2,
+		1, -2, 1,
+		3, -1, 2
+	};
+	static float invA[9];
+	static float b[] = {
+		10, 8, 11,
+		4, 8, 2
+	};
+	static float bc[] = {
+		10, 4,
+		8, 8,
+		11, 2
+	};
+
+	static float expected[] = {
+		 1, -2, 3,
+		-2, -4, 2
+	}; // A \ b
+
+	static int idxc[3];
+	static int idxr[3];
+	static float ans[6];
+	static float ansI[3];
+	static int pivot[3];
+	GWMatrix::gj_solve(invA, idxc, idxr, pivot, A, 3, ans, b, 1);
+	GWMatrix::gj_inv(invA, invA, 3, idxc, idxr);
+	GWMatrix::mul_mv(ansI, b, invA, 3, 3);
+
+	GWMatrix::gj_solve(invA, idxc, idxr, pivot, A, 3, ans, b, 2);
+	int ansLen = sizeof(expected) / sizeof(float);
+	for (int i = 0; i < ansLen; ++i) {
+		int d = f32_ulp_diff(ans[i], expected[i]);
+		if (d > 100) {
+			return false;
+		}
+	}
+	GWMatrix::gj_solve(A, idxc, idxr, pivot, A, 3, b, b, 2); //SIC
+	return true;
+}
+
 static bool test_solve3() {
 	using namespace GWBase;
 
@@ -181,6 +225,7 @@ static bool test_pascal() {
 }
 
 static TEST_ENTRY s_mtx_tests[] = {
+	TEST_DECL(test_gj3),
 	TEST_DECL(test_solve3),
 	TEST_DECL(test_distmtx),
 	TEST_DECL(test_pascal)

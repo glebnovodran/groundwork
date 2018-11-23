@@ -100,6 +100,20 @@ namespace GWMatrix {
 		return t;
 	}
 
+	template<typename T>
+	inline void copy(T* pDst, const T* pSrc, int n) {
+		for (int i = 0; i < n*n; ++i) {
+			pDst[i] = pSrc[i];
+		}
+	}
+
+	template<typename T>
+	inline void copy(T* pDst, const T* pSrc, int n, int m) {
+		for (int i = 0; i < n * m; ++i) {
+			pDst[i] = pSrc[i];
+		}
+	}
+
 	/* rows */
 
 	template<typename T>
@@ -454,9 +468,7 @@ namespace GWMatrix {
 	template<typename T>
 	inline bool lu_decomp(T* pLU, const T* pMtx, int n, T* pTmpVec /*[n]*/, int* pPerm /*[n]*/, int* pDetSgn = nullptr, T tolerance = T(0)) {
 		if (pLU != pMtx) {
-			for (int i = 0; i < n * n; ++i) {
-				pLU[i] = pMtx[i];
-			}
+			GWMatrix::copy(pLU, pMtx, n);
 		}
 		for (int i = 0; i < n; ++i) {
 			pTmpVec[i] = inner_row_row(pMtx, n, i, i);
@@ -636,4 +648,97 @@ namespace GWMatrix {
 			transpose(pInv, n);
 		}
 	}
+
+	// pGJ - resulting mtx: inverted, no columns permutations
+	// pIdxc, pIdxR, pPiv - pivot bookkeeping arrays
+	// pA - matrix to solve
+	// n - pA dimentions
+	// pAns - solution(s)
+	// pRHS - righ-hand side(s)
+	// m - RHS number
+	template<typename T>
+	bool gj_solve(T* pGJ, int* pIdxC, int* pIdxR, int* pPiv, const T* pA, const int n, T* pAns = nullptr, const T* pRHS = nullptr, const int m = 0) {
+
+		int irow = 0;
+		int icol = 0;
+
+		if (pGJ != pA) { GWMatrix::copy(pGJ, pA, n); }
+
+		if ((pAns!=nullptr) && (pRHS != nullptr)) {
+			if (pAns!= pRHS) { GWMatrix::copy(pAns, pRHS, n, m); }
+		}
+
+		tup_zero(pPiv, n);
+
+		for (int i = 0; i < n; ++i) {
+			T maxElem = 0;
+			for (int j = 0; j < n; ++j) {
+				if (pPiv[j] != 1) {
+					int rj = j * n;
+					for (int k = 0; k < n; ++k) {
+						if (0 == pPiv[k]) {
+							T elem = pGJ[rj + k];
+							if (elem < 0) elem = -elem;
+							if (elem >= maxElem) {
+								maxElem = elem;
+								irow = j;
+								icol = k;
+							}
+						}
+					}
+				}
+			}
+
+			++(pPiv[icol]);
+			if (irow != icol) {
+				swap_rows(pGJ, n, irow, icol);
+				if (pAns) {
+					swap_cols(pAns, n, irow, icol, 0, n-1);
+				}
+			}
+			pIdxR[i] = irow;
+			pIdxC[i] = icol;
+			int rc = icol * n;
+			int pivOffs = rc + icol;
+			T pivVal = pGJ[pivOffs];
+			if (pivVal == 0.0f) { return false; } // singular matrix
+			T invPiv = T(1) / pivVal;
+			pGJ[pivOffs] = T(1);
+			tup_scl(&pGJ[rc], n, invPiv);
+			if (pAns) {
+				col_scl(pAns, n, icol, 0, m-1, invPiv);
+			}
+
+			for (int l = 0; l < n; ++l) {
+				if (l != icol) {
+					int r = l * n;
+					T d = pGJ[r + icol];
+					pGJ[r + icol] = T(0);
+					row_elim(pGJ, n, l, icol, 0, n-1, -d);
+					if (pAns) {
+						col_elim(pAns, 3, l, icol, 0, m-1, -d);
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	template<typename T>
+	void gj_inv(T* pInv, const T* pGJ, const int n, int* pIdxC, int* pIdxR) {
+		int irow = 0;
+		int icol = 0;
+		if (pInv != pGJ) { GWMatrix::copy(pInv, pGJ, n); }
+		
+		for (int i = n; --i >= 0;) {
+			irow = pIdxR[i];
+			icol = pIdxC[i];
+			if (irow != icol) {
+				swap_cols(pInv, n, irow, icol, 0, n - 1);
+			}
+		}
+		
+	}
+
 } // namespace
