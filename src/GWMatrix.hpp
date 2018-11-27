@@ -656,8 +656,9 @@ namespace GWMatrix {
 	// pAns - solution(s)
 	// pRHS - righ-hand side(s)
 	// m - RHS number
+	// columnRHS - RHS are passed as columns or as rows
 	template<typename T>
-	bool gj_solve(T* pGJ, int* pIdxC, int* pIdxR, int* pPiv, const T* pA, const int n, T* pAns = nullptr, const T* pRHS = nullptr, const int m = 0) {
+	bool gj_solve(T* pGJ, int* pIdxC, int* pIdxR, int* pPiv, const T* pA, const int n, T* pAns = nullptr, const T* pRHS = nullptr, const int m = 0, const bool columnRHS = true) {
 
 		int irow = 0;
 		int icol = 0;
@@ -693,7 +694,11 @@ namespace GWMatrix {
 			if (irow != icol) {
 				swap_rows(pGJ, n, irow, icol);
 				if (pAns) {
-					swap_cols(pAns, n, irow, icol, 0, n-1);
+					if (columnRHS) {
+						swap_rows(pAns, m, irow, icol, 0, m - 1);
+					} else {
+						swap_cols(pAns, n, irow, icol, 0, m - 1);
+					}
 				}
 			}
 			pIdxR[i] = irow;
@@ -706,7 +711,11 @@ namespace GWMatrix {
 			pGJ[pivOffs] = T(1);
 			tup_scl(&pGJ[rc], n, invPiv);
 			if (pAns) {
-				col_scl(pAns, n, icol, 0, m-1, invPiv);
+				if (columnRHS) {
+					row_scl(pAns, m, icol, 0, m - 1, invPiv);
+				} else {
+					col_scl(pAns, n, icol, 0, m - 1, invPiv);
+				}
 			}
 
 			for (int l = 0; l < n; ++l) {
@@ -716,7 +725,11 @@ namespace GWMatrix {
 					pGJ[r + icol] = T(0);
 					row_elim(pGJ, n, l, icol, 0, n-1, -d);
 					if (pAns) {
-						col_elim(pAns, 3, l, icol, 0, m-1, -d);
+						if (columnRHS) {
+							row_elim(pAns, m, l, icol, 0, m - 1, -d);
+						} else {
+							col_elim(pAns, n, l, icol, 0, m - 1, -d);
+						}
 					}
 				}
 			}

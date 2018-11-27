@@ -29,37 +29,61 @@ static bool test_gj3() {
 	static float invA[9];
 	static float b[] = {
 		10, 8, 11,
+		4, 8, 2,
+		10, 8, 11,
 		4, 8, 2
 	};
 	static float bc[] = {
-		10, 4,
-		8, 8,
-		11, 2
+		10, 4, 10, 4,
+		8, 8, 8, 8,
+		11, 2, 11, 2
 	};
 
 	static float expected[] = {
 		 1, -2, 3,
+		-2, -4, 2,
+		 1, -2, 3,
 		-2, -4, 2
 	}; // A \ b
 
+	static float expectedC[] = {
+		 1, -2, 1, -2,
+		-2, -4,-2, -4,
+		 3,  2, 3,  2
+	};
 	static int idxc[3];
 	static int idxr[3];
-	static float ans[6];
+	static float ans[12];
 	static float ansI[3];
 	static int pivot[3];
-	GWMatrix::gj_solve(invA, idxc, idxr, pivot, A, 3, ans, b, 1);
+
+	static const int eps = 100;
+	GWMatrix::gj_solve(invA, idxc, idxr, pivot, A, 3, ans, b, 1, false);
 	GWMatrix::gj_inv(invA, invA, 3, idxc, idxr);
 	GWMatrix::mul_mv(ansI, b, invA, 3, 3);
 
-	GWMatrix::gj_solve(invA, idxc, idxr, pivot, A, 3, ans, b, 2);
+	GWMatrix::gj_solve(invA, idxc, idxr, pivot, A, 3, ans, b, 4, false);
 	int ansLen = sizeof(expected) / sizeof(float);
 	for (int i = 0; i < ansLen; ++i) {
 		int d = f32_ulp_diff(ans[i], expected[i]);
-		if (d > 100) {
+		if (d > eps) {
 			return false;
 		}
 	}
-	GWMatrix::gj_solve(A, idxc, idxr, pivot, A, 3, b, b, 2); //SIC
+	GWMatrix::gj_solve(invA, idxc, idxr, pivot, A, 3, b, b, 4, false);
+	for (int i = 0; i < ansLen; ++i) {
+		int d = f32_ulp_diff(b[i], expected[i]);
+		if (d > eps) {
+			return false;
+		}
+	}
+	GWMatrix::gj_solve(A, idxc, idxr, pivot, A, 3, ans, bc, 4, true);
+	for (int i = 0; i < ansLen; ++i) {
+		int d = f32_ulp_diff(ans[i], expectedC[i]);
+		if (d > eps) {
+			return false;
+		}
+	}
 	return true;
 }
 
