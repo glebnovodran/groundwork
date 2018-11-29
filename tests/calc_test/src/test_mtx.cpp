@@ -19,6 +19,17 @@ inline void gen_Pascal_mtx(T* pMtx, int n) {
 	}
 }
 
+static bool test_tup() {
+	using namespace GWMatrix;
+	static float tuple [4] = {-1, 0, 16, -25};
+
+	if (16 != tup_max(tuple, 4)) { return false; }
+	if (25 != tup_max_abs(tuple, 4)) { return false; }
+	if (16 != tup_max_abs(tuple, 0, 2)) { return false; }
+	if (0 != tup_max_abs(tuple, -1, 3)) { return false; }
+	return true;
+}
+
 static bool test_gj3() {
 	using namespace GWBase;
 	static float A[] = {
@@ -249,6 +260,7 @@ static bool test_pascal() {
 }
 
 static TEST_ENTRY s_mtx_tests[] = {
+	TEST_DECL(test_tup),
 	TEST_DECL(test_gj3),
 	TEST_DECL(test_solve3),
 	TEST_DECL(test_distmtx),

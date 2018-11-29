@@ -135,6 +135,8 @@ namespace GWMatrix {
 
 	template<typename T>
 	inline T row_inf_norm(const T* pMtx, const int ncol, const int irow, const int iorg, const int iend, int* pIdx = nullptr) {
+		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
+
 		T* p = pMtx + (irow * ncol) + iorg;
 		T maxval = *p;
 		int idx = iorg;
@@ -178,6 +180,8 @@ namespace GWMatrix {
 
 	template<typename T>
 	inline T col_inf_norm(const T* pMtx, const int ncol, const int icol, const int iorg, const int iend, int* pIdx = nullptr) {
+		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
+
 		T* p = pMtx + (iorg * ncol) + icol;
 		T maxval = *p;
 		int idx = iorg;
@@ -317,6 +321,7 @@ namespace GWMatrix {
 
 	template<typename T>
 	inline T tup_max(const T* pTup, const int iorg, const int iend) {
+		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
 		T x = pTup[iorg];
 		for (int i = iorg + 1; i <= iend; ++i) {
 			x = std::max(x, pTup[i]);
@@ -327,6 +332,16 @@ namespace GWMatrix {
 	template<typename T>
 	inline T tup_max(const T* pTup, const int n) {
 		return tup_max(pTup, 0, n - 1);
+	}
+
+	template<typename T>
+	inline T tup_max_abs(const T* pTup, const int iorg, const int iend) {
+		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
+		T x = ::fabs(pTup[iorg]);
+		for (int i = iorg + 1; i <= iend; ++i) {
+			x = std::max(x, T(::fabs(pTup[i])));
+		}
+		return x;
 	}
 
 	template<typename T>
