@@ -138,7 +138,7 @@ namespace GWMatrix {
 		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
 
 		T* p = pMtx + (irow * ncol) + iorg;
-		T maxval = *p;
+		T maxval = ::fabs(*p);
 		int idx = iorg;
 		for (int i = iorg; i <= iend; ++i) {
 			T val = ::fabs(*p);
@@ -183,7 +183,7 @@ namespace GWMatrix {
 		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
 
 		T* p = pMtx + (iorg * ncol) + icol;
-		T maxval = *p;
+		T maxval = ::fabs(*p);
 		int idx = iorg;
 		for (int i = iorg; i <= iend; ++i) {
 			T val = ::fabs(*p);
