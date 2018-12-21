@@ -9,13 +9,14 @@
 #define COMPARE_QUAT(q, p) GWBase::almost_equal(q.arc_distance(p), 0.0f)
 #define COMPARE_VEC(v0, v1, eps) GWTuple::compare(v0, v1, eps)
 
-union U32 {
-	int32_t i;
-	uint32_t u;
-	float f;
-};
-
-double time_micros();
+template<typename T>
+bool compare_mtx(const T* mtx0, const T* mtx1, int m, int n) {
+	for (int i = 0; i < m; ++i) {
+		int ri = i * n;
+		if (!GWMatrix::tup_almost_eq(&mtx0[ri], &mtx1[ri], n, 0.001f)) { return false; }
+	}
+	return true;
+}
 
 struct TEST_ENTRY {
 	bool(*pFunc)();

@@ -36,10 +36,25 @@ static bool test_quat_expmap() {
 	return COMPARE_QUAT(q, p);
 }
 
+static bool test_get_transform() {
+	GWQuaternionF q;
+	GWVectorF deg(45.0f, 30.0f, 15.0f);
+	q.set_degrees(deg.x, deg.y, deg.z);
+	GWTransformF xform = q.get_transform();
+	float res[16] = {
+		0.836516, 0.224144, -0.5, 0,
+		0.158494, 0.774519, 0.612372, 0,
+		0.524519, -0.591506, 0.612372, 0,
+		0, 0, 0, 1
+	};
+	return compare_mtx<float>((float*)xform.m, res, 4, 4);
+}
+
 static TEST_ENTRY s_quat_tests[] = {
 	TEST_DECL(test_quat_set_get),
 	TEST_DECL(test_apply),
-	TEST_DECL(test_quat_expmap)
+	TEST_DECL(test_quat_expmap),
+	TEST_DECL(test_get_transform)
 };
 
 bool test_quat() {

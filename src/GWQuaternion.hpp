@@ -73,13 +73,13 @@ public:
 	}
 
 	GWVectorBase<T> calc_axis_x() const {
-		return GWVectorBase<T>(T(1) - T(2)*mQ.y*mQ.y - T(2)*mQ.z*mQ.z, T(2)*mQ.x*mQ.y + T(2)*mQ.w*mQ.z, T(2)*mQ.x*mQ.z - T(2)*mQ.w*mQ.y);
+		return apply(GWVectorBase<T>(1, 0, 0));
 	}
 	GWVectorBase<T> calc_axis_y() const {
-		return GWVectorBase<T>(T(2)*mQ.x*mQ.y - T(2)*mQ.w*mQ.z, T(1) - T(2)*mQ.x*mQ.x - T(2)*mQ.z*mQ.z, T(2)*mQ.y*mQ.z + T(2)*mQ.w*mQ.x);
+		return apply(GWVectorBase<T>(0, 1, 0));
 	}
 	GWVectorBase<T> calc_axis_z() const {
-		return GWVectorBase<T>(T(2)*mQ.x*mQ.z + T(2)*mQ.w*mQ.y, T(2)*mQ.y*mQ.z - T(2)*mQ.w*mQ.x, T(1) - T(2)*mQ.x*mQ.x - T(2)*mQ.y*mQ.y);
+		return apply(GWVectorBase<T>(0, 0, 1));
 	}
 
 	GWTransform<T> get_transform() const {

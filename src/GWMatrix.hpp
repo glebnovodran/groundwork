@@ -11,7 +11,7 @@ namespace GWMatrix {
 	// Based on https://blogs.msdn.microsoft.com/nativeconcurrency/2014/09/04/raking-through-the-parallelism-tool-shed-the-curious-case-of-matrix-matrix-multiplication/
 	// MxP = MxN * NxP
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
-	inline void mul_mm(DST_T* pDst, const SRC1_T* pSrc1, const SRC2_T* pSrc2, int m, int n, int p) {
+	inline void mul_mm(DST_T* pDst, const SRC1_T* pSrc1, const SRC2_T* pSrc2, const int m, const int n, const int p) {
 		const int nres = m * p;
 		for (int i = 0; i < nres; ++i) {
 			pDst[i] = 0;
@@ -31,18 +31,18 @@ namespace GWMatrix {
 
 	// 1xN = 1xM * MxN
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
-	inline void mul_vm(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int m, int n) {
+	inline void mul_vm(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, const int m, const int n) {
 		mul_mm(pDst, pVec, pMtx, 1, m, n);
 	}
 
 	// Mx1 = MxN * Nx1
 	template<typename DST_T, typename SRC1_T, typename SRC2_T>
-	inline void mul_mv(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, int m, int n) {
+	inline void mul_mv(DST_T* pDst, const SRC1_T* pVec, const SRC2_T* pMtx, const int m, const int n) {
 		mul_mm(pDst, pMtx, pVec, m, n, 1);
 	}
 
 	template<typename T>
-	inline void scl(T* pMtx, int n, T s) {
+	inline void scl(T* pMtx, const int n, T s) {
 		for (int i = 0; i < n*n; ++i) {
 			pMtx[i] *= s;
 		}
@@ -56,7 +56,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void set_identity(T* pMtx, int n) {
+	inline void set_identity(T* pMtx, const int n) {
 		for (int i = 0; i < n; ++i) {
 			for (int j = 0; j < n; ++j) {
 				int offs = i*n + j;
@@ -66,7 +66,7 @@ namespace GWMatrix {
 	}
 
 	template<typename DST_T, typename SRC_T>
-	inline void transpose(DST_T* pDst, const SRC_T* pSrc, int n) {
+	inline void transpose(DST_T* pDst, const SRC_T* pSrc, const int n) {
 		for (int i = 0; i < n; ++i) {
 			for (int j = 0; j < n; ++j) {
 				int ij = i * n + j;
@@ -77,7 +77,7 @@ namespace GWMatrix {
 	}
 
 	template<typename DST_T>
-	inline void transpose(DST_T* pMtx, int n) {
+	inline void transpose(DST_T* pMtx, const int n) {
 		for (int i = 0; i < n - 1; ++i) {
 			for (int j = i + 1; j < n; ++j) {
 				int ij = i * n + j;
@@ -90,7 +90,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline T mtx_trace(const T* pMtx, int n) {
+	inline T mtx_trace(const T* pMtx, const int n) {
 		T* p = pMtx;
 		T t = T(0);
 		for (int i = 0; i < n; ++i) {
@@ -101,14 +101,14 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void copy(T* pDst, const T* pSrc, int n) {
+	inline void copy(T* pDst, const T* pSrc, const int n) {
 		for (int i = 0; i < n*n; ++i) {
 			pDst[i] = pSrc[i];
 		}
 	}
 
 	template<typename T>
-	inline void copy(T* pDst, const T* pSrc, int n, int m) {
+	inline void copy(T* pDst, const T* pSrc, const int n, const int m) {
 		for (int i = 0; i < n * m; ++i) {
 			pDst[i] = pSrc[i];
 		}
@@ -210,7 +210,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_zero(T* pDst, int n) {
+	inline void tup_zero(T* pDst, const int n) {
 		tup_zero(pDst, 0, n - 1);
 	}
 
@@ -222,12 +222,12 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_sqrt(T* pDst, const T* pSrc, int n) {
+	inline void tup_sqrt(T* pDst, const T* pSrc, const int n) {
 		tup_sqrt(pDst, pSrc, 0, n - 1);
 	}
 
 	template<typename T>
-	inline void tup_sqrt(T* pDst, int n) {
+	inline void tup_sqrt(T* pDst, const int n) {
 		tup_sqrt(pDst, pDst, 0, n - 1);
 	}
 
@@ -240,12 +240,12 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_scl(T* pDst, const T* pSrc, int n, T s) {
+	inline void tup_scl(T* pDst, const T* pSrc, const int n, T s) {
 		tup_scl(pDst, pSrc, 0, n - 1, s);
 	}
 
 	template<typename T>
-	inline void tup_scl(T* pDst, int n, T s) {
+	inline void tup_scl(T* pDst, const int n, T s) {
 		tup_scl(pDst, pDst, 0, n - 1, s);
 	}
 
@@ -260,7 +260,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_rcp(T* pDst, const T* pSrc, int n) {
+	inline void tup_rcp(T* pDst, const T* pSrc, const int n) {
 		tup_rcp(pDst, pSrc, 0, n - 1);
 	}
 
@@ -278,7 +278,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_add(T* pDst, const T* pSrc, int n) {
+	inline void tup_add(T* pDst, const T* pSrc, const int n) {
 		tup_add(pDst, pSrc, 0, n - 1);
 	}
 
@@ -290,7 +290,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_add(T* pDst, const T* pSrc1, const T* pSrc2, int n) {
+	inline void tup_add(T* pDst, const T* pSrc1, const T* pSrc2, const int n) {
 		tup_add(pDst, pSrc1, pSrc2, 0, n - 1);
 	}
 
@@ -303,12 +303,12 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_sub(T* pDst, const T* pSrc, int n) {
+	inline void tup_sub(T* pDst, const T* pSrc, const int n) {
 		tup_sub(pDst, pSrc, 0, n - 1);
 	}
 
 	template<typename T, typename WT = T>
-	inline WT tup_inner(const T* pA, const T* pB, int n) {
+	inline WT tup_inner(const T* pA, const T* pB, const int n) {
 		WT s = WT(0);
 		for (int i = 0; i < n; ++i) {
 			WT a = pA[i];
@@ -350,7 +350,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_normalize(T* pDst, const T* pSrc, int n) {
+	inline void tup_normalize(T* pDst, const T* pSrc, const int n) {
 		T m = tup_max_abs(pSrc, n);
 		if (m > T(0)) {
 			tup_scl(pDst, pSrc, n, T(1) / m);
@@ -360,6 +360,13 @@ namespace GWMatrix {
 		}
 	}
 
+	template<typename T>
+	inline bool tup_almost_eq(const T* pTup0, const T* pTup1, const int n, T eps=0.0001f) {
+		for (int i = 0; i < n; ++i) {
+			if (!GWBase::almost_equal(pTup0[i], pTup1[i], eps)) { return false; }
+		}
+		return true;
+	}
 
 	/* swap */
 
@@ -428,7 +435,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline CALC_T inner_row_row(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int irowB, int iorg, int iend) {
+	inline CALC_T inner_row_row(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int irowB, const int iorg, const int iend) {
 		CALC_T s = CALC_T(0);
 		const T* pRowA = pMtxA + (irowA * ncolA);
 		const T* pRowB = pMtxB + (irowB * ncolB);
@@ -451,7 +458,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T, typename CALC_T = T>
-	inline CALC_T inner_row_col(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int icolB, int iorg, int iend) {
+	inline CALC_T inner_row_col(const T* pMtxA, const int ncolA, const int irowA, const T* pMtxB, const int ncolB, const int icolB, const int iorg, const int iend) {
 		CALC_T s = CALC_T(0);
 		const T* pRowA = pMtxA + (irowA * ncolA);
 		const T* pColB = pMtxB + (iorg * ncolB) + icolB;
@@ -481,7 +488,7 @@ namespace GWMatrix {
 	/* solvers */
 
 	template<typename T>
-	inline bool lu_decomp(T* pLU, const T* pMtx, int n, T* pTmpVec /*[n]*/, int* pPerm /*[n]*/, int* pDetSgn = nullptr, T tolerance = T(0)) {
+	inline bool lu_decomp(T* pLU, const T* pMtx, const int n, T* pTmpVec /*[n]*/, int* pPerm /*[n]*/, int* pDetSgn = nullptr, T tolerance = T(0)) {
 		if (pLU != pMtx) {
 			GWMatrix::copy(pLU, pMtx, n);
 		}
