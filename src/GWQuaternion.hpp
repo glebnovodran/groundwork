@@ -9,6 +9,12 @@ namespace GWUnitQuaternion {
 	template<typename T>T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p);
 }
 
+namespace GWQuaternion {
+	template<typename T> inline GWQuaternionBase<T> exp(const GWQuaternionBase<T>& q);
+	template<typename T> inline GWQuaternionBase<T> log(const GWQuaternionBase<T>& q);
+	template<typename T> inline GWQuaternionBase<T> conjugate(const GWQuaternionBase<T>& q);
+}
+
 template<typename T> class GWQuaternionBase {
 protected:
 	GWTuple4<T> mQ;
@@ -178,10 +184,17 @@ public:
 	void scl(T s) { GWTuple::scl(mQ, s); }
 
 	GWVectorBase<T> apply(const GWVectorBase<T>& v) const {
+#if 0
 		GWVectorBase<T> qvec = V();
 		T s = S();
 		T d = qvec.dot(v);
 		return (d*qvec + (s*s)*v - s*GWVector::cross(v, qvec)) * T(2) - v;
+#else
+		GWQuaternionBase<T> q = *this;
+		GWQuaternionBase<T> qv0;
+		qv0.set_vs(v);
+		return ((q * qv0) * GWQuaternion::conjugate(q)).V();
+#endif
 	}
 
 	T arc_distance(const GWQuaternionBase& q) const {
@@ -235,6 +248,12 @@ namespace GWQuaternion {
 	template<typename T> inline GWQuaternionBase<T> log(const GWQuaternionBase<T>& q) {
 		GWQuaternionBase<T> res;
 		res.log(q);
+		return res;
+	}
+
+	template<typename T> inline GWQuaternionBase<T> conjugate(const GWQuaternionBase<T>& q) {
+		GWQuaternionBase<T> res;
+		res.conjugate(q);
 		return res;
 	}
 
