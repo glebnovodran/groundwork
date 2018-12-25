@@ -2,7 +2,7 @@
  * Groundwork calculation test utils
  * Author: Gleb Novodran <novodran@gmail.com>
  */
-
+#include <groundwork.hpp>
 #include "test.hpp"
 
 static TEST_ENTRY s_tests[] = {
