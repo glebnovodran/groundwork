@@ -9,9 +9,10 @@
 #	include <Windows.h>
 #endif
 
-#include <time.h>
+//#include <time.h>
 #include <iostream>
 #include <cstdarg>
+#include <chrono>
 
 #include "GWSys.hpp"
 
@@ -33,20 +34,7 @@ void GWSys::dbg_msg(const char* pFmt, ...) {
 }
 
 double GWSys::time_micros() {
-	double ms = 0.0f;
-#if defined(_WIN32)
-	LARGE_INTEGER frq;
-	if (QueryPerformanceFrequency(&frq)) {
-		LARGE_INTEGER ctr;
-		QueryPerformanceCounter(&ctr);
-		ms = ((double)ctr.QuadPart / (double)frq.QuadPart) * 1.0e6;
-	}
-#else
-	struct timespec t;
-	if (clock_gettime(CLOCK_MONOTONIC, &t) != 0) {
-		clock_gettime(CLOCK_REALTIME, &t);
-	}
-	ms = (double)t.tv_nsec*1.0e-3 + (double)t.tv_sec*1.0e6;
-#endif
-	return ms;
+	using namespace std::chrono;
+	auto t = high_resolution_clock::now();
+	return (double)duration_cast<nanoseconds>(t.time_since_epoch()).count() * 1.0e-3;
 }
