@@ -93,7 +93,7 @@ template<typename T> GWQuaternionBase<T> GWUnitQuaternion::slerp(const GWQuatern
 		bf = -bf;
 	}
 
-	if (::fabs(c) <= (T(1) - T(1e-5f))) {
+	if (std::fabs(c) <= (T(1) - T(1e-5f))) {
 		GWBase::clamp(c, T(-1), T(1));
 		theta = std::acos(c);
 		s = std::sin(theta);

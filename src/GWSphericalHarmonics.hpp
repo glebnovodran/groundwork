@@ -77,7 +77,7 @@ namespace GWSH {
 	void calc_phong_weights(T* pWgt, T s, T scl) {
 		if (pWgt) {
 			for (int i = 0; i < 3; ++i) {
-				pWgt[i] = ::exp(float(-i * i) / (T(2) * s)) * scl;
+				pWgt[i] = std::exp(float(-i * i) / (T(2) * s)) * scl;
 			}
 		}
 	}

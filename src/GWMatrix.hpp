@@ -337,9 +337,9 @@ namespace GWMatrix {
 	template<typename T>
 	inline T tup_max_abs(const T* pTup, const int iorg, const int iend) {
 		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
-		T x = ::fabs(pTup[iorg]);
+		T x = std::fabs(pTup[iorg]);
 		for (int i = iorg + 1; i <= iend; ++i) {
-			x = std::max(x, T(::fabs(pTup[i])));
+			x = std::max(x, T(std::fabs(pTup[i])));
 		}
 		return x;
 	}
@@ -354,7 +354,7 @@ namespace GWMatrix {
 		T m = tup_max_abs(pSrc, n);
 		if (m > T(0)) {
 			tup_scl(pDst, pSrc, n, T(1) / m);
-			tup_scl(pDst, n, T(1) / T(::sqrt(tup_inner(pDst, pDst, n))));
+			tup_scl(pDst, n, T(1) / T(GWBase::tsqrt(tup_inner(pDst, pDst, n))));
 		} else {
 			tup_zero(pDst, n);
 		}
@@ -514,14 +514,14 @@ namespace GWMatrix {
 					t -= inner_row_col(pLU, n, i, pLU, n, j, 0, j - 1);
 					pLU[offs] = t;
 				}
-				t = ::fabs(t) * pTmpVec[i];
+				t = std::fabs(t) * pTmpVec[i];
 				if (t > s) {
 					s = t;
 					idx = i;
 				}
 			}
 			s = pLU[idx*n + j];
-			if (::fabs(s) < eps) return false;
+			if (std::fabs(s) < eps) return false;
 			if (pPerm) {
 				pPerm[j] = idx;
 			}

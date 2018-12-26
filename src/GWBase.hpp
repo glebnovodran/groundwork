@@ -74,7 +74,7 @@ namespace GWBase {
 	inline int32_t f32_ulp_diff(float a, float b) {
 		if (a == b) return 0;
 		const float e = 1.0e-6f;
-		if (::fabs(a) < e && ::fabs(b) < e) return 0;
+		if (std::fabs(a) < e && std::fabs(b) < e) return 0;
 		Cvt32 ua;
 		ua.f = a;
 		Cvt32 ub;
@@ -87,7 +87,7 @@ namespace GWBase {
 
 	inline int64_t f64_ulp_diff(double a, double b, double nearz = 1.0e-12f) {
 		if (a == b) return 0;
-		if (::fabs(a) < nearz && ::fabs(b) < nearz) return 1;
+		if (std::fabs(a) < nearz && std::fabs(b) < nearz) return 1;
 		Cvt64 ua;
 		ua.d = a;
 		Cvt64 ub;
@@ -98,11 +98,11 @@ namespace GWBase {
 	}
 
 	template<typename T> inline bool almost_equal(T a, T b, T eps = T(0.0001f)) {
-		return (T(::fabs(a - b)) <= eps);
+		return (T(std::fabs(a - b)) <= eps);
 	}
 
 	template<typename T> inline bool almost_equal_rel(T a, T b, T eps = T(0.001f)) {
-		return (T(::fabs(a - b)) <= ::fmax(::fabs(a), ::fabs(b)) * eps);
+		return (T(std::fabs(a - b)) <= ::fmax(::fabs(a), std::fabs(b)) * eps);
 	}
 
 	static int64_t factorial(int64_t x) {
@@ -120,8 +120,8 @@ namespace GWBase {
 	void vec_to_oct(float vx, float vy, float vz, float& ox, float& oy);
 	void oct_to_vec(float ox, float oy, float& vx, float& vy, float& vz);
 
-	template<typename T> inline T radians(T deg) { return T(deg * (pi / 180)); }
-	template<typename T> inline T degrees(T rad) { return T(rad * (180 / pi)); }
+	template<typename T> inline T radians(T deg) { return T(deg * (pi / T(180))); }
+	template<typename T> inline T degrees(T rad) { return T(rad * (T(180) / pi)); }
 
 	inline GWRotationOrder rord_from_int(int ival) {
 		return ival > (int)GWRotationOrder::MAX ? GWRotationOrder::XYZ : GWRotationOrder(ival);
@@ -150,14 +150,14 @@ namespace GWBase {
 
 	template<typename T> inline T mod_pi(T rad) {
 		T twoPi = T(2 * pi);
-		rad = ::fmod(rad, twoPi);
-		if (::fabs(rad) > pi) {
+		rad = std::fmod(rad, twoPi);
+		if (std::fabs(rad) > pi) {
 			rad = rad < T(0) ? twoPi + rad : rad - twoPi;
 		}
 		return rad;
 	}
 
-	template<typename T> inline T tsqrt(T x) { return ::sqrt(x); }
+	template<typename T> inline T tsqrt(T x) { return std::sqrt(x); }
 	inline float tsqrt(float x) { return ::sqrtf(x); } // GCC: force single-precision
 
 	// Ranq1, Numerical Recipes 3d ed., chapter 3.7.1
@@ -415,7 +415,7 @@ namespace GWTuple {
 	inline void lerp_fma(TUPLE_DST_T& dst, const TUPLE_SRC0_T& a, const TUPLE_SRC1_T& b, T t) {
 		const int n = std::min((int)TUPLE_DST_T::ELEMS_NUM, std::min((int)TUPLE_SRC0_T::ELEMS_NUM, (int)TUPLE_SRC1_T::ELEMS_NUM));
 		for (int i = 0; i < n; ++i) {
-			dst.elems[i] = typename TUPLE_DST_T::elem_t(::fma(b.elems[i] - a.elems[i], t, a.elems[i]));
+			dst.elems[i] = typename TUPLE_DST_T::elem_t(std::fma(b.elems[i] - a.elems[i], t, a.elems[i]));
 		}
 	}
 
@@ -428,7 +428,7 @@ namespace GWTuple {
 	inline void abs(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
 		const int n = std::min((int)TUPLE_DST_T::ELEMS_NUM, (int)TUPLE_SRC_T::ELEMS_NUM);
 		for (int i = 0; i < n; ++i) {
-			dst.elems[i] = ::fabs(src.elems[i]);
+			dst.elems[i] = std::fabs(src.elems[i]);
 		}
 	}
 
@@ -487,9 +487,9 @@ namespace GWTuple {
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t min_abs_elem(const TUPLE_T& v) {
 		int n = (int)TUPLE_T::ELEMS_NUM;
-		typename TUPLE_T::elem_t minVal = ::fabs(v.elems[0]);
+		typename TUPLE_T::elem_t minVal = std::fabs(v.elems[0]);
 		for (int i = 1; i < n; ++i) {
-			typename TUPLE_T::elem_t absVal = ::fabs(v.elems[i]);
+			typename TUPLE_T::elem_t absVal = std::fabs(v.elems[i]);
 			minVal = std::min(minVal, absVal);
 		}
 		return minVal;
@@ -497,9 +497,9 @@ namespace GWTuple {
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t max_abs_elem(const TUPLE_T& v) {
 		int n = (int)TUPLE_T::ELEMS_NUM;
-		typename TUPLE_T::elem_t maxVal = ::fabs(v.elems[0]);
+		typename TUPLE_T::elem_t maxVal = std::fabs(v.elems[0]);
 		for (int i = 1; i < n; ++i) {
-			typename TUPLE_T::elem_t absVal = ::fabs(v.elems[i]);
+			typename TUPLE_T::elem_t absVal = std::fabs(v.elems[i]);
 			maxVal = std::max(maxVal, absVal);
 		}
 		return maxVal;
@@ -507,7 +507,7 @@ namespace GWTuple {
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t magnitude_fast(const TUPLE_T& v) {
 		typename TUPLE_T::elem_t magSq = GWTuple::inner(v, v);
-		return ::sqrt(magSq);
+		return GWBase::tsqrt(magSq);
 	}
 
 	// Mike Day "Vector length and normalization difficulties"
