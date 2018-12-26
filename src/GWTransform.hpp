@@ -59,8 +59,8 @@ public:
 	}
 
 	void make_rx(T rx) {
-		T s = ::sin(rx);
-		T c = ::cos(rx);
+		T s = std::sin(rx);
+		T c = std::cos(rx);
 		set_identity();
 		m[1][1] = c;
 		m[1][2] = s;
@@ -68,8 +68,8 @@ public:
 		m[2][2] = c;
 	}
 	void make_ry(T ry) {
-		T s = ::sin(ry);
-		T c = ::cos(ry);
+		T s = std::sin(ry);
+		T c = std::cos(ry);
 		set_identity();
 		m[0][0] = c;
 		m[0][2] = -s;
@@ -77,8 +77,8 @@ public:
 		m[2][2] = c;
 	}
 	void make_rz(T rz) {
-		T s = ::sin(rz);
-		T c = ::cos(rz);
+		T s = std::sin(rz);
+		T c = std::cos(rz);
 		set_identity();
 		m[0][0] = c;
 		m[0][1] = s;

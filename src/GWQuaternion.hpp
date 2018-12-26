@@ -56,15 +56,15 @@ public:
 
 	void set_rx(T rads) {
 		T h = rads * T(0.5f);
-		GWTuple::set(mQ, ::sin(h), T(0), T(0), ::cos(h));
+		GWTuple::set(mQ, std::sin(h), T(0), T(0), std::cos(h));
 	}
 	void set_ry(T rads) {
 		T h = rads * T(0.5f);
-		GWTuple::set(mQ, T(0), ::sin(h), T(0), ::cos(h));
+		GWTuple::set(mQ, T(0), std::sin(h), T(0), std::cos(h));
 	}
 	void set_rz(T rads) {
 		T h = rads * T(0.5f);
-		GWTuple::set(mQ, T(0), T(0), ::sin(h), ::cos(h));
+		GWTuple::set(mQ, T(0), T(0), std::sin(h), std::cos(h));
 	}
 
 	void set_radians(T rx, T ry, T rz, GWRotationOrder order = GWRotationOrder::XYZ);
@@ -122,8 +122,8 @@ public:
 		GWVectorBase<T> vec;
 		T halfAng;
 		vec.normalize(v, &halfAng);
-		T s = ::sin(halfAng);
-		T c = ::cos(halfAng);
+		T s = std::sin(halfAng);
+		T c = std::cos(halfAng);
 		vec *= s;
 
 		set_vs(vec, c);
@@ -216,7 +216,7 @@ namespace GWUnitQuaternion {
 		GWVectorBase<T> v = q.V();
 		T vmag;
 		v.normalize(&vmag);
-		T h = vmag < T(0.1e-6) ? 1 : atan2(vmag, q.S());
+		T h = vmag < T(0.1e-6) ? 1 : std::atan2(vmag, q.S());
 		v.scl(h);
 		return v;
 	}
@@ -231,7 +231,7 @@ namespace GWUnitQuaternion {
 	// Geodesic distance on the unit sphere
 	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
 	template<typename T>T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
-		return T((::acos(GWBase::saturate(::fabs(q.dot(p)))) / (GWBase::pi / 2)));
+		return T((std::acos(GWBase::saturate(::fabs(q.dot(p)))) / (GWBase::pi / 2)));
 	}
 
 	template<typename T> GWQuaternionBase<T> slerp(const GWQuaternionBase<T>& qa, const GWQuaternionBase<T>& qb, T t);

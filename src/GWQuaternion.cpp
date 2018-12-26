@@ -58,11 +58,11 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 		{ m[i2][i0], m[i2][i1], m[i2][i2] }
 	};
 
-	radians[i0] = ::atan2(rotM[1][2], rotM[2][2]);
-	radians[i1] = ::atan2(-rotM[0][2], ::sqrt(rotM[0][0] * rotM[0][0] + rotM[0][1] * rotM[0][1]));
-	T s = ::sin(radians[i0]);
-	T c = ::cos(radians[i0]);
-	radians[i2] = ::atan2(s*rotM[2][0] - c * rotM[1][0], c*rotM[1][1] - s * rotM[2][1]);
+	radians[i0] = std::atan2(rotM[1][2], rotM[2][2]);
+	radians[i1] = std::atan2(-rotM[0][2], std::sqrt(rotM[0][0] * rotM[0][0] + rotM[0][1] * rotM[0][1]));
+	T s = std::sin(radians[i0]);
+	T c = std::cos(radians[i0]);
+	radians[i2] = std::atan2(s*rotM[2][0] - c * rotM[1][0], c*rotM[1][1] - s * rotM[2][1]);
 
 	if (rotTbl[(uint32_t)order].positive == 0) {
 		radians.neg();
@@ -95,11 +95,11 @@ template<typename T> GWQuaternionBase<T> GWUnitQuaternion::slerp(const GWQuatern
 
 	if (::fabs(c) <= (T(1) - T(1e-5f))) {
 		GWBase::clamp(c, T(-1), T(1));
-		theta = ::acos(c);
-		s = ::sin(theta);
+		theta = std::acos(c);
+		s = std::sin(theta);
 		invS = T(1) / s;
-		af = ::sin(((1) - t)*theta) * invS;
-		bf *= ::sin(t*theta) * invS;
+		af = std::sin(((1) - t)*theta) * invS;
+		bf *= std::sin(t*theta) * invS;
 	} else {
 		af = T(1) - t;
 		bf *= t;

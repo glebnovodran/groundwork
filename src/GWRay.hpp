@@ -16,10 +16,10 @@ public:
 	GWVectorBase<T> at(T t) const { return mOrig + t * mDir; }
 
 	inline void from_asimuth_inclination(T azimuth, T inclination) {
-		T sinA = ::sin(azimuth);
-		T cosA = ::cos(azimuth);
-		T sinI = ::sin(inclination);
-		T cosI = ::cos(inclination);
+		T sinA = std::sin(azimuth);
+		T cosA = std::cos(azimuth);
+		T sinI = std::sin(inclination);
+		T cosI = std::cos(inclination);
 		mDir.x = cosA * sinI;
 		mDir.y = cosI;
 		mDir.z = sinA * sinI;

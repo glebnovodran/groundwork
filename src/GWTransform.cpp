@@ -72,8 +72,8 @@ template void GWTransform<double>::make_transform(const GWQuaternionBase<double>
 
 template<typename T> void GWTransform<T>::make_projection(T fovY, T aspect, T znear, T zfar) {
 	T angle = T(0.5f) * fovY;
-	T s = ::sin(angle);
-	T c = ::cos(angle);
+	T s = std::sin(angle);
+	T c = std::cos(angle);
 	T cot = c / s;
 	T sclCoeff = zfar / (zfar - znear);
 	set_zero();
