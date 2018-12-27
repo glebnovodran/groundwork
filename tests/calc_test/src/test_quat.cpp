@@ -16,6 +16,20 @@ static bool test_quat_set_get() {
 	p.normalize();
 	GWVectorF deg0 = GWUnitQuaternion::get_degrees(p, GWRotationOrder::YZX);
 	res &= COMPARE_VEC(deg, deg0, 0.0001f);
+
+	return res;
+}
+
+static bool test_quat_set_get_rad() {
+	bool res = true;
+	GWQuaternionF q(0.33527f, 0.28532f, 0.018283f, 0.897693f);
+	GWVectorF rad(GWBase::pi/2.0f, GWBase::pi/6.0f, GWBase::pi/8.0f);
+	//GWVectorF rad(0.0f, 0.0f, 0.0f);
+	GWQuaternionF p;
+	p.set_radians(rad.x, rad.y, rad.z);
+	p.normalize();
+	GWVectorF rad0 = GWUnitQuaternion::get_radians(p);
+	res &= COMPARE_VEC(rad, rad0, 0.0001f);
 	return res;
 }
 
@@ -52,6 +66,7 @@ static bool test_get_transform() {
 
 static TEST_ENTRY s_quat_tests[] = {
 	TEST_DECL(test_quat_set_get),
+	TEST_DECL(test_quat_set_get_rad),
 	TEST_DECL(test_apply),
 	TEST_DECL(test_quat_expmap),
 	TEST_DECL(test_get_transform)

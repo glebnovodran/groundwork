@@ -59,7 +59,7 @@ template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuate
 	};
 
 	radians[i0] = std::atan2(rotM[1][2], rotM[2][2]);
-	radians[i1] = std::atan2(-rotM[0][2], std::sqrt(rotM[0][0] * rotM[0][0] + rotM[0][1] * rotM[0][1]));
+	radians[i1] = std::atan2(-rotM[0][2], GWBase::tsqrt(rotM[0][0] * rotM[0][0] + rotM[0][1] * rotM[0][1]));
 	T s = std::sin(radians[i0]);
 	T c = std::cos(radians[i0]);
 	radians[i2] = std::atan2(s*rotM[2][0] - c * rotM[1][0], c*rotM[1][1] - s * rotM[2][1]);
