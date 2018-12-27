@@ -18,7 +18,7 @@ template<typename T> struct GWSphereBase {
 		GWVectorBase<T> d = pnt - c;
 		T distSq = d.length_sq();
 		if (distSq > r*r) {
-			T dist = ::sqrt(distSq);
+			T dist = GWBase::tsqrt(distSq);
 			T newR = (r + dist) * T(0.5);
 			T s = (newR - r) / dist;
 			r = newR;

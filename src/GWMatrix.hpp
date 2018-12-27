@@ -42,7 +42,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void scl(T* pMtx, const int n, T s) {
+	inline void scl(T* pMtx, const int n, const T s) {
 		for (int i = 0; i < n*n; ++i) {
 			pMtx[i] *= s;
 		}
@@ -117,7 +117,7 @@ namespace GWMatrix {
 	/* rows */
 
 	template<typename T>
-	inline void row_scl(T* pMtx, const int ncol, const int irow, const int iorg, const int iend, T s) {
+	inline void row_scl(T* pMtx, const int ncol, const int irow, const int iorg, const int iend, const T s) {
 		T* p = pMtx + (irow * ncol);
 		for (int i = iorg; i <= iend; ++i) {
 			p[i] *= s;
@@ -125,7 +125,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void row_elim(T* pMtx, const int ncol, const int irow1, const int irow2, const int iorg, const int iend, T s) {
+	inline void row_elim(T* pMtx, const int ncol, const int irow1, const int irow2, const int iorg, const int iend, const T s) {
 		T* p1 = pMtx + (irow1 * ncol);
 		T* p2 = pMtx + (irow2 * ncol);
 		for (int i = iorg; i <= iend; ++i) {
@@ -138,10 +138,10 @@ namespace GWMatrix {
 		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
 
 		T* p = pMtx + (irow * ncol) + iorg;
-		T maxval = ::fabs(*p);
+		T maxval = std::fabs(*p);
 		int idx = iorg;
 		for (int i = iorg; i <= iend; ++i) {
-			T val = ::fabs(*p);
+			T val = std::fabs(*p);
 			if (val > maxval) {
 				maxval = val;
 				idx = i;
@@ -158,7 +158,7 @@ namespace GWMatrix {
 	/* colums */
 
 	template<typename T>
-	inline void col_scl(T* pMtx, const int ncol, const int icol, const int iorg, const int iend, T s) {
+	inline void col_scl(T* pMtx, const int ncol, const int icol, const int iorg, const int iend, const T s) {
 		T* p = pMtx + (iorg * ncol) + icol;
 		for (int i = iorg; i <= iend; ++i) {
 			*p *= s;
@@ -167,7 +167,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void col_elim(T* pMtx, const int ncol, const int icol1, const int icol2, const int iorg, const int iend, T s) {
+	inline void col_elim(T* pMtx, const int ncol, const int icol1, const int icol2, const int iorg, const int iend, const T s) {
 		T* p = pMtx + (iorg * ncol);
 		T* p1 = p + icol1;
 		T* p2 = p + icol2;
@@ -183,10 +183,10 @@ namespace GWMatrix {
 		if ((iorg > iend) || (iorg < 0) ) { return  T(0); }
 
 		T* p = pMtx + (iorg * ncol) + icol;
-		T maxval = ::fabs(*p);
+		T maxval = std::fabs(*p);
 		int idx = iorg;
 		for (int i = iorg; i <= iend; ++i) {
-			T val = ::fabs(*p);
+			T val = std::fabs(*p);
 			if (val > maxval) {
 				maxval = val;
 				idx = i;
@@ -233,19 +233,19 @@ namespace GWMatrix {
 
 
 	template<typename T>
-	inline void tup_scl(T* pDst, const T* pSrc, const int iorg, const int iend, T s) {
+	inline void tup_scl(T* pDst, const T* pSrc, const int iorg, const int iend, const T s) {
 		for (int i = iorg; i <= iend; ++i) {
 			pDst[i] = pSrc[i] * s;
 		}
 	}
 
 	template<typename T>
-	inline void tup_scl(T* pDst, const T* pSrc, const int n, T s) {
+	inline void tup_scl(T* pDst, const T* pSrc, const int n, const T s) {
 		tup_scl(pDst, pSrc, 0, n - 1, s);
 	}
 
 	template<typename T>
-	inline void tup_scl(T* pDst, const int n, T s) {
+	inline void tup_scl(T* pDst, const int n, const T s) {
 		tup_scl(pDst, pDst, 0, n - 1, s);
 	}
 
@@ -265,7 +265,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline void tup_rcp(T* pDst, int n) {
+	inline void tup_rcp(T* pDst, const int n) {
 		tup_rcp(pDst, pDst, 0, n - 1);
 	}
 
@@ -361,7 +361,7 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline bool tup_almost_eq(const T* pTup0, const T* pTup1, const int n, T eps=0.0001f) {
+	inline bool tup_almost_eq(const T* pTup0, const T* pTup1, const int n, const T eps=0.0001f) {
 		for (int i = 0; i < n; ++i) {
 			if (!GWBase::almost_equal(pTup0[i], pTup1[i], eps)) { return false; }
 		}
@@ -488,7 +488,7 @@ namespace GWMatrix {
 	/* solvers */
 
 	template<typename T>
-	inline bool lu_decomp(T* pLU, const T* pMtx, const int n, T* pTmpVec /*[n]*/, int* pPerm /*[n]*/, int* pDetSgn = nullptr, T tolerance = T(0)) {
+	inline bool lu_decomp(T* pLU, const T* pMtx, const int n, T* pTmpVec /*[n]*/, int* pPerm /*[n]*/, int* pDetSgn = nullptr, const T tolerance = T(0)) {
 		if (pLU != pMtx) {
 			GWMatrix::copy(pLU, pMtx, n);
 		}
@@ -612,12 +612,12 @@ namespace GWMatrix {
 	}
 
 	template<typename T>
-	inline T lu_det(const T* pLU, const int n, int sgn) {
+	inline T lu_det(const T* pLU, const int n, const int sgn) {
 		T det = 1;
 		for (int i = 0; i < n; ++i) {
 			det *= pLU[i*n + i];
 		}
-		det = ::fabs(det);
+		det = std::fabs(det);
 		if (sgn < 0) {
 			det = -det;
 		}
