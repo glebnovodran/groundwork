@@ -355,10 +355,10 @@ void test_quat() {
 	cout << "=====================" << endl;
 }
 
-void test_motion() {
+void test_motion(const std::string& motPath) {
 	using namespace std;
 	GWMotion mot;
-	if (mot.load("../../data/walk_rn.txt")) {
+	if (mot.load(motPath)) {
 		GWMotion::Node node = mot.get_node("/obj/ANIM/j_Ankle_L");
 		GWMotion::Track rotTrk = node.get_track(GWTrackKind::ROT);
 		GWQuaternionF q = rotTrk.eval_quat(0.5f);
@@ -439,6 +439,8 @@ void test_motion() {
 		pTrk->replace_data(newRot);
 
 		mot.unload();
+	} else {
+		cout << "Couldn't load the motion file" << endl;
 	}
 }
 
@@ -500,11 +502,11 @@ int main(int argc, char* argv[]) {
 	test_ray();
 	test_xform();
 	test_quat();
-	test_motion();
+	test_motion("../data/walk_rn.txt");
 
-	test_image("../../data/pano_test1_h.dds");
-	test_model_recource("../../data/cook_rb/cook_rb.gwmdl");
-	test_gwcat("../../data/cook_rb/cook_rb.gwcat");
+	test_image("../data/pano_test1_h.dds");
+	test_model_recource("../data/cook_rb/cook_rb.gwmdl");
+	test_gwcat("../data/cook_rb/cook_rb.gwcat");
 
 	return 0;
 }
