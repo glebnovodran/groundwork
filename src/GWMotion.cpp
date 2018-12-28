@@ -86,10 +86,10 @@ public:
 		mNumTracks += calc_num_tracks(grpInfo);
 	}
 
-	size_t get_num_groups() const {
+	uint32_t get_num_groups() const {
 		return mGrpMap.size();
 	}
-	size_t get_num_tracks() const { return mNumTracks; }
+	uint32_t get_num_tracks() const { return mNumTracks; }
 
 	uint32_t calc_num_tracks(TDMotion::XformGrp& grpInfo) const {
 		uint32_t numTracks = 0;
@@ -110,10 +110,10 @@ public:
 uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp, GWTrackKind kind,
 	GWVectorF pOut[], float defVal = 0.0f) {
 	const TDMotion::Channel* tdchan[3];
-	size_t motLen = tdmot.length();
+	uint32_t motLen = tdmot.length();
 	uint8_t srcMask = 0;
 
-	const size_t* pChanIdx = &grp.idx[(uint8_t)kind * 3];
+	const uint32_t* pChanIdx = &grp.idx[(uint8_t)kind * 3];
 	for (uint32_t i = 0; i < 3; ++i) {
 		if (pChanIdx[i] != TDMotion::NONE) {
 			srcMask |= 1 << i;
@@ -145,7 +145,7 @@ bool GWMotion::load(const std::string & filePath) {
 
 		mpNodeInfo = new NodeInfo[numNodes];
 		mpTrackInfo = new TrackInfo[numTracks];
-		size_t motLen = tdmot.length();
+		uint32_t motLen = tdmot.length();
 		GWVectorF* pTmpVec = new GWVectorF[motLen];
 
 		NodeInfo* pNodeInfo = mpNodeInfo;
@@ -168,9 +168,9 @@ bool GWMotion::load(const std::string & filePath) {
 
 			if (grp.has_rord()) {
 				const TDMotion::Channel* pROrdChan = tdmot.get_channel(entry.second.rOrd);
-				size_t num = pROrdChan->length();
+				uint32_t num = pROrdChan->length();
 				pNodeInfo->pROrd = new GWRotationOrder[num];
-				for (size_t i = 0; i < pROrdChan->values.size(); ++i) {
+				for (uint32_t i = 0; i < pROrdChan->values.size(); ++i) {
 					float val = pROrdChan->values[i];
 					pNodeInfo->pROrd[i] = GWBase::rord_from_float(val);
 				}
@@ -178,9 +178,9 @@ bool GWMotion::load(const std::string & filePath) {
 
 			if (grp.has_xord()) {
 				const TDMotion::Channel* pXOrdChan = tdmot.get_channel(entry.second.xOrd);
-				size_t num = pXOrdChan->length();
+				uint32_t num = pXOrdChan->length();
 				pNodeInfo->pXOrd = new GWTransformOrder[num];
-				for (size_t i = 0; i < pXOrdChan->values.size(); ++i) {
+				for (uint32_t i = 0; i < pXOrdChan->values.size(); ++i) {
 					float val = pXOrdChan->values[i];
 					pNodeInfo->pXOrd[i] = GWBase::xord_from_float(val);
 				}
