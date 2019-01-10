@@ -6,8 +6,8 @@
 #include "GWBase.hpp"
 #include "GWVector.hpp"
 #include "GWMatrix.hpp"
-#include "GWTransform.hpp"
 #include "GWQuaternion.hpp"
+//#include "GWTransform.hpp"
 
 
 template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuaternionBase<T>& q, GWRotationOrder order) {

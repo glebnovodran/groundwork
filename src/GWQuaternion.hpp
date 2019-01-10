@@ -82,18 +82,6 @@ public:
 		return apply(GWVectorBase<T>(0, 0, 1));
 	}
 
-	GWTransform<T> get_transform() const {
-		GWTransform<T> xform;
-		get_transform(xform);
-		return xform;
-	}
-	void get_transform(GWTransform<T>& xform) const {
-		xform.set_row(0, calc_axis_x());
-		xform.set_row(1, calc_axis_y());
-		xform.set_row(2, calc_axis_z());
-		xform.set_row(3, GWVectorBase<T>(0), T(1));
-	}
-
 	T magnitude() const { return GWTuple::magnitude(mQ); }
 	void normalize() { GWTuple::normalize(mQ); }
 	void normalize(const GWQuaternionBase& q) {

@@ -281,10 +281,11 @@ void test_xform() {
 	xform1.make_rotation(GWBase::radians(10.0f), GWBase::radians(20.0f), GWBase::radians(30.0f));
 	GWQuaternionF q;
 	q.set_degrees(10.0f, 20.0f, 30.0f);
-	xform2 = q.get_transform();
-
+	xform2.make_rotation(q);
 	if (!xform1.compare(xform2, 0.0001f)) {
 		std::cout << "make_rotation error\n";
+	} else {
+		std::cout << "make_rotation : ok" << endl;
 	}
 
 	GWTransformF rx; rx.make_deg_rx(10.0f);
@@ -348,7 +349,8 @@ void test_quat() {
 	qq.scl(0.5f);
 
 	q.set_degrees(45, 30, 15);
-	GWTransformF xform = q.get_transform();
+	GWTransformF xform;
+	xform.make_rotation(q);
 	GWVectorF v(1.0f, 0.0f, 0.0f);
 	GWVectorF v1 = q.apply(v);
 	GWVectorF v2 = xform.calc_vec(v);

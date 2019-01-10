@@ -54,7 +54,8 @@ static bool test_get_transform() {
 	GWQuaternionF q;
 	GWVectorF deg(45.0f, 30.0f, 15.0f);
 	q.set_degrees(deg.x, deg.y, deg.z);
-	GWTransformF xform = q.get_transform();
+	GWTransformF xform;
+	xform.make_rotation(q); // TODO: move to transform test
 	float res[16] = {
 		0.836516, 0.224144, -0.5, 0,
 		0.158494, 0.774519, 0.612372, 0,

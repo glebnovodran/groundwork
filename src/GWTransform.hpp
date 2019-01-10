@@ -91,6 +91,12 @@ public:
 	void make_deg_rz(T degZ) { make_rz(GWBase::radians(degZ)); }
 
 	void make_rotation(T rx, T ry, T rz, GWRotationOrder order = GWRotationOrder::XYZ);
+	void make_rotation(const GWQuaternionBase<T>& q) {
+		set_row(0, q.calc_axis_x());
+		set_row(1, q.calc_axis_y());
+		set_row(2, q.calc_axis_z());
+		set_row(3, GWVectorBase<T>(0), T(1));
+	}
 
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT);
 

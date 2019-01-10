@@ -6,8 +6,8 @@
 #include "GWBase.hpp"
 #include "GWVector.hpp"
 #include "GWMatrix.hpp"
-#include "GWTransform.hpp"
 #include "GWQuaternion.hpp"
+#include "GWTransform.hpp"
 
 template<typename T> void GWTransform<T>::make_rotation(T rx, T ry, T rz, GWRotationOrder order) {
 	static uint8_t tbl[] = {
@@ -54,7 +54,7 @@ template<typename T> void GWTransform<T>::make_transform(const GWQuaternionBase<
 
 	GWTransform m[3];
 	m[SCL].make_scaling(scl);
-	m[TRN] = rot.get_transform();
+	m[TRN].make_rotation(rot);
 	m[ROT].make_translation(trn);
 
 	uint32_t ord = (uint32_t)order;
