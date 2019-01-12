@@ -11,6 +11,7 @@ set(GW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../groundwork/src")
 add_executable(calc_test
 	src/test_quat.cpp
 	src/test_mtx.cpp
+	src/test_xform.cpp
 	src/test.cpp
 	src/main.cpp
 )

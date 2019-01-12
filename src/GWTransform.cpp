@@ -112,7 +112,7 @@ template<typename T> void GWTransform<T>::transpose_sr(const GWTransform & x) {
 template void GWTransform<float>::transpose_sr(const GWTransform& x);
 template void GWTransform<double>::transpose_sr(const GWTransform& x);
 
-template<typename T> GWTransform<T> GWTransform<T>::get_inverted() const{
+template<typename T> GWTransform<T> GWTransform<T>::get_inverted_fast() const {
 	GWTransform inv;
 
 	T a0 = m[0][0] * m[1][1] - m[0][1] * m[1][0];
@@ -165,5 +165,5 @@ template<typename T> GWTransform<T> GWTransform<T>::get_inverted() const{
 	return inv;
 }
 
-template GWTransform<float> GWTransform<float>::get_inverted() const;
-template GWTransform<double> GWTransform<double>::get_inverted() const;
+template GWTransform<float> GWTransform<float>::get_inverted_fast() const;
+template GWTransform<double> GWTransform<double>::get_inverted_fast() const;

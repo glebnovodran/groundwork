@@ -2,8 +2,6 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
-template<typename T> class GWQuaternionBase;
-
 template<typename T> class GWTransform {
 public:
 	T m[4][4];
@@ -124,7 +122,25 @@ public:
 		(*this) = m0.get_inverted();
 	}
 	void invert() { invert(*this); }
-	GWTransform get_inverted() const;
+
+	GWTransform get_inverted() const {
+		GWTransform inv;
+		int idxc[4];
+		int idxr[4];
+		int pivot[4];
+		T* pInv = reinterpret_cast<T*>(inv.m);
+
+		GWMatrix::gj_solve(pInv, idxc, idxr, pivot, reinterpret_cast<const T*>(m), 4);
+		GWMatrix::gj_inv(pInv, pInv, 4, idxc, idxr);
+		return inv;
+	}
+
+	void invert_fast(const GWTransform& m0) {
+		(*this) = m0.get_inverted_fast();
+	}
+	void invert_fast() { invert_fast(*this); }
+
+	GWTransform get_inverted_fast() const;
 
 	void transpose(const GWTransform& x0) {
 		GWMatrix::transpose((T*)m, (T*)x0.m, 4);
