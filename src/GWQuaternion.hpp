@@ -99,8 +99,8 @@ public:
 
 	void invert(const GWQuaternionBase& q) {
 		conjugate(q);
-		T mag = GWTuple::inner(q.mQ, q.mQ);
-		scl(T(1) / mag);
+		T mag = magnitude(q);
+		scl(GWBase::rcp0(mag));
 	}
 	void invert() {
 		invert(*this);
