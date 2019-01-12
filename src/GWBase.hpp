@@ -160,6 +160,9 @@ namespace GWBase {
 	template<typename T> inline T tsqrt(T x) { return std::sqrt(x); }
 	inline float tsqrt(float x) { return ::sqrtf(x); } // GCC: force single-precision
 
+	template<typename T> inline T div0(T x, T y) { return y != T(0) ? x / y : T(0); }
+	template<typename T> inline T rcp0(T x) { return div0(T(1), x); }
+
 	// Ranq1, Numerical Recipes 3d ed., chapter 3.7.1
 	class Random {
 	private:
@@ -532,7 +535,7 @@ namespace GWTuple {
 			typename TUPLE_T::elem_t divisor = 1 / maxAbsElem;
 			scl(dst, divisor);
 			mag = magnitude_fast(dst);
-			scl(dst, 1 / mag);
+			scl(dst, GWBase::rcp0(mag));
 		}
 
 		if (pMag) { *pMag = mag * maxAbsElem; }
@@ -546,7 +549,7 @@ namespace GWTuple {
 	template<typename TUPLE_T> inline void normalize_fast(TUPLE_T& v) {
 		typename TUPLE_T::elem_t mag = magnitude_fast(v);
 		if (mag > 0) {
-			scl(v, 1 / mag);
+			scl(v, GWBase::rcp0(mag));
 		}
 	}
 	template<typename TUPLE_T> inline void normalize_fast(TUPLE_T& dst, const TUPLE_T& src) {
