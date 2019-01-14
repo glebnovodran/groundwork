@@ -6,6 +6,13 @@ template<typename T> class GWTransform {
 public:
 	T m[4][4];
 
+	T* as_tptr() {
+		return reinterpret_cast<T*>(m);
+	}
+	const T* as_tptr() const {
+		return reinterpret_cast<const T*>(m);
+	}
+
 	void set_zero() {
 		T* pData = &m[0][0];
 		for (int i = 0; i < 16; ++i) { pData[i] = T(0); }
@@ -128,9 +135,9 @@ public:
 		int idxc[4];
 		int idxr[4];
 		int pivot[4];
-		T* pInv = reinterpret_cast<T*>(inv.m);
+		T* pInv = inv.as_tptr();
 
-		GWMatrix::gj_solve(pInv, idxc, idxr, pivot, reinterpret_cast<const T*>(m), 4);
+		GWMatrix::gj_solve(pInv, idxc, idxr, pivot, as_tptr(), 4);
 		GWMatrix::gj_inv(pInv, pInv, 4, idxc, idxr);
 		return inv;
 	}
