@@ -62,7 +62,7 @@ static bool test_get_transform() {
 		0.524519, -0.591506, 0.612372, 0,
 		0, 0, 0, 1
 	};
-	return compare_mtx<float>((float*)xform.m, res, 4, 4);
+	return compare_mtx<float>(xform.as_tptr(), res, 4, 4);
 }
 
 static TEST_ENTRY s_quat_tests[] = {
