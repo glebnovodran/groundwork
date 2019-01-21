@@ -34,11 +34,12 @@ const char* GWResourceUtil::get_kind_string(GWResourceKind kind) {
 }
 
 void write_py_mtx(std::ostream& os, const GWTransformF& xform) {
+	const float* pData = xform.as_tptr();
 	os << "[";
 	for (int i = 0; i < 4; ++i) {
 		os << "[";
-		for (int j = 0; j < 4; ++j) {
-			os << xform.m[i][j];
+		for (int j = 0; j < 4; ++j, ++pData) {
+			os << (*pData);
 			if (j < 3) os << ", ";
 		}
 		os << "]";
