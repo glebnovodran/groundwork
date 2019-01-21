@@ -105,6 +105,11 @@ public:
 	void invert() {
 		invert(*this);
 	}
+	GWQuaternionBase get_inverted() const {
+		GWQuaternionBase q;
+		q.invert(*this);
+		return q;
+	}
 
 	void exp_pure(const GWVectorBase<T>& v) {
 		GWVectorBase<T> vec;
@@ -171,6 +176,11 @@ public:
 	void scl(const GWQuaternionBase& q, T s) { GWTuple::scl(mQ, q.mQ, s); }
 	void scl(T s) { GWTuple::scl(mQ, s); }
 
+	void diff(const GWQuaternionBase& q, const GWQuaternionBase& p) {
+		*this = q * p.get_inverted();
+	}
+	void diff(const GWQuaternionBase& q) { diff(*this, q); }
+
 	GWVectorBase<T> apply(const GWVectorBase<T>& v) const {
 #if 0
 		GWVectorBase<T> qvec = V();
@@ -223,6 +233,10 @@ namespace GWUnitQuaternion {
 	}
 
 	template<typename T> GWQuaternionBase<T> slerp(const GWQuaternionBase<T>& qa, const GWQuaternionBase<T>& qb, T t);
+
+	template<typename T> GWQuaternionBase<T> diff(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+		return q * GWUnitQuaternion::invert(p);
+	}
 }
 
 namespace GWQuaternion {
@@ -257,6 +271,12 @@ namespace GWQuaternion {
 
 	template<typename T> inline T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
 		return q.arc_distance(p);
+	}
+
+	template<typename T> GWQuaternionBase<T> diff(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+		GWQuaternionBase<T> diffQ;
+		diffQ.diff(p, q);
+		return diffQ;
 	}
 }
 
