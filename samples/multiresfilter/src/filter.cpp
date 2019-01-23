@@ -69,7 +69,7 @@ void MotionBands::copy_g0() {
 		GWVectorF* pG = nodeBands.G(0);
 		GWMotion::Node node = mpMot->get_node_by_id(i);
 		for (int32_t fno = 0; fno < nodeBands.numFrames; ++fno) {
-			*pG++ = node.eval(GWTrackKind::ROT, fno);
+			*pG++ = node.eval(GWTrackKind::ROT, float(fno));
 		}
 	}
 }
