@@ -14,7 +14,7 @@ public:
 	}
 
 	void set_zero() {
-		T* pData = &m[0][0];
+		T* pData = as_tptr();
 		for (int i = 0; i < 16; ++i) { pData[i] = T(0); }
 	}
 
@@ -120,7 +120,7 @@ public:
 
 	void mul(const GWTransform& m0, const GWTransform& m1) {
 		GWTransform res;
-		GWMatrix::mul_mm(&res.m[0][0], &m0.m[0][0], &m1.m[0][0], 4, 4, 4);
+		GWMatrix::mul_mm(res.as_tptr(), m0.as_tptr(), m1.as_tptr(), 4, 4, 4);
 		(*this) = res;
 	}
 	void mul(const GWTransform& m) { mul(*this, m); }
@@ -150,10 +150,10 @@ public:
 	GWTransform get_inverted_fast() const;
 
 	void transpose(const GWTransform& x0) {
-		GWMatrix::transpose((T*)m, (T*)x0.m, 4);
+		GWMatrix::transpose(as_tptr(), x0.as_tptr(), 4);
 	}
 	void transpose() {
-		GWMatrix::transpose((T*)m, 4);
+		GWMatrix::transpose(as_tptr(), 4);
 	}
 
 	void transpose_sr(const GWTransform& m0);
@@ -161,7 +161,7 @@ public:
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T>& v) const {
 		GWTuple4<T> res;
-		GWMatrix::mul_vm(res.elems, v.elems, &m[0][0], 3, 4);
+		GWMatrix::mul_vm(res.elems, v.elems, as_tptr(), 3, 4);
 		return GWVectorBase<T>(res);
 	}
 
@@ -170,7 +170,7 @@ public:
 		GWTuple4<T> vec;
 		GWTuple::copy(vec, v);
 		vec[3] = 1;
-		GWMatrix::mul_vm(res.elems, vec.elems, &m[0][0], 4, 4);
+		GWMatrix::mul_vm(res.elems, vec.elems, as_tptr(), 4, 4);
 		return GWVectorBase<T>(res);
 	}
 
