@@ -257,6 +257,9 @@ void test_xform() {
 	xform.set_identity();
 	xform.mul(sclX, trnX);
 
+	GWTransform3x4F x34 = GWXformCvt::get_3x4(xform);
+	GWTransformF x44 = GWXformCvt::get_4x4(x34);
+
 	GWTransformF xform1 = {
 		1, 0, 0, 0,
 		0, 2, 0, 0,

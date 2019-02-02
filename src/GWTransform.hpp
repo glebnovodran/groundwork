@@ -1,6 +1,7 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
+template<typename T> class GWTransform3x4;
 
 template<typename T> class GWTransform {
 public:
@@ -221,3 +222,73 @@ template<typename T> inline GWTransform<T> operator * (const GWTransform<T>& m0,
 
 typedef GWTransform<float> GWTransformF;
 typedef GWTransform<double> GWTransformD;
+
+template<typename T> class GWTransform3x4 {
+public:
+	T m[3][4];
+	T* as_tptr() {
+		return reinterpret_cast<T*>(m);
+	}
+	const T* as_tptr() const {
+		return reinterpret_cast<const T*>(m);
+	}
+
+	void set_zero() {
+		T* pData = as_tptr();
+		for (int i = 0; i < 16; ++i) { pData[i] = T(0); }
+	}
+
+	void set_identity() { make_scaling(1, 1, 1); }
+
+	void set_column(uint32_t idx, const GWVectorBase<T>& v) {
+		for (int i = 0; i < 3; ++i) {
+			m[i][idx] = v[i];
+		}
+	}
+
+	void set_translation(const GWVectorBase<T>& v) {
+		set_column(3, v);
+	}
+	inline void set_translation(T tx, T ty, T tz) {
+		m[0][3] = tx;
+		m[1][3] = ty;
+		m[2][3] = tz;
+	}
+
+	inline void set_scaling(T sx, T sy, T sz) {
+		m[0][0] = sx;
+		m[1][1] = sy;
+		m[2][2] = sz;
+	}
+	void make_scaling(T sx, T sy, T sz) {
+		set_zero();
+		set_scaling(sx, sy, sz);
+	}
+	void make_scaling(const GWVectorBase<T>& scl) {
+		make_scaling(scl.x, scl.y, scl.z);
+	}
+
+};
+
+typedef GWTransform3x4<float> GWTransform3x4F;
+typedef GWTransform3x4<double> GWTransform3x4D;
+
+namespace GWXformCvt {
+	template<typename T> inline GWTransform3x4<T> get_3x4(const GWTransform<T>& xform) {
+		GWTransform<T> tmp;
+		GWTransform3x4<T> res;
+		tmp.transpose(xform);
+		GWMatrix::copy(res.as_tptr(), tmp.as_tptr(), 3, 4);
+		return res;
+	}
+
+	template<typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34) {
+		GWTransform<T> res;
+		T* pDst = res.as_tptr();
+		const T* pSrc = x34.as_tptr();
+		GWMatrix::copy(pDst, pSrc, 3, 4);
+		res.set_row(3, GWVectorBase<T>(0.0f), 1.0f);
+		res.transpose();
+		return res;
+	}
+}
