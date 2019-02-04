@@ -235,7 +235,7 @@ public:
 
 	void set_zero() {
 		T* pData = as_tptr();
-		for (int i = 0; i < 16; ++i) { pData[i] = T(0); }
+		for (int i = 0; i < 12; ++i) { pData[i] = T(0); }
 	}
 
 	void set_identity() { make_scaling(1, 1, 1); }
