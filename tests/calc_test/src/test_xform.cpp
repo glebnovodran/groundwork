@@ -47,8 +47,35 @@ static bool test_xform_invert() {
 	return true;
 }
 
+static bool test_3x4() {
+	GWTransformF xform;
+	GWTransform3x4F xform34;
+
+	GWVectorF pnt(-1.0f, -4.0f, -8.0f);
+	GWVectorF axisX(1.0f, 0.0f, 0.0f);
+	xform.make_translation(2.0f, 4.0f, 8.0f);
+	GWVectorF px = xform.calc_pnt(pnt);
+
+	xform34 = GWXformCvt::get_3x4(xform);
+	GWVectorF px34 = xform34.calc_pnt(pnt);
+	if (!GWTuple::compare(px, px34, 0.001f)) {
+		GWSys::dbg_msg("test_3x4: vector transform test failed");
+		return false;
+	}
+	xform.make_rotation(15.0f, 30.0f, 45.0f);
+	xform34 = GWXformCvt::get_3x4(xform);
+	GWVectorF v = xform.calc_vec(axisX);
+	GWVectorF v34 = xform34.calc_vec(axisX);
+	if (!GWTuple::compare(v, v34, 0.001f)) {
+		GWSys::dbg_msg("test_3x4: vector transform test failed");
+		return false;
+	}
+	return true;
+}
+
 static TEST_ENTRY s_xform_tests[] = {
 	TEST_DECL(test_xform_invert),
+	TEST_DECL(test_3x4),
 };
 
 bool test_xform() {

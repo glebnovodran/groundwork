@@ -214,7 +214,7 @@ public:
 	}
 };
 
-template<typename T> inline GWTransform<T> operator * (const GWTransform<T>& m0, const GWTransform<T>& m1) {
+template <typename T> inline GWTransform<T> operator * (const GWTransform<T>& m0, const GWTransform<T>& m1) {
 	GWTransform<T> m;
 	m.mul(m0, m1);
 	return m;
@@ -249,10 +249,16 @@ public:
 	void set_translation(const GWVectorBase<T>& v) {
 		set_column(3, v);
 	}
+
 	inline void set_translation(T tx, T ty, T tz) {
 		m[0][3] = tx;
 		m[1][3] = ty;
 		m[2][3] = tz;
+	}
+
+	void make_translation(T tx, T ty, T tz) {
+		set_identity();
+		set_translation(tx, ty, tz);
 	}
 
 	inline void set_scaling(T sx, T sy, T sz) {
@@ -260,35 +266,87 @@ public:
 		m[1][1] = sy;
 		m[2][2] = sz;
 	}
+
 	void make_scaling(T sx, T sy, T sz) {
 		set_zero();
 		set_scaling(sx, sy, sz);
 	}
+
 	void make_scaling(const GWVectorBase<T>& scl) {
 		make_scaling(scl.x, scl.y, scl.z);
 	}
 
+	//transposed comparing to 4x4
+	void make_rx(T rx) {
+		T s = std::sin(rx);
+		T c = std::cos(rx);
+		set_identity();
+		m[1][1] = c;
+		m[2][1] = s;
+		m[1][2] = -s;
+		m[2][2] = c;
+	}
+	void make_ry(T ry) {
+		T s = std::sin(ry);
+		T c = std::cos(ry);
+		set_identity();
+		m[0][0] = c;
+		m[2][0] = -s;
+		m[0][2] = s;
+		m[2][2] = c;
+	}
+	void make_rz(T rz) {
+		T s = std::sin(rz);
+		T c = std::cos(rz);
+		set_identity();
+		m[0][0] = c;
+		m[1][0] = s;
+		m[0][1] = -s;
+		m[1][1] = c;
+	}
+
+	void make_deg_rx(T degX) { make_rx(GWBase::radians(degX)); }
+	void make_deg_ry(T degY) { make_ry(GWBase::radians(degY)); }
+	void make_deg_rz(T degZ) { make_rz(GWBase::radians(degZ)); }
+
+	GWVectorBase<T> calc_vec(const GWVectorBase<T> &v) const {
+		GWTuple4<T> res;
+		//GWMatrix::mul_vm(res.elems, v.elems, as_tptr(), 3, 4);
+		GWMatrix::mul_mv(res.elems, v.elems, as_tptr(), 3, 4);
+		return GWVectorBase<T>(res);
+	}
+
+	GWVectorBase<T> calc_pnt(const GWVectorBase<T> &v) const {
+		GWTuple4<T> res;
+		GWTuple4<T> vec;
+		GWTuple::copy(vec, v);
+		vec[3] = 1;
+		GWMatrix::mul_mv(res.elems, vec.elems, as_tptr(), 3, 4);
+		return GWVectorBase<T>(res);
+	}
 };
 
 typedef GWTransform3x4<float> GWTransform3x4F;
 typedef GWTransform3x4<double> GWTransform3x4D;
 
 namespace GWXformCvt {
-	template<typename T> inline GWTransform3x4<T> get_3x4(const GWTransform<T>& xform) {
-		GWTransform<T> tmp;
-		GWTransform3x4<T> res;
-		tmp.transpose(xform);
-		GWMatrix::copy(res.as_tptr(), tmp.as_tptr(), 3, 4);
-		return res;
-	}
 
-	template<typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34) {
-		GWTransform<T> res;
-		T* pDst = res.as_tptr();
-		const T* pSrc = x34.as_tptr();
-		GWMatrix::copy(pDst, pSrc, 3, 4);
-		res.set_row(3, GWVectorBase<T>(0.0f), 1.0f);
-		res.transpose();
-		return res;
-	}
+template <typename T> inline GWTransform3x4<T> get_3x4(const GWTransform<T>& xform) {
+	GWTransform<T> tmp;
+	GWTransform3x4<T> res;
+	tmp.transpose(xform);
+	GWMatrix::copy(res.as_tptr(), tmp.as_tptr(), 3, 4);
+	return res;
 }
+
+template <typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34) {
+	GWTransform<T> res;
+	T* pDst = res.as_tptr();
+	const T* pSrc = x34.as_tptr();
+	GWMatrix::copy(pDst, pSrc, 3, 4);
+	res.set_row(3, GWVectorBase<T>(0.0f), 1.0f);
+	res.transpose();
+	return res;
+}
+
+} // namespace GWXformCvt
