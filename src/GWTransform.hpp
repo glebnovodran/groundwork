@@ -311,8 +311,9 @@ public:
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T> &v) const {
 		GWTuple4<T> res;
-		//GWMatrix::mul_vm(res.elems, v.elems, as_tptr(), 3, 4);
-		GWMatrix::mul_mv(res.elems, v.elems, as_tptr(), 3, 4);
+		GWTuple4<T> vec;
+		GWTuple::copy(vec, v, 0);
+		GWMatrix::mul_mv(res.elems, vec.elems, as_tptr(), 3, 4);
 		return GWVectorBase<T>(res);
 	}
 

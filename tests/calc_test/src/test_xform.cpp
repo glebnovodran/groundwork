@@ -53,6 +53,7 @@ static bool test_3x4() {
 
 	GWVectorF pnt(-1.0f, -4.0f, -8.0f);
 	GWVectorF axisX(1.0f, 0.0f, 0.0f);
+
 	xform.make_translation(2.0f, 4.0f, 8.0f);
 	GWVectorF px = xform.calc_pnt(pnt);
 
@@ -67,7 +68,29 @@ static bool test_3x4() {
 	GWVectorF v = xform.calc_vec(axisX);
 	GWVectorF v34 = xform34.calc_vec(axisX);
 	if (!GWTuple::compare(v, v34, 0.001f)) {
-		GWSys::dbg_msg("test_3x4: vector transform test failed");
+		GWSys::dbg_msg("test_3x4: vector rotation test 0 failed");
+		return false;
+	}
+
+	GWVectorF v0(1.0f, 1.0f, 0.0f);
+	v0.normalize();
+	v = xform.calc_vec(v0);
+	v34 = xform34.calc_vec(v0);
+	if (!GWTuple::compare(v, v34, 0.001f)) {
+		GWSys::dbg_msg("test_3x4: vector rotation test 1 failed");
+		return false;
+	}
+
+	xform.set_translation(1.0f, 2.0f, 3.0f);
+	GWVectorF vv = xform.calc_vec(v0);
+	if (!GWTuple::compare(v, vv, 0.001f)) {
+		GWSys::dbg_msg("test_3x4: vector rotation test 1.1 failed");
+		return false;
+	}
+	xform34.set_translation(1.0f, 2.0f, 3.0f);
+	GWVectorF vv34 = xform.calc_vec(v0);
+	if (!GWTuple::compare(v34, vv34, 0.001f)) {
+		GWSys::dbg_msg("test_3x4: vector rotation test 1.2 failed");
 		return false;
 	}
 	return true;
