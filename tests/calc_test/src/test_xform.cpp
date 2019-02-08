@@ -93,6 +93,18 @@ static bool test_3x4() {
 		GWSys::dbg_msg("test_3x4: vector rotation test 1.2 failed");
 		return false;
 	}
+
+	GWQuaternionF q;
+	q.set_degrees(15.0f, 30.0f, 45.0f, GWRotationOrder::XYZ);
+	GWTransform3x4F xq34;
+	xq34.make_rotation(q);
+	xform.make_rotation(15.0f, 30.0f, 45.0f, GWRotationOrder::XYZ);
+	xform34 = GWXformCvt::get_3x4(xform);
+
+	if (!compare_mtx(xq34.as_tptr(), xform34.as_tptr(), 3, 4)) {
+		GWSys::dbg_msg("make_rotation failed");
+		return false;
+	}
 	return true;
 }
 

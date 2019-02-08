@@ -55,6 +55,13 @@ public:
 		m[3][3] = T(1);
 	}
 
+	inline void set_scaling(T s) {
+		for (int i = 0; i < 3; ++i) {
+			m[i][i] = s;
+		}
+		m[3][3] = T(1);
+	}
+
 	void make_scaling(T sx, T sy, T sz) {
 		set_zero();
 		set_scaling(sx, sy, sz);
@@ -62,6 +69,11 @@ public:
 
 	void make_scaling(const GWVectorBase<T>& scl) {
 		make_scaling(scl.x, scl.y, scl.z);
+	}
+
+	void make_scaling(T s) {
+		set_zero();
+		set_scaling(s);
 	}
 
 	void make_rx(T rx) {
@@ -267,6 +279,12 @@ public:
 		m[2][2] = sz;
 	}
 
+	inline void set_scaling(T s) {
+		for (int i = 0; i < 3; ++i) {
+			m[i][i] = s;
+		}
+	}
+
 	void make_scaling(T sx, T sy, T sz) {
 		set_zero();
 		set_scaling(sx, sy, sz);
@@ -274,6 +292,11 @@ public:
 
 	void make_scaling(const GWVectorBase<T>& scl) {
 		make_scaling(scl.x, scl.y, scl.z);
+	}
+
+	void make_scaling(T s) {
+		set_zero();
+		set_scaling(s);
 	}
 
 	//transposed comparing to 4x4
@@ -308,6 +331,13 @@ public:
 	void make_deg_rx(T degX) { make_rx(GWBase::radians(degX)); }
 	void make_deg_ry(T degY) { make_ry(GWBase::radians(degY)); }
 	void make_deg_rz(T degZ) { make_rz(GWBase::radians(degZ)); }
+
+	void make_rotation(const GWQuaternionBase<T>& q) {
+		set_column(0, q.calc_axis_x());
+		set_column(1, q.calc_axis_y());
+		set_column(2, q.calc_axis_z());
+		set_column(3, GWVectorBase<T>(0));
+	}
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T> &v) const {
 		GWTuple4<T> res;
