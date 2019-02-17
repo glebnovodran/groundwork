@@ -30,8 +30,8 @@ template<typename T> void GWTransform<T>::make_rotation(T rx, T ry, T rz, GWRota
 		int i0 = tbl[idx];
 		int i1 = tbl[idx+1];
 		int i2 = tbl[idx+2];
-		mul(r[i0], r[i1]);
-		mul(r[i2]);
+		(*this) = GWXform::concatenate(r[i0], r[i1]);
+		apply(r[i2]);
 	}
 }
 
@@ -54,8 +54,8 @@ template<typename T> void GWTransform<T>::make_transform(const GWQuaternionBase<
 
 	GWTransform m[3];
 	m[SCL].make_scaling(scl);
-	m[TRN].make_rotation(rot);
-	m[ROT].make_translation(trn);
+	m[ROT].make_rotation(rot);
+	m[TRN].make_translation(trn);
 
 	uint32_t ord = (uint32_t)order;
 	int i0 = tbl[ord].i0;
@@ -63,8 +63,8 @@ template<typename T> void GWTransform<T>::make_transform(const GWQuaternionBase<
 	int i2 = tbl[ord].i2;
 
 	*this = m[i0];
-	mul(m[i1]);
-	mul(m[i2]);
+	apply(m[i1]);
+	apply(m[i2]);
 }
 
 template void GWTransform<float>::make_transform(const GWQuaternionBase<float>& rot, const GWVectorBase<float>& trn, const GWVectorBase<float>& scl, GWTransformOrder order);

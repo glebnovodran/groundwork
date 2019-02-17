@@ -103,17 +103,22 @@ public:
 		m[1][0] = -s;
 		m[1][1] = c;
 	}
-
-	void make_deg_rx(T degX) { make_rx(GWBase::radians(degX)); }
-	void make_deg_ry(T degY) { make_ry(GWBase::radians(degY)); }
-	void make_deg_rz(T degZ) { make_rz(GWBase::radians(degZ)); }
-
 	void make_rotation(T rx, T ry, T rz, GWRotationOrder order = GWRotationOrder::XYZ);
 	void make_rotation(const GWQuaternionBase<T>& q) {
 		set_row(0, q.calc_axis_x());
 		set_row(1, q.calc_axis_y());
 		set_row(2, q.calc_axis_z());
 		set_row(3, GWVectorBase<T>(0), T(1));
+	}
+
+	void make_deg_rx(T degX) { make_rx(GWBase::radians(degX)); }
+	void make_deg_ry(T degY) { make_ry(GWBase::radians(degY)); }
+	void make_deg_rz(T degZ) { make_rz(GWBase::radians(degZ)); }
+	void make_deg_rotation(T degX, T degY, T degZ, GWRotationOrder order = GWRotationOrder::XYZ) {
+		T rx = GWBase::radians(degX);
+		T ry = GWBase::radians(degY);
+		T rz = GWBase::radians(degZ);
+		make_rotation(rx, ry, rz, order);
 	}
 
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT);
@@ -130,13 +135,11 @@ public:
 		transpose_sr();
 		set_translation(calc_vec(-pos));
 	}
-
-	void mul(const GWTransform& m0, const GWTransform& m1) {
+	void apply(const GWTransform& parent) {
 		GWTransform res;
-		GWMatrix::mul_mm(res.as_tptr(), m0.as_tptr(), m1.as_tptr(), 4, 4, 4);
+		GWMatrix::mul_mm(res.as_tptr(), as_tptr(), parent.as_tptr(), 4, 4, 4);
 		(*this) = res;
 	}
-	void mul(const GWTransform& m) { mul(*this, m); }
 
 	void invert(const GWTransform& m0) {
 		(*this) = m0.get_inverted();
@@ -225,12 +228,6 @@ public:
 		return true;
 	}
 };
-
-template <typename T> inline GWTransform<T> operator * (const GWTransform<T>& m0, const GWTransform<T>& m1) {
-	GWTransform<T> m;
-	m.mul(m0, m1);
-	return m;
-}
 
 typedef GWTransform<float> GWTransformF;
 typedef GWTransform<double> GWTransformD;
@@ -359,6 +356,17 @@ public:
 
 typedef GWTransform3x4<float> GWTransform3x4F;
 typedef GWTransform3x4<double> GWTransform3x4D;
+
+namespace GWXform {
+
+template <typename T>
+inline GWTransform<T> concatenate(const GWTransform<T>& child, const GWTransform<T>& parent) {
+	GWTransform<T> res;
+	GWMatrix::mul_mm(res.as_tptr(), child.as_tptr(), parent.as_tptr(), 4, 4, 4);
+	return res;
+}
+
+}
 
 namespace GWXformCvt {
 

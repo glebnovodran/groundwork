@@ -93,10 +93,12 @@ GWTransformF GWModelResource::calc_skel_node_world_mtx(uint32_t idx, const GWTra
 		}
 		idx = get_skel_node_parent_idx(idx);
 		while (check_skel_node_idx(idx)) {
-			parentWM = pLM[idx] * parentWM;
+			//parentWM = pLM[idx] * parentWM;
+			parentWM = GWXform::concatenate(pLM[idx], parentWM);
 			idx = get_skel_node_parent_idx(idx);
 		}
-		nodeWM = parentWM * nodeWM;
+		//nodeWM = parentWM * nodeWM;
+		nodeWM = GWXform::concatenate(parentWM, nodeWM);
 	}
 	if (pParentWM) {
 		*pParentWM = parentWM;

@@ -6,6 +6,39 @@
 #include <groundwork.hpp>
 #include "test.hpp"
 
+static bool test_make_rotation() {
+	GWTransformF testData = {
+		0.520866f, 0.703879f, -0.482963f, 0,
+		-0.683013f, 0.683013f, 0.258819f, 0,
+		0.512047f, 0.19506f, 0.836516f, 0,
+		0, 0, 0, 1
+	};
+
+	GWTransformF xform;
+	xform.make_deg_rotation(15.0f, 30.0f, 45.0f, GWRotationOrder::YXZ);
+	bool res = GWMatrix::tup_almost_eq(xform.as_tptr(), testData.as_tptr(), 16, 0.001f);
+	return res;
+}
+
+static bool test_make_xform() {
+	GWTransformF testData = {
+		1.83712f, 1.44183f, -0.324469f, 0,
+		-2.12132f, 1.36603f, 0.183013f, 0,
+		1.06066f, 0.234725f, 0.928023f, 0,
+		1.83712f, 5.11278f, 3.75365f, 1
+	};
+
+	GWTransformF xform;
+	GWQuaternionF q;
+	q.set_degrees(15.0f, 30.0f, 45.0f, GWRotationOrder::YZX);
+	GWVectorF trn(1.0f, 2.0f, 4.0f);
+	GWVectorF scl(3.0f, 2.0f, 1.0f);
+	xform.make_transform(q, trn, scl, GWTransformOrder::TRS);
+
+	bool res = GWMatrix::tup_almost_eq(xform.as_tptr(), testData.as_tptr(), 16, 0.001f);
+	return res;
+}
+
 static bool test_xform_invert() {
 	GWTransformF xform1 = {
 		1, 0, 0, 0,
@@ -133,6 +166,8 @@ static bool test_3x4() {
 }
 
 static TEST_ENTRY s_xform_tests[] = {
+	TEST_DECL(test_make_rotation),
+	TEST_DECL(test_make_xform),
 	TEST_DECL(test_xform_invert),
 	TEST_DECL(test_3x4),
 };

@@ -255,7 +255,7 @@ void test_xform() {
 	trnX.make_translation(4, 5, 6);
 
 	xform.set_identity();
-	xform.mul(sclX, trnX);
+	xform = GWXform::concatenate(sclX, trnX);
 
 	GWTransform3x4F x34 = GWXformCvt::get_3x4(xform);
 	GWTransformF x44 = GWXformCvt::get_4x4(x34);
@@ -295,8 +295,8 @@ void test_xform() {
 	GWTransformF ry; ry.make_deg_ry(20.0f);
 	GWTransformF rz; rz.make_deg_rz(30.0f);
 	xform = rx;
-	xform.mul(ry);
-	xform.mul(rx, ry);
+	xform.apply(ry);
+	xform = GWXform::concatenate(rx, ry);
 	cout << "=====================" << endl;
 }
 
