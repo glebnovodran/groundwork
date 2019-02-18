@@ -2,6 +2,12 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 template<typename T> class GWTransform3x4;
+template<typename T> class GWTransform;
+
+namespace GWXformCvt {
+template <typename T> inline GWTransform3x4<T> get_3x4(const GWTransform<T>& xform);
+template <typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34);
+}
 
 template<typename T> class GWTransform {
 public:
@@ -334,6 +340,22 @@ public:
 		set_column(1, q.calc_axis_y());
 		set_column(2, q.calc_axis_z());
 		set_column(3, GWVectorBase<T>(0));
+	}
+	void make_rotation(T rx, T ry, T rz, GWRotationOrder order = GWRotationOrder::XYZ) {
+		GWQuaternionBase<T> q;
+		q.set_radians(rx, ry, rz, order);
+		make_rotation(q);
+	}
+	void make_deg_rotation(T degX, T degY, T degZ, GWRotationOrder order = GWRotationOrder::XYZ) {
+		GWQuaternionBase<T> q;
+		q.set_degress(degX, degY, degZ, order);
+		make_rotation(q);
+	}
+
+	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT) {
+		GWTransform<T> xform;
+		xform.make_transform(rot, trn, scl, order);
+		(*this) = GWXformCvt::get_3x4(xform);
 	}
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T> &v) const {
