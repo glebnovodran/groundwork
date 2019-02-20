@@ -1,6 +1,7 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
+/*
 template<typename T> class GWTransform3x4;
 template<typename T> class GWTransform;
 
@@ -8,7 +9,7 @@ namespace GWXformCvt {
 template <typename T> inline GWTransform3x4<T> get_3x4(const GWTransform<T>& xform);
 template <typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34);
 }
-
+*/
 template<typename T> class GWTransform {
 public:
 	T m[4][4];
@@ -355,7 +356,8 @@ public:
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT) {
 		GWTransform<T> xform;
 		xform.make_transform(rot, trn, scl, order);
-		(*this) = GWXformCvt::get_3x4(xform);
+		xform.transpose();
+		GWMatrix::copy(as_tptr(), xform.as_tptr(), 3, 4);
 	}
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T> &v) const {

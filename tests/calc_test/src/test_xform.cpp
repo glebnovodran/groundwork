@@ -34,8 +34,13 @@ static bool test_make_xform() {
 	GWVectorF trn(1.0f, 2.0f, 4.0f);
 	GWVectorF scl(3.0f, 2.0f, 1.0f);
 	xform.make_transform(q, trn, scl, GWTransformOrder::TRS);
+	bool res = xform.compare(testData, 0.001f);
 
-	bool res = GWMatrix::tup_almost_eq(xform.as_tptr(), testData.as_tptr(), 16, 0.001f);
+	GWTransform3x4F xform34;
+	xform34.make_transform(q, trn, scl, GWTransformOrder::TRS);
+	GWTransformF xform1 = GWXformCvt::get_4x4(xform34);
+	res &= xform.compare(xform1, 0.001f);
+
 	return res;
 }
 
