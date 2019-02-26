@@ -307,12 +307,12 @@ namespace GWMatrix {
 		tup_sub(pDst, pSrc, 0, n - 1);
 	}
 
-	template<typename T, typename WT = T>
-	inline WT tup_inner(const T* pA, const T* pB, const int n) {
-		WT s = WT(0);
+	template<typename T, typename CALC_T = T>
+	inline CALC_T tup_inner(const T* pA, const T* pB, const int n) {
+		CALC_T s = CALC_T(0);
 		for (int i = 0; i < n; ++i) {
-			WT a = pA[i];
-			WT b = pB[i];
+			CALC_T a = pA[i];
+			CALC_T b = pB[i];
 			s += a * b;
 		}
 		return s;
