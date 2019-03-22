@@ -370,7 +370,6 @@ void GWModelResource::write_skel(std::ostream& os, const char* pBase) {
 			os << "nd.setParms({'geoscale':0.01,'controltype':1})" << endl;
 			os << "nd.setUserData('nodeshape', '" << (skinFlg ? "bone" : "rect") << "')" << endl;
 			if (skinFlg) {
-				//glm::vec4 sph = calc_skin_node_sphere_of_influence(find_skel_node_skin_idx(i));
 				GWSphereF sph= pSph[i];
 				os << "# " << pNodeName << " skin SOI: " << sph.c.x << ", " << sph.c.y << ", " << sph.c.z << ", " << sph.r << endl;
 				os << "cr = nd.createNode('cregion', 'cregion')" << endl;
