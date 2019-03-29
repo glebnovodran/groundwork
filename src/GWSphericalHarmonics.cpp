@@ -13,7 +13,7 @@
 template<typename T> void GWSHCoeffsBase<T>::calc_pano(const GWImage* pImg) {
 	int w = pImg->get_width();
 	int h = pImg->get_height();
-	T da = T((2.0*GWBase::pi / w) * (GWBase::pi / h));
+	T da = T((2.0*T(GWBase::pi) / w) * (T(GWBase::pi) / h));
 	T dx[1];
 	T dy[1];
 	T dz[1];
@@ -28,13 +28,13 @@ template<typename T> void GWSHCoeffsBase<T>::calc_pano(const GWImage* pImg) {
 
 	for (int y = 0; y < h; ++y) {
 		T v = T(1) - (y + T(0.5f)) * ih;
-		T dw = da * std::sin(GWBase::pi * v);
-		T inclination = (v - T(1)) * GWBase::pi;
+		T dw = da * std::sin(T(GWBase::pi) * v);
+		T inclination = (v - T(1)) * T(GWBase::pi);
 		T sinI = std::sin(inclination);
 		T cosI = std::cos(inclination);
 		for (int x = 0; x < w; ++x) {
 			T u = (x + T(0.5f)) * iw;
-			T azimuth = u * T(2) * GWBase::pi;
+			T azimuth = u * T(2) * T(GWBase::pi);
 			T sinA = std::sin(azimuth);
 			T cosA = std::cos(azimuth);
 			dx[0] = cosA * sinI;
@@ -59,7 +59,7 @@ template void GWSHCoeffsBase<double>::calc_pano(const GWImage* pImg);
 template<typename T> void GWSHCoeffsBase<T>::synth_pano(GWImage * pImg) const {
 	int w = pImg->get_width();
 	int h = pImg->get_height();
-	T da = T((2.0*GWBase::pi / w) * (GWBase::pi / h));
+	T da = T((2.0*T(GWBase::pi) / w) * (T(GWBase::pi) / h));
 	T dx;
 	T dy;
 	T dz;
@@ -70,13 +70,13 @@ template<typename T> void GWSHCoeffsBase<T>::synth_pano(GWImage * pImg) const {
 
 	for (int y = 0; y < h; ++y) {
 		T v = T(1) - (y + T(0.5f)) * ih;
-		T dw = da * std::sin(GWBase::pi * v);
-		T inclination = (v - T(1)) * GWBase::pi;
+		T dw = da * std::sin(T(GWBase::pi) * v);
+		T inclination = (v - T(1)) * T(GWBase::pi);
 		T sinI = std::sin(inclination);
 		T cosI = std::cos(inclination);
 		for (int x = 0; x < w; ++x) {
 			T u = (x + T(0.5f)) * iw;
-			T azimuth = u * T(2) * GWBase::pi;
+			T azimuth = u * T(2) * T(GWBase::pi);
 			T sinA = std::sin(azimuth);
 			T cosA = std::cos(azimuth);
 			dx = cosA * sinI;
