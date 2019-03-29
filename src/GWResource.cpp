@@ -29,6 +29,7 @@ const char* GWResourceUtil::get_kind_string(GWResourceKind kind) {
 	case GWResourceKind::DDS: pStr = "DDS"; break;
 	case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
 	case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;
+	default: break;
 	}
 	return pStr;
 }
