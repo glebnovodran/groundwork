@@ -297,6 +297,8 @@ void test_xform() {
 	xform = rx;
 	xform.apply(ry);
 	xform = GWXform::concatenate(rx, ry);
+	xform.set_identity();
+	xform.make_view(GWVectorF(1,1,1), GWVectorF(0,0,0));
 	cout << "=====================" << endl;
 }
 

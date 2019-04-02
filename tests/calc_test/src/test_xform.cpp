@@ -85,6 +85,19 @@ static bool test_xform_invert() {
 	return true;
 }
 
+static bool test_make_view() {
+	GWTransformF xform;
+	GWTransformF testData = {
+		0.707107, -0.408248, 0.57735, 0,
+		0, 0.816497, 0.57735, 0,
+		-0.707107, -0.408248, 0.57735, 0,
+		-0, 0, -1.73205, 1
+	};
+	xform.make_view(GWVectorF(1, 1, 1), GWVectorF(0, 0, 0));
+	bool res = xform.compare(testData, 0.001f);
+	return res;
+}
+
 static bool test_3x4_apply() {
 	GWTransformF xform;
 	GWTransform3x4F xform34;
@@ -174,6 +187,7 @@ static TEST_ENTRY s_xform_tests[] = {
 	TEST_DECL(test_make_rotation),
 	TEST_DECL(test_make_xform),
 	TEST_DECL(test_xform_invert),
+	TEST_DECL(test_make_view),
 	TEST_DECL(test_3x4),
 };
 

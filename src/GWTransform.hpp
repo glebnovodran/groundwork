@@ -131,9 +131,12 @@ public:
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT);
 
 	void make_projection(T fovY, T aspect, T znear, T zfar);
-	void make_view(const GWVectorBase<T>& pos, const GWVectorBase<T>& tgt, const GWVectorBase<T>& upVec) {
-		GWVectorBase<T> dir = (tgt - pos).normalize();
-		GWVectorBase<T> side = GWVector::cross(upVec, dir).normalize();
+
+	void make_view(const GWVectorBase<T>& pos, const GWVectorBase<T>& tgt, const GWVectorBase<T>& upVec = GWVectorBase<T>(0,1,0)) {
+		GWVectorBase<T> dir = (tgt - pos);
+		dir.normalize();
+		GWVectorBase<T> side = GWVector::cross(upVec, dir);
+		side.normalize();
 		GWVectorBase<T> up = GWVector::cross(side, dir);
 
 		set_row(0, -side, 0.0f);
@@ -142,6 +145,7 @@ public:
 		transpose_sr();
 		set_translation(calc_vec(-pos));
 	}
+
 	void apply(const GWTransform& parent) {
 		GWTransform res;
 		GWMatrix::mul_mm(res.as_tptr(), as_tptr(), parent.as_tptr(), 4, 4, 4);
@@ -180,7 +184,7 @@ public:
 	}
 
 	void transpose_sr(const GWTransform& m0);
-	void transpose_sr() { transpose(*this); }
+	void transpose_sr() { transpose_sr(*this); }
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T>& v) const {
 		GWTuple4<T> res;
