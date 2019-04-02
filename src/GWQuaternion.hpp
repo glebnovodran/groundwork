@@ -33,6 +33,9 @@ public:
 		mQ.w = s;
 	}
 
+	T* as_tptr() { return reinterpret_cast<T*>(mQ.elems); }
+	const T* as_tptr() const { return reinterpret_cast<const T*>(mQ.elems); }
+
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(mQ, tuple); }
 	GWTuple4<T> get_tuple() const { return mQ; }
 

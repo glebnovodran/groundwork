@@ -219,6 +219,8 @@ void test_vec() {
 
 	a.normalize();
 	a = -a;
+	const float* pA = a.as_tptr();
+
 	float la = a.length();
 	float laf = a.length_fast();
 }
@@ -359,6 +361,8 @@ void test_quat() {
 	GWVectorF v(1.0f, 0.0f, 0.0f);
 	GWVectorF v1 = q.apply(v);
 	GWVectorF v2 = xform.calc_vec(v);
+	float* pData = q.as_tptr();
+
 	cout << "=====================" << endl;
 }
 

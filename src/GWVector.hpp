@@ -10,6 +10,9 @@ public:
 	template<typename FILL_T> GWVectorBase(FILL_T s) { GWTuple::fill(*this, s); }
 	template<typename X_T, typename Y_T, typename Z_T> GWVectorBase(X_T x, Y_T y, Z_T z) { GWTuple::set(*this, x, y, z); }
 
+	T* as_tptr() { return reinterpret_cast<T*>(this->elems); }
+	const T* as_tptr() const { return reinterpret_cast<const T*>(this->elems); }
+
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(*this, tuple); }
 	void fill(T val) { GWTuple::fill(*this, val); }
 	void set(const GWVectorBase& v) { GWTuple::copy(*this, v); }
