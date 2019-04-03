@@ -314,9 +314,13 @@ class GWModelResource:
 			skelRootPath = None # no skin -> no skel
 
 		self.skelNodes = None
+		self.skelCHOPs = None
 		if skelRootPath:
 			skelRoot = hou.node(skelRootPath)
 			if skelRoot:
+				self.skelCHOPs = []
+				self.skelTreeCHOPs(skelRoot)
+				for chop in self.skelCHOPs: chop.setExportFlag(False)
 				self.skelNodes = []
 				self.skelNodeMap = {}
 				self.skelTree(skelRoot)
@@ -325,6 +329,21 @@ class GWModelResource:
 						skelNode.parentId = self.skelNodeMap[skelNode.parent.name()]
 					else:
 						skelNode.parentId = -1
+				for chop in self.skelCHOPs: chop.setExportFlag(True)
+
+	def skelTreeCHOPs(self, node):
+		path = node.path()
+		for ch in ["t", "r", "s"]:
+			ct = hou.parmTuple(path + "/" + ch)
+			if ct:
+				for c in ct:
+					trk = c.overrideTrack()
+					if trk:
+						chop = trk.chopNode()
+						if not chop in self.skelCHOPs:
+							self.skelCHOPs.append(chop)
+		for link in node.outputConnectors()[0]:
+			self.skelTreeCHOPs(link.outputNode())
 
 	def skelTree(self, node):
 		self.skelNodeMap[node.name()] = len(self.skelNodes)
@@ -471,17 +490,17 @@ class GWModelResource:
 					skelIdx = self.skelNodeMap[skinName]
 				f.write(struct.pack("i", skelIdx))
 			if self.skinData:
-				for iw in self.skinData:
+				for sidx, iw in enumerate(self.skinData):
 					nwgt = len(iw)
 					jidx = [0 for i in xrange(4)]
 					jwgt = [0 for i in xrange(4)]
 					wsum = 0
 					for i in xrange(nwgt):
 						jidx[i] = iw[i][0]
-						jwgt[i] = int(round(iw[i][1] * 255.0))
+						jwgt[i] = max(min(int(round(iw[i][1] * 255.0)), 0xFF), 0)
 						wsum += jwgt[i]
 					if wsum != 0xFF:
-						jwgt[nwgt-1] = 0xFF - sum(jwgt[:nwgt-1])
+						jwgt[nwgt-1] = max(0xFF - sum(jwgt[:nwgt-1]), 0)
 					jfmt = "HHHH"
 					if len(self.skinNodeNames) <= (1 << 8): jfmt = "BBBB"
 					f.write(struct.pack(jfmt, jidx[0], jidx[1], jidx[2], jidx[3]))
