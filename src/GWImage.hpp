@@ -2,9 +2,48 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+
+struct DDSHead {
+	union {
+		char magic[4];
+		uint32_t magic32;
+	};
+	uint32_t size;
+	uint32_t flags;
+	uint32_t height;
+	uint32_t width;
+	uint32_t pitchLin;
+	uint32_t depth;
+	uint32_t mipMapCount;
+	uint32_t reserved1[11];
+	struct PixelFormat {
+		uint32_t size;
+		uint32_t flags;
+		uint32_t fourCC;
+		uint32_t bitCount;
+		uint32_t maskR;
+		uint32_t maskG;
+		uint32_t maskB;
+		uint32_t maskA;
+	} format;
+	uint32_t caps;
+	uint32_t caps2;
+	uint32_t caps3;
+	uint32_t caps4;
+	uint32_t reserved2;
+
+	bool is_dds() const {
+		static char sig[4] = { 'D', 'D', 'S', ' ' };
+		return std::memcmp(sig, magic, 4) == 0;
+	}
+	bool is_dds128() const { return format.fourCC == 0x74; }
+	bool is_dds64() const { return format.fourCC == 0x71; }
+
+};
 
 class GWImage {
 protected:
@@ -48,5 +87,5 @@ public:
 	static void free(GWImage* pImg);
 	static GWImage* read_dds(std::ifstream& ifs);
 	static GWImage* read_dds(const std::string& path);
-
+	static GWImage* from_dds(const DDSHead& dds);
 };

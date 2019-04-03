@@ -39,44 +39,6 @@ void GWImage::update() {
 	calc_range(mMin, mMax, mPixels, mWidth * mHeight);
 }
 
-struct DDSHead {
-	union {
-		char magic[4];
-		uint32_t magic32;
-	};
-	uint32_t size;
-	uint32_t flags;
-	uint32_t height;
-	uint32_t width;
-	uint32_t pitchLin;
-	uint32_t depth;
-	uint32_t mipMapCount;
-	uint32_t reserved1[11];
-	struct PixelFormat {
-		uint32_t size;
-		uint32_t flags;
-		uint32_t fourCC;
-		uint32_t bitCount;
-		uint32_t maskR;
-		uint32_t maskG;
-		uint32_t maskB;
-		uint32_t maskA;
-	} format;
-	uint32_t caps;
-	uint32_t caps2;
-	uint32_t caps3;
-	uint32_t caps4;
-	uint32_t reserved2;
-
-	bool is_dds() const {
-		static char sig[4] = { 'D', 'D', 'S', ' ' };
-		return std::memcmp(sig, magic, 4) == 0;
-	}
-	bool is_dds128() const { return format.fourCC == 0x74; }
-	bool is_dds64() const { return format.fourCC == 0x71; }
-
-};
-
 GWImage* GWImage::read_dds(std::ifstream& ifs) {
 	DDSHead header;
 	ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
@@ -110,6 +72,20 @@ GWImage* GWImage::read_dds(const std::string& path) {
 	ifstream ifs(path, ios::binary);
 	if (ifs.good()) {
 		pImg = read_dds(ifs);
+	}
+	return pImg;
+}
+
+GWImage* GWImage::from_dds(const DDSHead& dds) {
+	GWImage* pImg = nullptr;
+	if (dds.is_dds()) {
+		int w = dds.width;
+		int h = dds.height;
+		int npix = w * h;
+		if (dds.is_dds128()) {
+			pImg = alloc(w, h);
+			memcpy(pImg->mPixels, &dds + 1, dds.pitchLin);
+		}
 	}
 	return pImg;
 }
