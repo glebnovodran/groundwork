@@ -301,6 +301,14 @@ void test_xform() {
 	xform = GWXform::concatenate(rx, ry);
 	xform.set_identity();
 	xform.make_view(GWVectorF(1,1,1), GWVectorF(0,0,0));
+	xform.set_translation(1, 2, 3);
+	GWTransform3x4F xform34 = GWXformCvt::get_3x4(xform);
+	xform.set_translation(4, 5, 6);
+	xform34.copy_translation(xform);
+
+	GWVectorF trn34 = xform34.get_translation();
+	GWVectorF trn = xform.get_translation();
+	cout << GWTuple::compare(trn, trn34, 0.001f) << endl;
 	cout << "=====================" << endl;
 }
 

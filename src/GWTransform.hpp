@@ -46,6 +46,11 @@ public:
 		m[3][3] = T(1);
 	}
 
+	GWVectorBase<T> get_translation() const {
+		GWVectorBase<T> trn(m[3][0], m[3][1], m[3][2]);
+		return trn;
+	}
+
 	void make_translation(T tx, T ty, T tz) {
 		set_identity();
 		set_translation(tx, ty, tz);
@@ -53,6 +58,10 @@ public:
 
 	void make_translation(const GWVectorBase<T>& trn) {
 		make_translation(trn.x, trn.y, trn.z);
+	}
+
+	void copy_translation(const GWTransform<T>& xform) {
+		set_translation(xform.get_translation());
 	}
 
 	inline void set_scaling(T sx, T sy, T sz) {
@@ -276,9 +285,22 @@ public:
 		m[2][3] = tz;
 	}
 
+	GWVectorBase<T> get_translation() const {
+		GWVectorBase<T> trn(m[0][3], m[1][3], m[2][3]);
+		return trn;
+	}
+
 	void make_translation(T tx, T ty, T tz) {
 		set_identity();
 		set_translation(tx, ty, tz);
+	}
+
+	void copy_translation(const GWTransform<T>& xform) {
+		set_translation(xform.get_translation());
+	}
+
+	void copy_translation(const GWTransform3x4<T>& xform34) {
+		set_translation(xform34.get_translation());
 	}
 
 	inline void set_scaling(T sx, T sy, T sz) {
