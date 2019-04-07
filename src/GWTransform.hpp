@@ -375,7 +375,7 @@ public:
 	}
 	void make_deg_rotation(T degX, T degY, T degZ, GWRotationOrder order = GWRotationOrder::XYZ) {
 		GWQuaternionBase<T> q;
-		q.set_degress(degX, degY, degZ, order);
+		q.set_degrees(degX, degY, degZ, order);
 		make_rotation(q);
 	}
 
@@ -407,17 +407,6 @@ public:
 typedef GWTransform3x4<float> GWTransform3x4F;
 typedef GWTransform3x4<double> GWTransform3x4D;
 
-namespace GWXform {
-
-template <typename T>
-inline GWTransform<T> concatenate(const GWTransform<T>& child, const GWTransform<T>& parent) {
-	GWTransform<T> res;
-	GWMatrix::mul_mm(res.as_tptr(), child.as_tptr(), parent.as_tptr(), 4, 4, 4);
-	return res;
-}
-
-}
-
 namespace GWXformCvt {
 
 template <typename T> inline GWTransform3x4<T> get_3x4(const GWTransform<T>& xform) {
@@ -439,3 +428,19 @@ template <typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34
 }
 
 } // namespace GWXformCvt
+
+namespace GWXform {
+
+template <typename T>
+inline GWTransform<T> concatenate(const GWTransform<T>& child, const GWTransform<T>& parent) {
+	GWTransform<T> res;
+	GWMatrix::mul_mm(res.as_tptr(), child.as_tptr(), parent.as_tptr(), 4, 4, 4);
+	return res;
+}
+
+template <typename T>
+inline GWTransform3x4<T> concatenate(const GWTransform3x4<T>& child, const GWTransform3x4<T>& parent) {
+	return GWXformCvt::get_3x4(concatenate(GWXformCvt::get_4x4(child), GWXformCvt::get_4x4(parent)));
+}
+
+} // namespace GWXform

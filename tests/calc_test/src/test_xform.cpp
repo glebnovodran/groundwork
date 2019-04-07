@@ -174,9 +174,26 @@ static bool test_3x4_rotation() {
 	return true;
 }
 
+static bool test_3x4_concat() {
+	GWTransform3x4F xform34;
+	xform34.make_deg_rotation(15.0f, 30.0f, 0.0f, GWRotationOrder::XYZ);
+	GWTransform3x4F xformX;
+	xformX.make_deg_rx(15.0f);
+	GWTransform3x4F xformY;
+	xformY.make_deg_ry(30.0f);
+
+	GWTransform3x4F xformXY = GWXform::concatenate(xformX, xformY);
+	if (!compare_mtx(xform34.as_tptr(), xformXY.as_tptr(), 3, 4)) {
+		GWSys::dbg_msg("3x4 concatenate failed");
+		return false;
+	}
+	return true;
+}
+
 static TEST_ENTRY s_xform3x4_tests[] = {
 	TEST_DECL(test_3x4_apply),
 	TEST_DECL(test_3x4_rotation),
+	TEST_DECL(test_3x4_concat),
 };
 
 static bool test_3x4() {
