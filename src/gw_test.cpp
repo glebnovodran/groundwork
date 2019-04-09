@@ -253,6 +253,7 @@ void test_xform() {
 
 	GWTransformF sclX;
 	sclX.make_scaling(1, 2, 3);
+	GWVectorF sv = sclX.get_scaling();
 	GWTransformF trnX;
 	trnX.make_translation(4, 5, 6);
 

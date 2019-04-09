@@ -78,6 +78,11 @@ public:
 		m[3][3] = T(1);
 	}
 
+	GWVectorBase<T> get_scaling() const {
+		GWVectorBase<T> scl(m[0][0], m[1][1], m[2][2]);
+		return scl;
+	}
+
 	void make_scaling(T sx, T sy, T sz) {
 		set_zero();
 		set_scaling(sx, sy, sz);
@@ -313,6 +318,11 @@ public:
 		for (int i = 0; i < 3; ++i) {
 			m[i][i] = s;
 		}
+	}
+
+	GWVectorBase<T> get_scaling() const {
+		GWVectorBase<T> scl(m[0][0], m[1][1], m[2][2]);
+		return scl;
 	}
 
 	void make_scaling(T sx, T sy, T sz) {
