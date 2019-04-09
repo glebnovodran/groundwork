@@ -18,7 +18,7 @@ template<typename T> void GWTransform<T>::make_rotation(T rx, T ry, T rz, GWRota
 		2, 0, 1,
 		2, 1, 0
 	};
-	int idx = (int)order;
+	uint8_t idx = uint8_t(order);
 	if (idx >= 6) {
 		set_identity();
 	} else {
@@ -27,9 +27,9 @@ template<typename T> void GWTransform<T>::make_rotation(T rx, T ry, T rz, GWRota
 		r[1].make_ry(ry);
 		r[2].make_rz(rz);
 		idx *= 3;
-		int i0 = tbl[idx];
-		int i1 = tbl[idx+1];
-		int i2 = tbl[idx+2];
+		uint8_t i0 = tbl[idx];
+		uint8_t i1 = tbl[idx+1];
+		uint8_t i2 = tbl[idx+2];
 		(*this) = GWXform::concatenate(r[i0], r[i1]);
 		apply(r[i2]);
 	}
