@@ -190,10 +190,21 @@ static bool test_3x4_concat() {
 	return true;
 }
 
+static bool test_3x4_get_quat() {
+	GWQuaternionD q, p;
+	GWTransform3x4D xform34;
+	q.set_degrees(90.0, 60.0, 30.0);
+	xform34.make_rotation(q);
+	p = xform34.get_rotation();
+	double d = GWUnitQuaternion::arc_distance(p, q);
+	return d < 0.0001;
+}
+
 static TEST_ENTRY s_xform3x4_tests[] = {
 	TEST_DECL(test_3x4_apply),
 	TEST_DECL(test_3x4_rotation),
 	TEST_DECL(test_3x4_concat),
+	TEST_DECL(test_3x4_get_quat)
 };
 
 static bool test_3x4() {

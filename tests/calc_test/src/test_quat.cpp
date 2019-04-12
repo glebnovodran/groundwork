@@ -65,12 +65,30 @@ static bool test_get_transform() {
 	return compare_mtx<float>(xform.as_tptr(), res, 4, 4);
 }
 
+static bool test_to_transform() {
+	GWQuaternionF q, p;
+	q.set_degrees(15.0f, 30.0f, 60.0f);
+	q.normalize();
+	GWTransformF xform;
+	xform.make_rotation(q);
+	p = GWUnitQuaternion::from_transform(xform.as_tptr(), 4, true);
+	p.normalize();
+	float dist = GWUnitQuaternion::arc_distance(q, p);
+	bool res = 0.0001f >= dist;
+	GWTransform3x4F xform34;
+	xform34.make_rotation(q);
+	p = GWUnitQuaternion::from_transform(xform34.as_tptr(), 4, false);
+	res = res && (0.0001f >= GWUnitQuaternion::arc_distance(q, p));
+	return res;
+}
+
 static TEST_ENTRY s_quat_tests[] = {
 	TEST_DECL(test_quat_set_get),
 	TEST_DECL(test_quat_set_get_rad),
 	TEST_DECL(test_apply),
 	TEST_DECL(test_quat_expmap),
-	TEST_DECL(test_get_transform)
+	TEST_DECL(test_get_transform),
+	TEST_DECL(test_to_transform)
 };
 
 bool test_quat() {

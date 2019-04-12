@@ -231,7 +231,7 @@ namespace GWUnitQuaternion {
 
 	// Geodesic distance on the unit sphere
 	// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4238811/
-	template<typename T>T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
+	template<typename T> T arc_distance(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
 		return T((std::acos(GWBase::saturate(std::fabs(q.dot(p)))) / (GWBase::pi / 2)));
 	}
 
@@ -240,6 +240,8 @@ namespace GWUnitQuaternion {
 	template<typename T> GWQuaternionBase<T> diff(const GWQuaternionBase<T>& q, const GWQuaternionBase<T>& p) {
 		return q * GWUnitQuaternion::invert(p);
 	}
+
+	template<typename T> GWQuaternionBase<T> from_transform(const T* pXfrom, const int n, bool rowAxis = true);
 }
 
 namespace GWQuaternion {

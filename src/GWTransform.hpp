@@ -142,6 +142,10 @@ public:
 		make_rotation(rx, ry, rz, order);
 	}
 
+	GWQuaternionBase<T> get_rotation() const {
+		return GWUnitQuaternion::from_transform(*this, 4, true);
+	}
+
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT);
 
 	void make_projection(T fovY, T aspect, T znear, T zfar);
@@ -387,6 +391,10 @@ public:
 		GWQuaternionBase<T> q;
 		q.set_degrees(degX, degY, degZ, order);
 		make_rotation(q);
+	}
+
+	GWQuaternionBase<T> get_rotation() const {
+		return GWUnitQuaternion::from_transform(as_tptr(), 4, false);
 	}
 
 	void make_transform(const GWQuaternionBase<T>& rot, const GWVectorBase<T>& trn, const GWVectorBase<T>& scl, GWTransformOrder order = GWTransformOrder::SRT) {

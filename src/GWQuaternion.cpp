@@ -7,8 +7,6 @@
 #include "GWVector.hpp"
 #include "GWMatrix.hpp"
 #include "GWQuaternion.hpp"
-//#include "GWTransform.hpp"
-
 
 template<typename T> GWVectorBase<T> GWUnitQuaternion::get_radians(const GWQuaternionBase<T>& q, GWRotationOrder order) {
 	static struct { uint8_t idx0, idx1, idx2, positive; } rotTbl[] = {
@@ -114,6 +112,66 @@ template<typename T> GWQuaternionBase<T> GWUnitQuaternion::slerp(const GWQuatern
 
 template GWQuaternionBase<float> GWUnitQuaternion::slerp(const GWQuaternionBase<float>& qa, const GWQuaternionBase<float>& qb, float t);
 template GWQuaternionBase<double> GWUnitQuaternion::slerp(const GWQuaternionBase<double>& qa, const GWQuaternionBase<double>& qb, double t);
+
+template<typename T> GWQuaternionBase<T> GWUnitQuaternion::from_transform(const T* pXfrom, const int n, bool rowAxis) {
+	GWQuaternionBase<T> q;
+	T x, y, z, w;
+	T m[3][3];
+	T t;
+
+	if (rowAxis) {
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				m[i][j] = pXfrom[i*n + j];
+			}
+		}
+	} else {
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				m[j][i] = pXfrom[i*n + j];
+			}
+		}
+	}
+
+	if (m[2][2] < 0) {
+		if (m[0][0] > m[1][1]) {
+			t = 1 + m[0][0] - m[1][1] - m[2][2];
+			x = t;
+			y = m[0][1] + m[1][0];
+			z = m[2][0] + m[0][2];
+			w = m[1][2] - m[2][1];
+		} else {
+			t = 1 - m[0][0] + m[1][1] - m[2][2];
+			x = m[0][1] + m[1][0];
+			y = t;
+			z = m[1][2] + m[2][1];
+			w = m[2][0] - m[0][2];
+		}
+	} else {
+		if (m[0][0] < - m[1][1]) {
+			t = 1 - m[0][0] - m[1][1] + m[2][2];
+			x = m[2][0] + m[0][2];
+			y = m[1][2] + m[2][1];
+			z = t;
+			w = m[1][0] - m[0][1];
+		} else {
+			t = 1 + m[0][0] + m[1][1] + m[2][2];
+			x = m[1][2] - m[2][1];
+			y = m[2][0] - m[0][2];
+			z = m[0][1] - m[1][0];
+			w = t;
+		}
+	}
+
+	GWVectorBase<T> v(x, y, z);
+	q.set_vs(v, w);
+	q.scl(T(0.5f) / ::sqrt(t));
+
+	return q;
+}
+
+template GWQuaternionBase<float> GWUnitQuaternion::from_transform(const float* pXfrom, const int n, bool rowAxis);
+template GWQuaternionBase<double> GWUnitQuaternion::from_transform(const double* pXfrom, const int n, bool rowAxis);
 
 template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWRotationOrder order) {
 	static uint8_t tbl[] = {
