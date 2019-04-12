@@ -62,8 +62,9 @@ template<typename T> void GWTransform<T>::make_transform(const GWQuaternionBase<
 	int i1 = tbl[ord].i1;
 	int i2 = tbl[ord].i2;
 
-	*this = m[i0];
-	apply(m[i1]);
+	*this = GWXform::concatenate(m[i0], m[i1]);
+	//*this = m[i0];
+	//apply(m[i1]);
 	apply(m[i2]);
 }
 
