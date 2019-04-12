@@ -241,7 +241,7 @@ namespace GWUnitQuaternion {
 		return q * GWUnitQuaternion::invert(p);
 	}
 
-	template<typename T> GWQuaternionBase<T> from_transform(const T* pXfrom, const int n, bool rowAxis = true);
+	template<typename T> GWQuaternionBase<T> from_transform(const T* pXfrom, const int n, const bool rowAxis = true);
 }
 
 namespace GWQuaternion {

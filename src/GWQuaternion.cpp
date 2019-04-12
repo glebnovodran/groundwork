@@ -113,7 +113,7 @@ template<typename T> GWQuaternionBase<T> GWUnitQuaternion::slerp(const GWQuatern
 template GWQuaternionBase<float> GWUnitQuaternion::slerp(const GWQuaternionBase<float>& qa, const GWQuaternionBase<float>& qb, float t);
 template GWQuaternionBase<double> GWUnitQuaternion::slerp(const GWQuaternionBase<double>& qa, const GWQuaternionBase<double>& qb, double t);
 
-template<typename T> GWQuaternionBase<T> GWUnitQuaternion::from_transform(const T* pXfrom, const int n, bool rowAxis) {
+template<typename T> GWQuaternionBase<T> GWUnitQuaternion::from_transform(const T* pXfrom, const int n, const bool rowAxis) {
 	GWQuaternionBase<T> q;
 	T x, y, z, w;
 	T m[3][3];
@@ -170,8 +170,8 @@ template<typename T> GWQuaternionBase<T> GWUnitQuaternion::from_transform(const 
 	return q;
 }
 
-template GWQuaternionBase<float> GWUnitQuaternion::from_transform(const float* pXfrom, const int n, bool rowAxis);
-template GWQuaternionBase<double> GWUnitQuaternion::from_transform(const double* pXfrom, const int n, bool rowAxis);
+template GWQuaternionBase<float> GWUnitQuaternion::from_transform(const float* pXfrom, const int n, const bool rowAxis);
+template GWQuaternionBase<double> GWUnitQuaternion::from_transform(const double* pXfrom, const int n, const bool rowAxis);
 
 template<typename T> void GWQuaternionBase<T>::set_radians(T rx, T ry, T rz, GWRotationOrder order) {
 	static uint8_t tbl[] = {
