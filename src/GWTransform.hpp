@@ -404,7 +404,7 @@ public:
 		GWMatrix::copy(as_tptr(), xform.as_tptr(), 3, 4);
 	}
 
-	GWVectorBase<T> calc_vec(const GWVectorBase<T> &v) const {
+	GWVectorBase<T> calc_vec(const GWVectorBase<T>&v) const {
 		GWTuple4<T> res;
 		GWTuple4<T> vec;
 		GWTuple::copy(vec, v, 0);
@@ -412,7 +412,7 @@ public:
 		return GWVectorBase<T>(res);
 	}
 
-	GWVectorBase<T> calc_pnt(const GWVectorBase<T> &v) const {
+	GWVectorBase<T> calc_pnt(const GWVectorBase<T>&v) const {
 		GWTuple4<T> res;
 		GWTuple4<T> vec;
 		GWTuple::copy(vec, v);

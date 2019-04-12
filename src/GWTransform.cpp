@@ -87,7 +87,7 @@ template<typename T> void GWTransform<T>::make_projection(T fovY, T aspect, T zn
 template void GWTransform<float>::make_projection(float fovY, float aspect, float znear, float zfar);
 template void GWTransform<double>::make_projection(double fovY, double aspect, double znear, double zfar);
 
-template<typename T> void GWTransform<T>::transpose_sr(const GWTransform & x) {
+template<typename T> void GWTransform<T>::transpose_sr(const GWTransform& x) {
 	for (uint32_t i = 0; i < 3; ++i) {
 		for (uint32_t j = i; j < 3; ++j) {
 			T val = x.m[i][j]; m[i][j] = x.m[j][i]; m[j][i] = val;
