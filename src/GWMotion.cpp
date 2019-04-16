@@ -1,6 +1,11 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
+
+#ifdef _MSC_VER
+#	define _SCL_SECURE_NO_WARNINGS
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <assert.h>
@@ -87,7 +92,7 @@ public:
 	}
 
 	uint32_t get_num_groups() const {
-		return mGrpMap.size();
+		return uint32_t(mGrpMap.size());
 	}
 	uint32_t get_num_tracks() const { return mNumTracks; }
 
@@ -99,11 +104,11 @@ public:
 		return numTracks;
 	}
 	uint32_t calc_str_size() const {
-		uint32_t size = 0;
+		size_t size = 0;
 		for (const auto& pair: mGrpMap) {
 			size += pair.first.length();
 		}
-		return size;
+		return uint32_t(size);
 	}
 };
 
@@ -160,7 +165,7 @@ bool GWMotion::load(const std::string & filePath) {
 			pNodeInfo->numFrames = motLen;
 			pNodeInfo->pName = pChar;
 
-			uint32_t sz = entry.first.length();
+			size_t sz = entry.first.length();
 			entry.first.copy(pChar, sz);
 			pChar += sz;
 			*pChar = '\x0';
