@@ -70,14 +70,14 @@ struct GWModelResource : public GWResource {
 	/* +60 */ uint32_t mOffsExtInfo;
 
 	struct Attr {
-		GWHalf4 mNrmTgtEnc;
+		GWHalf4 mNrmTngEnc;
 		GWHalf4 mColor;
 		GWHalf4 mTex;
 
 		GWVectorF get_normal() const {
 			GWVectorF vec;
 			float oct[2];
-			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc, 2);
+			GWBase::half_to_float(oct, (uint16_t*)&mNrmTngEnc, 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
 			return vec;
 		}
@@ -85,7 +85,7 @@ struct GWModelResource : public GWResource {
 		GWVectorF get_tangent() const {
 			GWVectorF vec;
 			float oct[2];
-			GWBase::half_to_float(oct, (uint16_t*)&mNrmTgtEnc.elems[2], 2);
+			GWBase::half_to_float(oct, (uint16_t*)&mNrmTngEnc.elems[2], 2);
 			GWBase::oct_to_vec(oct[0], oct[1], vec.x, vec.y, vec.z);
 			return vec;
 		}
