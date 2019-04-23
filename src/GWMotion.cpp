@@ -118,7 +118,7 @@ uint8_t get_raw_track_data(const TDMotion& tdmot, const TDMotion::XformGrp& grp,
 	uint32_t motLen = tdmot.length();
 	uint8_t srcMask = 0;
 
-	const uint32_t* pChanIdx = &grp.idx[(uint8_t)kind * 3];
+	const uint32_t* pChanIdx = &grp.idx[uint8_t(kind) * 3];
 	for (uint32_t i = 0; i < 3; ++i) {
 		if (pChanIdx[i] != TDMotion::NONE) {
 			srcMask |= 1 << i;
