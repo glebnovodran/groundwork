@@ -274,7 +274,7 @@ struct GWModelResource : public GWResource {
 		return lm;
 	}
 
-	GWTransformF calc_skel_node_world_mtx(uint32_t idx, const GWTransformF* pLM = nullptr, GWTransformF* pParentWM = nullptr);
+	GWTransformF calc_skel_node_world_xform(uint32_t idx, const GWTransformF* pLM = nullptr, GWTransformF* pParentWM = nullptr);
 
 	uint32_t* get_skel_node_name_offs() {
 		return reinterpret_cast<uint32_t*>(

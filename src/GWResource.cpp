@@ -79,7 +79,7 @@ const char* GWModelResource::get_mtl_name(uint32_t idx) {
 	return GWResourceUtil::name_from_path(get_mtl_path(idx));
 }
 
-GWTransformF GWModelResource::calc_skel_node_world_mtx(uint32_t idx, const GWTransformF* pLM, GWTransformF* pParentWM) {
+GWTransformF GWModelResource::calc_skel_node_world_xform(uint32_t idx, const GWTransformF* pLM, GWTransformF* pParentWM) {
 	GWTransformF nodeWM;
 	GWTransformF parentWM;
 	nodeWM.set_identity();
@@ -359,7 +359,7 @@ void GWModelResource::write_skel(std::ostream& os, const char* pBase) {
 	for (int i = 0; i < n; ++i) {
 		const char* pNodeName = get_skel_node_name(i);
 		if (pNodeName) {
-			os << "# "; write_py_mtx(os, calc_skel_node_world_mtx(i)); os << endl;
+			os << "# "; write_py_mtx(os, calc_skel_node_world_xform(i)); os << endl;
 			os << "nd = hou.node('" << pBase << "').createNode('null', '" << pNodeName << "')" << endl;
 			GWTransformF lm = get_skel_node_local_mtx(i);
 			os << "nd.setParmTransform(hou.Matrix4(";
