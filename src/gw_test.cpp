@@ -528,5 +528,7 @@ int main(int argc, char* argv[]) {
 	test_model_recource("../data/cook_rb/cook_rb.gwmdl");
 	test_gwcat("../data/cook_rb/cook_rb.gwcat");
 
+	GWCamera cam;
+	cam.update(GWVectorF(10, 0, 0), GWVectorF(0, 0, 0), GWVectorF(0,1,0), GWBase::radians(60), 0.0001f, 10.0f);
 	return 0;
 }

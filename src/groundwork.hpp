@@ -11,6 +11,7 @@
 #include "GWMatrix.hpp"
 #include "GWQuaternion.hpp"
 #include "GWTransform.hpp"
+#include "GWCamera.hpp"
 #include "GWMotion.hpp"
 #include "GWImage.hpp"
 #include "GWSphericalHarmonics.hpp"
