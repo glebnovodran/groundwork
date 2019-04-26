@@ -22,11 +22,11 @@ namespace GWResourceUtil {
 }
 
 struct GWResource {
-	/* +00*/ char mSignature[0x10];
-	/* +10*/ uint32_t mVersion;
-	/* +14*/ uint32_t mDataSize;
-	/* +18*/ uint32_t mStrsTop;
-	/* +1c*/ uint32_t mStrsSize;
+	/* +00 */ char mSignature[0x10];
+	/* +10 */ uint32_t mVersion;
+	/* +14 */ uint32_t mDataSize;
+	/* +18 */ uint32_t mStrsTop;
+	/* +1C */ uint32_t mStrsSize;
 
 	const char* get_str(uint32_t offs = 0) const {
 		if (offs < mStrsSize) {
@@ -339,6 +339,85 @@ struct GWModelResource : public GWResource {
 		write_skel(os);
 		os.close();
 	}
+};
+
+struct GWCollisionResource : public GWResource {
+	/* +20 */ uint32_t mPathOffs;
+	/* +24 */ int32_t mNumPnt;
+	/* +28 */ int32_t mNumPol;
+	/* +2C */ int32_t mOffsPnts;
+	/* +30 */ int32_t mOffsPols;
+	/* +34 */ int32_t mOffsTris;
+	/* +38 */ int32_t mOffsIdx;
+	/* +3C */ int32_t mOffsBVH;
+	/* +40 */ GWVectorF mBBoxMin;
+	/* +4C */ GWVectorF mBBoxMax;
+
+	struct Poly {
+		GWVectorF mBBoxMin;
+		GWVectorF mBBoxMax;
+		GWVectorF mNormal;
+		int32_t mOffsIdx;
+		int32_t mNumVtx;
+		int32_t mOffsTris;
+	};
+
+	struct BVHNode {
+		GWVectorF mBBoxMin;
+		GWVectorF mBBoxMax;
+		int32_t mLeft;
+		int32_t mRight;
+
+		bool is_leaf() const { return mRight < 0; }
+		int get_poly_id() const { return is_leaf() ? mLeft : -1; }
+	};
+
+	class TriFunc {
+	public:
+		TriFunc() {}
+		virtual ~TriFunc() {}
+		virtual void operator ()(GWCollisionResource& cls, GWVectorF vtx[3], GWVectorF nrm, int polIdx, int triIdx) {}
+	};
+
+	const char* get_path() const { return get_str(mPathOffs); }
+
+	GWVectorF* get_pnts_top() {
+		return reinterpret_cast<GWVectorF*>(get_ptr(mOffsPnts));
+	}
+
+	Poly* get_pols_top() {
+		return reinterpret_cast<Poly*>(get_ptr(mOffsPols));
+	}
+
+	int32_t* get_idx_top() {
+		return reinterpret_cast<int32_t*>(get_ptr(mOffsIdx));
+	}
+
+	int32_t* get_tris_top() {
+		return reinterpret_cast<int32_t*>(get_ptr(mOffsTris));
+	}
+
+	BVHNode* get_bvh_top() {
+		return reinterpret_cast<BVHNode*>(get_ptr(mOffsBVH));
+	}
+
+	int calc_num_tris();
+
+	bool check_poly_idx(int polIdx) const { return polIdx >= 0 && polIdx < mNumPol; }
+	bool get_poly_tri(GWVectorF vtx[3], int polIdx, int triIdx);
+	int get_poly_num_tris(int polIdx);
+	int for_all_tris(TriFunc& func, bool withNormals = true);
+
+	void write_geo(std::ostream& os);
+	void save_geo(const std::string& path);
+
+	void write_tri_geo(std::ostream& os);
+	void save_tri_geo(const std::string& path);
+
+	void write_bvh_geo(std::ostream& os);
+	void save_bvh_geo(const std::string& path);
+
+	static GWCollisionResource* load(const std::string& path);
 };
 
 struct GWCatalog : public GWResource {

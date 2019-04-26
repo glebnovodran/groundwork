@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <cstddef>
+#include <vector>
 #include "groundwork.hpp"
 
 const char* GWResourceUtil::name_from_path(const char* pPath, char sep) {
@@ -387,4 +388,284 @@ void GWModelResource::write_skel(std::ostream& os, const char* pBase) {
 
 	if (pSph != nullptr) { delete[] pSph; }
 }
+
+
+static void rand_pol_colors(std::vector<GWColorF>& c, const int n) {
+	GWBase::Random rnd;
+	const int mask = 0x3F;
+	const int base = 0x90;
+	for (int i = 0; i < n; ++i) {
+		GWColorF rc;
+		for (int j = 0; j < 3; ++j) {
+			int rv = base + int(rnd.u64() & mask);
+			rc.elems[j] = float(rv);
+		}
+		rc.a = 255.0f;
+		rc.scl(1.0f / rc.a);
+		c.push_back(rc);
+	}
+}
+
+int GWCollisionResource::calc_num_tris() {
+	int ntris = 0;
+	Poly* pPols = get_pols_top();
+	if (pPols) {
+		for (int i = 0; i < mNumPol; ++i) {
+			int nvtx = pPols[i].mNumVtx;
+			ntris += nvtx - 2;
+		}
+	}
+	return ntris;
+}
+
+bool GWCollisionResource::get_poly_tri(GWVectorF vtx[3], int polIdx, int triIdx) {
+	bool res = false;
+	GWVectorF* pPnts = get_pnts_top();
+	Poly* pPols = get_pols_top();
+	int32_t* pIdx = get_idx_top();
+	if (pPnts && pPols && pIdx && check_poly_idx(polIdx)) {
+		int pntIdx[3];
+		Poly* pPol = &pPols[polIdx];
+		int nvtx = pPol->mNumVtx;
+		int ntri = nvtx - 2;
+		if (triIdx >= 0 && triIdx < ntri) {
+			if (nvtx > 3) {
+				int32_t* pTris = get_tris_top();
+				if (pTris) {
+					for (int i = 0; i < 3; ++i) {
+						pntIdx[i] = pTris[pPol->mOffsTris + triIdx*3 + i];
+					}
+					for (int i = 0; i < 3; ++i) {
+						pntIdx[i] = pIdx[pPol->mOffsIdx + pntIdx[i]];
+					}
+				}
+			} else {
+				for (int i = 0; i < 3; ++i) {
+					pntIdx[i] = pIdx[pPol->mOffsIdx + i];
+				}
+			}
+			res = true;
+		}
+	}
+	return res;
+}
+
+int GWCollisionResource::get_poly_num_tris(int polIdx) {
+	int nvtx = 0;
+	Poly* pPols = get_pols_top();
+	if (pPols && check_poly_idx(polIdx)) {
+		nvtx = pPols->mNumVtx - 2;
+	}
+	return nvtx;
+}
+
+static GWVectorF calc_tri_normal(GWVectorF v[3]) {
+	GWVectorF nrm = GWVector::cross(v[0] - v[1], v[2] - v[1]);
+	nrm.normalize();
+	return nrm;
+}
+
+int GWCollisionResource::for_all_tris(TriFunc& func, bool withNormals) {
+	int triCount = 0;
+	Poly* pPols = get_pols_top();
+	if (pPols) {
+		GWVectorF vtx[3];
+		GWVectorF nrm(0.0f);
+		for (int i = 0; i < mNumPol; ++i) {
+			int ntri = get_poly_num_tris(i);
+			for (int j = 0; j < ntri; ++j) {
+				if (get_poly_tri(vtx, i, j)) {
+					if (withNormals) {
+						nrm = calc_tri_normal(vtx);
+					}
+					func(*this, vtx, nrm, i, j);
+				}
+			}
+			triCount += ntri;
+		}
+	}
+	return triCount;
+}
+
+void GWCollisionResource::write_geo(std::ostream& os) {
+	using namespace std;
+
+	GWVectorF* pPnts = get_pnts_top();
+	Poly* pPols = get_pols_top();
+	int32_t* pIdx = get_idx_top();
+
+	os << "PGEOMETRY V5" << endl;
+	os << "NPoints " << mNumPnt << " NPrims " << mNumPol << endl;
+	os << "NPointGroups 0 NPrimGroups " << 0 << endl;
+	os << "NPointAttrib 0 NVertexAttrib 0 NPrimAttrib 0 NAttrib 0" << endl;
+
+	for (int i = 0; i < mNumPnt; ++i) {
+		GWVectorF pnt = pPnts[i];
+		os << pnt.x << " " << pnt.y << " " << pnt.z << " 1" << endl;
+	}
+
+	os << "Run " << mNumPol << " Poly" << endl;
+	for (int i = 0; i < mNumPol; ++i) {
+		int nvtx = pPols[i].mNumVtx;
+		os << " " << nvtx << " <";
+		for (int j = 0; j < nvtx; ++j) {
+			os << " " << pIdx[pPols[i].mOffsIdx + j];
+		}
+		os << endl;
+	}
+
+	os << "beginExtra" << endl;
+	os << "endExtra" << endl;
+}
+
+void GWCollisionResource::save_geo(const std::string& path) {
+	std::ofstream os(path);
+	if (os.bad()) return;
+	write_geo(os);
+	os.close();
+}
+
+void GWCollisionResource::write_tri_geo(std::ostream& os) {
+	using namespace std;
+
+	GWVectorF* pPnts = get_pnts_top();
+	Poly* pPols = get_pols_top();
+	int32_t* pIdx = get_idx_top();
+	int32_t* pTris = get_tris_top();
+
+	vector<GWColorF> polClrs;
+	rand_pol_colors(polClrs, mNumPol);
+
+	int ntris = calc_num_tris();
+
+	os << "PGEOMETRY V5" << endl;
+	os << "NPoints " << mNumPnt << " NPrims " << ntris << endl;
+	os << "NPointGroups 0 NPrimGroups " << 0 << endl;
+	os << "NPointAttrib 0 NVertexAttrib 0 NPrimAttrib 1 NAttrib 0" << endl;
+
+	for (int i = 0; i < mNumPnt; ++i) {
+		GWVectorF pnt = pPnts[i];
+		os << pnt.x << " " << pnt.y << " " << pnt.z << " 1" << endl;
+	}
+
+	os << "PrimitiveAttrib" << endl;
+	os << "Cd 3 float 1 1 1" << endl;
+
+	os << "Run " << ntris << " Poly" << endl;
+	for (int i = 0; i < mNumPol; ++i) {
+		GWColorF clr = polClrs[i];
+		int nvtx = pPols[i].mNumVtx;
+		if (nvtx > 3) {
+			for (int j = 0; j < nvtx - 2; ++j) {
+				int triVtx[3];
+				for (int k = 0; k < 3; ++k) {
+					triVtx[k] = pTris[pPols[i].mOffsTris + j*3 + k];
+				}
+				os << " 3 <";
+				for (int k = 0; k < 3; ++k) {
+					os << " " << pIdx[pPols[i].mOffsIdx + triVtx[k]];
+				}
+				os << " [" << clr.r << " " << clr.g << " " << clr.b << "]";
+				os << endl;
+			}
+		} else {
+			os << " 3 <";
+			for (int j = 0; j < nvtx; ++j) {
+				os << " " << pIdx[pPols[i].mOffsIdx + j];
+			}
+			os << " [" << clr.r << " " << clr.g << " " << clr.b << "]" << endl;
+			os << endl;
+		}
+	}
+
+	os << "beginExtra" << endl;
+	os << "endExtra" << endl;
+}
+
+void GWCollisionResource::save_tri_geo(const std::string& path) {
+	std::ofstream os(path);
+	if (os.bad()) return;
+	write_tri_geo(os);
+	os.close();
+}
+
+void GWCollisionResource::write_bvh_geo(std::ostream& os) {
+	using namespace std;
+
+	BVHNode* pNodes = get_bvh_top();
+	if (!pNodes) return;
+	int nnodes = mNumPol*2 - 1;
+	int npnt = nnodes * 8;
+	int npol = nnodes * 12;
+
+	vector<GWColorF> polClrs;
+	rand_pol_colors(polClrs, mNumPol);
+
+	os << "PGEOMETRY V5" << endl;
+	os << "NPoints " << npnt << " NPrims " << npol << endl;
+	os << "NPointGroups 0 NPrimGroups " << 0 << endl;
+	os << "NPointAttrib 0 NVertexAttrib 0 NPrimAttrib 1 NAttrib 0" << endl;
+
+	for (int i = 0; i < nnodes; ++i) {
+		GWVectorF vmin = pNodes[i].mBBoxMin;
+		GWVectorF vmax = pNodes[i].mBBoxMax;
+		os << vmin.x << " " << vmin.y << " " << vmin.z << " 1" << endl;
+		os << vmin.x << " " << vmax.y << " " << vmin.z << " 1" << endl;
+		os << vmax.x << " " << vmax.y << " " << vmin.z << " 1" << endl;
+		os << vmax.x << " " << vmin.y << " " << vmin.z << " 1" << endl;
+
+		os << vmin.x << " " << vmin.y << " " << vmax.z << " 1" << endl;
+		os << vmin.x << " " << vmax.y << " " << vmax.z << " 1" << endl;
+		os << vmax.x << " " << vmax.y << " " << vmax.z << " 1" << endl;
+		os << vmax.x << " " << vmin.y << " " << vmax.z << " 1" << endl;
+	}
+
+	os << "PrimitiveAttrib" << endl;
+	os << "Cd 3 float 1 1 1" << endl;
+
+	os << "Run " << npol << " Poly" << endl;
+	for (int i = 0; i < nnodes; ++i) {
+		GWColorF clr(0.1f, 0.1f, 0.1f);
+		int nodePolId = pNodes[i].get_poly_id();
+		if (nodePolId >= 0) {
+			clr = polClrs[nodePolId];
+		}
+
+		int org = i * 8;
+		for (int j = 0; j < 2; ++j) {
+			for (int k = 0; k < 4; ++k) {
+				int v0 = org + j*4 + k;
+				int v1 = v0 + (k < 3 ? 1 : -3);
+				os << " 2 < " << v0 << " " << v1;
+				os << " [" << clr.r << " " << clr.g << " " << clr.b << "]" << endl;
+			}
+		}
+		for (int j = 0; j < 4; ++j) {
+			os << " 2 < " << org + j <<  " " << org + j + 4;
+			os << " [" << clr.r << " " << clr.g << " " << clr.b << "]" << endl;
+		}
+	}
+
+	os << "beginExtra" << endl;
+	os << "endExtra" << endl;
+}
+
+void GWCollisionResource::save_bvh_geo(const std::string& path) {
+	std::ofstream os(path);
+	if (os.bad()) return;
+	write_bvh_geo(os);
+	os.close();
+}
+
+GWCollisionResource* GWCollisionResource::load(const std::string& path) {
+	GWCollisionResource* pCls = nullptr;
+	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID("GWCls"));
+	if (pRsrc) {
+		pCls = reinterpret_cast<GWCollisionResource*>(pRsrc);
+		GWSys::dbg_msg("+ collision resource: %s\n", pCls->get_path());
+	}
+	return pCls;
+}
+
+
 
