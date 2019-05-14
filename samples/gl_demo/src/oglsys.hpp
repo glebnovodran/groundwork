@@ -1,23 +1,17 @@
+/*
+ * Author: Gleb Novodran <novodran@gmail.com>
+ */
+
 #define OGLSYS_ES 1
 
+#if defined(_WIN32)
 #undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0500
+#endif
 #if OGLSYS_ES
 #	define DYNAMICGLES_NO_NAMESPACE
 #	define DYNAMICEGL_NO_NAMESPACE
 #	include <DynamicGles.h>
-#else
-#	define WIN32_LEAN_AND_MEAN 1
-#	undef NOMINMAX
-#	define NOMINMAX
-#	include <Windows.h>
-#	include <tchar.h>
-#	include <GL/glcorearb.h>
-#	include <GL/glext.h>
-#	include <GL/wglext.h>
-#	define OGL_FN(_type, _name) extern PFNGL##_type##PROC gl##_name;
-#	include "x_oglfn.inc"
-#	undef OGL_FN
 #endif
 
 struct OGLSysIfc {
