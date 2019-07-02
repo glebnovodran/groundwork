@@ -242,6 +242,21 @@ namespace GWUnitQuaternion {
 	}
 
 	template<typename T> GWQuaternionBase<T> from_transform(const T* pXfrom, const int n, const bool rowAxis = true);
+
+	// http://www.geometrictools.com/Documentation/ConstrainedQuaternions.pdf
+	template<typename T> GWQuaternionBase<T> closest_by_axis(const GWQuaternionBase<T>& q, int axis) {
+		GWQuaternionBase<T> res;
+		res.set_identity();
+		T e = q.mQ[axis];
+		T w = q.mQ.w;
+		T sqm = e*e + w*w;
+		if (sqm > T(0)) {
+			s = GWBase::rcp0(GWBase::tsqrt(sqm));
+			res.mQ[axis] = s * e;
+			res.w = s * w;
+		}
+		return res;
+	}
 }
 
 namespace GWQuaternion {
