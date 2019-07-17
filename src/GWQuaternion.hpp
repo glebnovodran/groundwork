@@ -247,13 +247,14 @@ namespace GWUnitQuaternion {
 	template<typename T> GWQuaternionBase<T> closest_by_axis(const GWQuaternionBase<T>& q, int axis) {
 		GWQuaternionBase<T> res;
 		res.set_identity();
-		T e = q.mQ[axis];
-		T w = q.mQ.w;
+		GWVectorBase<T> v = q.V();
+		T e = v[axis];
+		T w = q.S();
 		T sqm = e*e + w*w;
 		if (sqm > T(0)) {
-			s = GWBase::rcp0(GWBase::tsqrt(sqm));
-			res.mQ[axis] = s * e;
-			res.w = s * w;
+			T s = GWBase::rcp0(GWBase::tsqrt(sqm));
+			v[axis] = s * e;
+			res.set_vs(v, s * w);
 		}
 		return res;
 	}
