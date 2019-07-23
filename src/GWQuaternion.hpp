@@ -258,6 +258,46 @@ namespace GWUnitQuaternion {
 		}
 		return res;
 	}
+
+	template<typename T> GWQuaternionBase<T> closest_xy(const GWQuaternionBase<T>& q) {
+		GWQuaternionBase<T> res;
+		T s;
+		GWVectorBase<T> v = q.V();
+		T x = v.x;
+		T y = v.y;
+		T z = v.z;
+		T w = q.S();
+
+		T det = std::fabs(-x*y - z*w);
+		if (det < T(0.5f)) {
+			GWTuple2<T> sc0, sc1;
+			T d = GWBase::tsqrt(std::fabs(T(1.0f) - T(4.0f)*det*det));
+			T a = x*w - y*z;
+			T b = w*w - x*x + y*y - z*z;
+			if (b >= T(0.0f)) {
+				sc0[0] = a;
+				sc0[1] = T(0.5f) * (d + b);
+			} else {
+				sc0[0] = T(0.5f) * (d - b);
+				sc0[1] = a;
+			}
+			s = GWBase::rcp0(GWTuple::magnitude(sc0));
+			GWTuple::scl(sc0, s);
+
+			sc1[0] = y*sc0[1] - z*sc0[0];
+			sc1[1] = w*sc0[1] + x*sc0[0];
+			s = GWBase::rcp0(GWTuple::magnitude(sc1));
+			GWTuple::scl(sc1, s);
+
+			const GWVectorBase<T> v(sc0[0]*sc1[1], sc0[1]*sc1[0], - sc0[0]*sc1[0]);
+			res.set_vs(v, sc0[1]*sc1[1]);
+		} else {
+			s = GWBase::rcp0(GWBase::tsqrt(det));
+			const GWVectorBase<T> v(x*s, T(0.0f), T(0.0f));
+			res.set_vs(v, w*s);
+		}
+		return res;
+	}
 }
 
 namespace GWQuaternion {

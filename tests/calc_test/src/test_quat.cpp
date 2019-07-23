@@ -82,13 +82,23 @@ static bool test_to_transform() {
 	return res;
 }
 
+static bool test_closest() {
+	GWQuaternionF q;
+	q.set_degrees(30.0f, 0.5f, 0.0f);
+	q.normalize();
+	GWQuaternionF cnstrd = GWUnitQuaternion::closest_by_axis(q, 0);
+	cnstrd = GWUnitQuaternion::closest_xy(q);
+	return true;
+}
+
 static TEST_ENTRY s_quat_tests[] = {
 	TEST_DECL(test_quat_set_get),
 	TEST_DECL(test_quat_set_get_rad),
 	TEST_DECL(test_apply),
 	TEST_DECL(test_quat_expmap),
 	TEST_DECL(test_get_transform),
-	TEST_DECL(test_to_transform)
+	TEST_DECL(test_to_transform),
+	TEST_DECL(test_closest)
 };
 
 bool test_quat() {
