@@ -26,10 +26,18 @@ public:
 
 	const GWVectorBase<T> V() const { return GWVectorBase<T>(mQ.x, mQ.y, mQ.z); }
 	T S() const { return mQ.w; };
-	void set_vs(const GWVectorBase<T>& v, T s = 0) {
+	void set_vs(const GWVectorBase<T>& v, const T s = 0) {
 		mQ.x = v.x;
 		mQ.y = v.y;
 		mQ.z = v.z;
+		mQ.w = s;
+	}
+	void set_v(const GWVectorBase<T>& v) {
+		mQ.x = v.x;
+		mQ.y = v.y;
+		mQ.z = v.z;
+	}
+	void set_s(const T s) {
 		mQ.w = s;
 	}
 
@@ -296,6 +304,18 @@ namespace GWUnitQuaternion {
 			const GWVectorBase<T> v(x*s, T(0.0f), T(0.0f));
 			res.set_vs(v, w*s);
 		}
+		return res;
+	}
+
+	template<typename T> GWQuaternionBase<T> closest_yx(const GWQuaternionBase<T>& q) {
+		GWQuaternionBase<T> p;
+		GWVectorBase<T> v = q.V();
+		v.z = -v.z;
+		p.set_v(v);
+		GWQuaternionBase<T> res = closest_xy(p);
+		v = res.V();
+		v.z = -v.z;
+		res.set_v(v);
 		return res;
 	}
 }
