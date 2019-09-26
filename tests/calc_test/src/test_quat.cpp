@@ -84,10 +84,31 @@ static bool test_to_transform() {
 
 static bool test_closest() {
 	GWQuaternionF q;
-	q.set_degrees(30.0f, 0.5f, 0.0f);
+	q.set_degrees(30.0f, 0.0f, 0.0f);
 	q.normalize();
 	GWQuaternionF cnstrd = GWUnitQuaternion::closest_by_axis(q, 0);
+	float dist = q.arc_distance(cnstrd);
+	if (dist>0.001f) return false;
+
+	GWQuaternionF qq;
+	qq.set_degrees(15.0f, -30.0f, 75.0f);
+	q.set_degrees(15.0f, 0.0f, 0.0f);
+	cnstrd = GWUnitQuaternion::closest_by_axis(q, 0);
+	dist = q.arc_distance(cnstrd);
+	if (dist>0.001f) return false;
+
+	q.set_degrees(0.0f, -30.0f, 0.0f);
+	cnstrd = GWUnitQuaternion::closest_by_axis(q, 1);
+	dist = q.arc_distance(cnstrd);
+	if (dist>0.001f) return false;
+
+	q.set_degrees(0.0f, 0.0f, 75.0f);
+	cnstrd = GWUnitQuaternion::closest_by_axis(q, 2);
+	dist = q.arc_distance(cnstrd);
+	if (dist>0.001f) return false;
+
 	cnstrd = GWUnitQuaternion::closest_xy(q);
+	cnstrd = GWUnitQuaternion::closest_yx(q);
 	return true;
 }
 
