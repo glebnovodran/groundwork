@@ -1,3 +1,7 @@
+/*
+ * Author: Gleb Novodran <novodran@gmail.com>
+ */
+
 class DemoIfc {
 public:
 	virtual void init() = 0;

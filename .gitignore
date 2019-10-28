@@ -20,7 +20,7 @@ todo.txt
 *.idb
 **/CMakeFiles/*
 CMakeCache.txt
-*.cmake
+cmake_install.cmake
 **/Makefile
 .vscode
 .vs
