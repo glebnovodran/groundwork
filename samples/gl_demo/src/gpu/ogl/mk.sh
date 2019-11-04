@@ -4,7 +4,6 @@ function shader() {
 	local outname=$1
 	echo $outname
 	shift
-	echo "==========="
 	while test ${#} -gt 0
 	do
 		echo "	${1}"
@@ -30,8 +29,12 @@ pwd
 #echo "${GLSL}"
 if [ -z "$GPU_DST_DIR" ]; then
 	echo "GPU_DST_DIR is not set"
-	export GPU_DST_DIR=.
+	export GPU_DST_DIR=./out
+	echo "Exporting to ${GPU_DST_DIR}"
+	mkdir ${GPU_DST_DIR}
 fi
+
+rm ${GPU_DST_DIR}/*
 
 if [ -z "${GLSL}" ]; then
 	echo "Path to GLSL validator is not set"
