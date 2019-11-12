@@ -28,6 +28,7 @@ set(GW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../groundwork/src")
 
 add_executable(gl_demo
 	src/oglsys.cpp
+	src/gpu.cpp
 	src/skinanim.cpp
 	src/main.cpp
 )
