@@ -5,24 +5,6 @@ enum GPUTexUnit {
 	TEXUNIT_SHADOW
 };
 
-struct GPUTex {
-	GLuint mHandle;
-	int mWidth;
-	int mHeight;
-	uint32_t* mpData;
-
-	GPUTex() : mHandle(0), mWidth(0), mHeight(0), mpData(nullptr) {}
-
-	~GPUTex() {
-		destroy();
-	}
-
-	void create(const GWImage& img, bool nonlin);
-	void destroy();
-	GLuint get_handle();
-	void reset();
-};
-
 struct GPUAttrLink {
 	void reset() { memset(this, 0xFF, sizeof(*this)); }
 };
