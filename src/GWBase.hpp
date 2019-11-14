@@ -97,6 +97,10 @@ namespace GWBase {
 		return ua.u > ub.u ? ua.u - ub.u : ub.u - ua.u;
 	}
 
+	inline uintptr_t align(uintptr_t x, int a) {
+		return ((x + (a - 1)) / a) * a;
+	}
+
 	template<typename T> inline bool almost_equal(T a, T b, T eps = T(0.0001f)) {
 		return (T(std::fabs(a - b)) <= eps);
 	}
