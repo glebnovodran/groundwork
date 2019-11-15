@@ -63,15 +63,18 @@ GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	}
 
 	fs.seekg(offsetof(GWResource, mDataSize));
-	uint32_t size = 0;
-	fs.read((char*)&size, 4);
-	if (size < 0x10) return nullptr;
+	uint32_t fsize = 0;
+	fs.read((char*)&fsize, 4);
+	if (fsize < 0x10) return nullptr;
+	uint32_t size = fsize + sizeof(Binding); // unaligned
+
 	char* pBuf = new char[size];
 	if (pBuf) {
 		fs.seekg(std::ios::beg);
 		fs.read(pBuf, size);
 	}
-
+	uint8_t* pBinding = GWBase::incr_ptr(pBuf, fsize);
+	std::fill_n(pBinding, sizeof(Binding),0);
 	fs.close();
 	return reinterpret_cast<GWResource*>(pBuf);
 }
@@ -234,6 +237,7 @@ GWModelResource* GWModelResource::load(const std::string& path) {
 	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID("GWModel"));
 	if (pRsrc) {
 		pMdr = reinterpret_cast<GWModelResource*>(pRsrc);
+		//const char* rpath = pMdr->get_path();
 		GWSys::dbg_msg("+ model resource: %s\n", pMdr->get_path());
 	}
 	return pMdr;

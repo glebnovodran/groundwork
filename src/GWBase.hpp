@@ -101,6 +101,10 @@ namespace GWBase {
 		return ((x + (a - 1)) / a) * a;
 	}
 
+	inline uint8_t* incr_ptr(void* ptr, const uint32_t inc) {
+		return &reinterpret_cast<uint8_t*>(ptr)[inc];
+	}
+
 	template<typename T> inline bool almost_equal(T a, T b, T eps = T(0.0001f)) {
 		return (T(std::fabs(a - b)) <= eps);
 	}

@@ -21,12 +21,33 @@ namespace GWResourceUtil {
 	const char* get_kind_string(GWResourceKind kind);
 }
 
-struct GWResource {
+class GWResource {
+protected:
 	/* +00 */ char mSignature[0x10];
 	/* +10 */ uint32_t mVersion;
 	/* +14 */ uint32_t mDataSize;
 	/* +18 */ uint32_t mStrsTop;
 	/* +1C */ uint32_t mStrsSize;
+
+	struct Binding {
+		void* pMem;
+	};
+
+	Binding* get_binding_ptr() {
+		reinterpret_cast<Binding*>(GWBase::incr_ptr(this, mDataSize));
+	}
+
+	Binding get_binding() {
+		Binding* pBinding = get_binding_ptr();
+		Binding bnd;
+		// since Binding was allocated unaligned
+		std::memcpy(&bnd, pBinding, sizeof(Binding));
+		return bnd;
+	}
+	void set_binding(const Binding& bnd) {
+		Binding* pBinding = get_binding_ptr();
+		std::memcpy(pBinding, &bnd, sizeof(Binding));
+	}
 
 	const char* get_str(uint32_t offs = 0) const {
 		if (offs < mStrsSize) {
@@ -42,15 +63,33 @@ struct GWResource {
 		return nullptr;
 	}
 
+public:
+
 	static GWResource* load(const std::string& path, const char* pSig);
 	static void unload(GWResource* pRsrc) {
 		if (pRsrc) {
 			delete[] reinterpret_cast<char*>(pRsrc);
 		}
 	}
+
+	void alloc_binding_memory(uint32_t size) {
+		Binding bnd = get_binding();
+		bnd.pMem = malloc(size);
+		set_binding(bnd);
+	}
+	void set_binding_memory(void* pMem) {
+		Binding bnd = get_binding();
+		bnd.pMem = pMem;
+		set_binding(bnd);
+	}
+	void* get_binding_memory() {
+		Binding bnd = get_binding();
+		return bnd.pMem;
+	}
 };
 
-struct GWModelResource : public GWResource {
+class GWModelResource : public GWResource {
+public:
 	/* +20 */ uint32_t mPathOffs;
 	/* +24 */ uint32_t mNumPnt;
 	/* +28 */ uint32_t mNumTri;
@@ -341,7 +380,8 @@ struct GWModelResource : public GWResource {
 	}
 };
 
-struct GWCollisionResource : public GWResource {
+class GWCollisionResource : public GWResource {
+public:
 	/* +20 */ uint32_t mPathOffs;
 	/* +24 */ int32_t mNumPnt;
 	/* +28 */ int32_t mNumPol;
@@ -420,13 +460,14 @@ struct GWCollisionResource : public GWResource {
 	static GWCollisionResource* load(const std::string& path);
 };
 
-struct GWCatalog : public GWResource {
-	uint32_t mNum;
-	struct Entry {
-		uint32_t mKind;
-		int32_t mNameOffs;
-		int32_t mFileNameOffs;
-	} mList[1];
+class GWCatalog : public GWResource {
+public:
+	/* +20 */ uint32_t mNum;
+	/* +24 */ struct Entry {
+				uint32_t mKind;
+				int32_t mNameOffs;
+				int32_t mFileNameOffs;
+			} mList[1];
 
 	bool check_idx(uint32_t idx) const { return idx < mNum; }
 	const char* get_name(uint32_t idx) const { return check_idx(idx) ? get_str(mList[idx].mNameOffs) : nullptr; }
