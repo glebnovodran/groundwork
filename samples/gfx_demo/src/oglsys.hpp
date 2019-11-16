@@ -1,4 +1,4 @@
-#define OGLSYS_ES 0
+#define OGLSYS_ES 1
 
 #if defined(ANDROID)
 #	define OGLSYS_ANDROID
