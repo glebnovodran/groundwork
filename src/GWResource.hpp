@@ -74,8 +74,15 @@ public:
 
 	void alloc_binding_memory(uint32_t size) {
 		Binding bnd = get_binding();
-		bnd.pMem = malloc(size);
+		bnd.pMem = new uint8_t[size];
 		set_binding(bnd);
+	}
+	void release_binding_memory() {
+		Binding bnd = get_binding();
+		if (bnd.pMem != nullptr) {
+			delete[] bnd.pMem;
+			bnd.pMem = nullptr;
+		}
 	}
 	void set_binding_memory(void* pMem) {
 		Binding bnd = get_binding();
