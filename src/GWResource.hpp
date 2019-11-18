@@ -80,7 +80,7 @@ public:
 	void release_binding_memory() {
 		Binding bnd = get_binding();
 		if (bnd.pMem != nullptr) {
-			delete[] bnd.pMem;
+			delete[] (uint8_t*)bnd.pMem;
 			bnd.pMem = nullptr;
 		}
 	}
