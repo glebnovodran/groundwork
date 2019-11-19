@@ -488,16 +488,25 @@ void test_image(const std::string& imgPath) {
 	}
 }
 
-void test_model_recource(const std::string& mdlPath) {
+void test_model(const std::string& mdlPath) {
 	using namespace std;
 
-	GWModelResource* pMdlRsc = GWModelResource::load(mdlPath);
-	if (pMdlRsc == nullptr) {
+	GWModelResource* pMdr = GWModelResource::load(mdlPath);
+	if (pMdr == nullptr) {
 		cout << "Cannot load the model file" << endl;
 		return;
 	}
-	GWModelResource::Material* pMtl = pMdlRsc->get_mtl(0);
-	pMdlRsc->save_geo("out.geo");
+	GWModelResource::Material* pMtl = pMdr->get_mtl(0);
+	pMdr->alloc_binding_memory(32);
+	uint32_t* pMdlMem = pMdr->get_binding_memory<uint32_t>();
+	*pMdlMem = 16;
+	pMdr->save_geo("out.geo");
+
+	GWModel* pMdl = GWModel::create(pMdr, 0x200, 0x300);
+	if (pMdl) {
+	} else {
+		cout<< "Couldn't create model out of " << mdlPath << endl;
+	}
 }
 
 void test_gwcat(const char* pPath) {
@@ -523,9 +532,8 @@ int main(int argc, char* argv[]) {
 	test_xform();
 	test_quat();
 	test_motion("../data/walk_rn.txt");
-
 	test_image("../data/pano_test1_h.dds");
-	test_model_recource("../data/cook_rb/cook_rb.gwmdl");
+	test_model(argv[1]);
 	test_gwcat("../data/cook_rb/cook_rb.gwcat");
 
 	GWCamera cam;

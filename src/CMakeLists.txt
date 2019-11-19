@@ -22,6 +22,7 @@ add_library(Groundwork STATIC
 	GWImage.cpp
 	GWSphericalHarmonics.cpp
 	GWResource.cpp
+	GWModel.cpp
 	${TDMOTION_DIR}/TDMotion.cpp
 )
 
