@@ -88,10 +88,14 @@ public:
 		Binding bnd = get_binding();
 		bnd.pMem = pMem;
 		set_binding(bnd);
-	}
+	}/*
 	void* get_binding_memory() {
 		Binding bnd = get_binding();
 		return bnd.pMem;
+	}*/
+	template<typename T> T* get_binding_memory() {
+		Binding bnd = get_binding();
+		return reinterpret_cast<T*>(bnd.pMem);
 	}
 };
 
