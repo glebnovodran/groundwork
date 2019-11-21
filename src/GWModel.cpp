@@ -60,3 +60,9 @@ GWModel* GWModel::create(GWModelResource* pMdr, const size_t paramMemSz, const s
 	pMdl->mWorld.set_identity();
 	return pMdl;
 }
+
+void GWModel::destroy(GWModel* pMdl) {
+	if (pMdl) {
+		delete[] reinterpret_cast<uint8_t*>(pMdl);
+	}
+}
