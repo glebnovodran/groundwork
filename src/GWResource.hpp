@@ -22,7 +22,7 @@ namespace GWResourceUtil {
 }
 
 class GWResource {
-protected:
+public:
 	/* +00 */ char mSignature[0x10];
 	/* +10 */ uint32_t mVersion;
 	/* +14 */ uint32_t mDataSize;
@@ -63,16 +63,17 @@ protected:
 		return nullptr;
 	}
 
-public:
-
 	static GWResource* load(const std::string& path, const char* pSig);
 	static void unload(GWResource* pRsrc) {
 		if (pRsrc) {
+			if (pRsrc->binding_memory_allocated()) {
+				GWSys::dbg_msg("Warning: Unloading a resource that has an allocated binding memory");
+			}
 			delete[] reinterpret_cast<char*>(pRsrc);
 		}
 	}
 
-	bool binding_memory_allocated() const {
+	bool binding_memory_allocated() {
 		Binding bnd = get_binding();
 		return bnd.pMem != nullptr;
 	}

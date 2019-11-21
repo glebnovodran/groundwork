@@ -237,7 +237,6 @@ GWModelResource* GWModelResource::load(const std::string& path) {
 	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID("GWModel"));
 	if (pRsrc) {
 		pMdr = reinterpret_cast<GWModelResource*>(pRsrc);
-		//const char* rpath = pMdr->get_path();
 		GWSys::dbg_msg("+ model resource: %s\n", pMdr->get_path());
 	}
 	return pMdr;
