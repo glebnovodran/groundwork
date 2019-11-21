@@ -72,6 +72,10 @@ public:
 		}
 	}
 
+	bool binding_memory_allocated() const {
+		Binding bnd = get_binding();
+		return bnd.pMem != nullptr;
+	}
 	void alloc_binding_memory(uint32_t size) {
 		Binding bnd = get_binding();
 		bnd.pMem = new uint8_t[size];
