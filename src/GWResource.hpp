@@ -34,7 +34,7 @@ public:
 	};
 
 	Binding* get_binding_ptr() {
-		reinterpret_cast<Binding*>(GWBase::incr_ptr(this, mDataSize));
+		return reinterpret_cast<Binding*>(GWBase::incr_ptr(this, mDataSize));
 	}
 
 	Binding get_binding() {
