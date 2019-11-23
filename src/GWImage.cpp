@@ -67,11 +67,11 @@ GWImage* GWImage::read_dds(std::ifstream& ifs) {
 }
 
 GWImage* GWImage::read_dds(const std::string& path) {
-	using namespace std;
+	DDSHead* pDDS = reinterpret_cast<DDSHead*>(GWSys::bin_load(path.c_str()));
 	GWImage* pImg = nullptr;
-	ifstream ifs(path, ios::binary);
-	if (ifs.good()) {
-		pImg = read_dds(ifs);
+	if (pDDS) {
+		pImg = from_dds(*pDDS);
+		GWSys::bin_free(pDDS);
 	}
 	return pImg;
 }
