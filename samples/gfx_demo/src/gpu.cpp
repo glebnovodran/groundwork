@@ -3,5 +3,5 @@
  */
 
 #include <groundwork.hpp>
-#include "oglsys.hpp"
+#include <oglsys.hpp>
 #include "gpu.hpp"
