@@ -83,6 +83,9 @@ static struct OGLSysGlb {
 #elif defined(OGLSYS_X11)
 	Display* mpXDisplay;
 	Window mXWnd;
+#elif defined(OGLSYS_VIVANTE_FB)
+	EGLNativeDisplayType mVivDisp;
+	EGLNativeWindowType mVivWnd;
 #endif
 
 	uint64_t mFrameCnt;
@@ -115,7 +118,11 @@ static struct OGLSysGlb {
 		PFNGLGENVERTEXARRAYSOESPROC pfnGenVertexArrays;
 		PFNGLDELETEVERTEXARRAYSOESPROC pfnDeleteVertexArrays;
 		PFNGLBINDVERTEXARRAYOESPROC pfnBindVertexArray;
+	#ifdef OGLSYS_VIVANTE_FB
+		void* pfnDrawElementsBaseVertex;
+	#else
 		PFNGLDRAWELEMENTSBASEVERTEXOESPROC pfnDrawElementsBaseVertex;
+	#endif
 #endif
 		bool bindlessTex;
 		bool ASTC_LDR;
@@ -736,6 +743,29 @@ void OGLSysGlb::init_wnd() {
 	XEvent evt;
 	XIfEvent(mpXDisplay, &evt, wait_MapNotify, (char*)mXWnd);
 	XSelectInput(mpXDisplay, mXWnd, ButtonPressMask | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | PointerMotionMask);
+#elif defined(OGLSYS_VIVANTE_FB)
+	mVivDisp = fbGetDisplayByIndex(0);
+	int vivW = 0;
+	int vivH = 0;
+	fbGetDisplayGeometry(mVivDisp, &vivW, &vivH);
+	dbg_msg("Vivante display: %d x %d\n", vivW, vivH);
+	int vivX = 0;
+	int vivY = 0;
+	if (mReduceRes) {
+		const float vivReduce = 0.5f;
+		int fullVivW = vivW;
+		int fullVivH = vivH;
+		vivW = int(float(fullVivW) * vivReduce);
+		vivH = int(float(fullVivH) * vivReduce);
+		vivX = (fullVivW - vivW) / 2;
+		vivY = (fullVivH - vivH) / 2;
+		dbg_msg("Reduced resolution: %d x %d\n", vivW, vivH);
+	}
+	mWidth = vivW;
+	mHeight = vivH;
+	mWndW = mWidth;
+	mWndH = mHeight;
+	mVivWnd = fbCreateWindow(mVivDisp, vivX, vivY, mWidth, mHeight);
 #endif
 
 #if !defined(OGLSYS_ANDROID)
@@ -757,8 +787,20 @@ void OGLSysGlb::reset_wnd() {
 		XCloseDisplay(mpXDisplay);
 		mpXDisplay = nullptr;
 	}
+#elif defined(OGLSYS_VIVANTE_FB)
+	fbDestroyWindow(mVivWnd);
+	fbDestroyDisplay(mVivDisp);
 #endif
 }
+
+#if defined(OGLSYS_VIVANTE_FB)
+#	define OGLSYS_ES_ALPHA_SIZE 0
+#	define OGLSYS_ES_DEPTH_SIZE 16
+#else
+#	define OGLSYS_ES_ALPHA_SIZE 8
+#	define OGLSYS_ES_DEPTH_SIZE 24
+
+#endif
 
 void OGLSysGlb::init_ogl() {
 	if (mWithoutCtx) {
@@ -775,7 +817,9 @@ void OGLSysGlb::init_ogl() {
 	if (mpXDisplay) {
 		mEGL.display = eglGetDisplay((EGLNativeDisplayType)mpXDisplay);
 	}
-#endif
+#	elif defined(OGLSYS_VIVANTE_FB)
+	mEGL.display = eglGetDisplay(mVivDisp);
+#	endif
 	if (!valid_display()) return;
 	int verMaj = 0;
 	int verMin = 0;
@@ -789,8 +833,8 @@ void OGLSysGlb::init_ogl() {
 		EGL_RED_SIZE, 8,
 		EGL_GREEN_SIZE, 8,
 		EGL_BLUE_SIZE, 8,
-		EGL_ALPHA_SIZE, 8,
-		EGL_DEPTH_SIZE, 24,
+		EGL_ALPHA_SIZE, OGLSYS_ES_ALPHA_SIZE,
+		EGL_DEPTH_SIZE, OGLSYS_ES_DEPTH_SIZE,
 		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
 		EGL_NONE
@@ -800,14 +844,14 @@ void OGLSysGlb::init_ogl() {
 	flg = !!eglChooseConfig(mEGL.display, cfgAttrs, &mEGL.config, 1, &ncfg);
 	if (!flg) {
 		static EGLint cfgAttrs2[] = {
-				EGL_RED_SIZE, 8,
-				EGL_GREEN_SIZE, 8,
-				EGL_BLUE_SIZE, 8,
-				EGL_ALPHA_SIZE, 8,
-				EGL_DEPTH_SIZE, 24,
-				EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-				EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-				EGL_NONE
+			EGL_RED_SIZE, 8,
+			EGL_GREEN_SIZE, 8,
+			EGL_BLUE_SIZE, 8,
+			EGL_ALPHA_SIZE, OGLSYS_ES_ALPHA_SIZE,
+			EGL_DEPTH_SIZE, OGLSYS_ES_DEPTH_SIZE,
+			EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+			EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+			EGL_NONE
 		};
 		useGLES2 = true;
 		flg = !!eglChooseConfig(mEGL.display, cfgAttrs2, &mEGL.config, 1, &ncfg);
@@ -821,6 +865,8 @@ void OGLSysGlb::init_ogl() {
 		mhWnd
 #elif defined(OGLSYS_X11)
 		(EGLNativeWindowType)mXWnd
+#elif defined(OGLSYS_VIVANTE_FB)
+		mVivWnd;
 #else
 		(EGLNativeWindowType)0
 #endif
@@ -839,6 +885,15 @@ void OGLSysGlb::init_ogl() {
 			EGL_NONE
 	};
 	mEGL.context = eglCreateContext(mEGL.display, mEGL.config, nullptr, useGLES2 ? ctxAttrs2 : ctxAttrs);
+	if (!valid_context() && !useGLES2) {
+		static EGLint ctxAttrs3[] = {
+			EGL_CONTEXT_MAJOR_VERSION_KHR, 3,
+			EGL_CONTEXT_MINOR_VERSION_KHR, 0,
+			EGL_CONTEXT_CLIENT_VERSION, 3,
+			EGL_NONE
+		};
+		mEGL.context = eglCreateContext(mEGL.display, mEGL.config, nullptr, ctxAttrs3);
+	}
 	if (!valid_context()) return;
 	eglMakeCurrent(mEGL.display, mEGL.surface, mEGL.surface, mEGL.context);
 	eglSwapInterval(mEGL.display, 1);
@@ -941,7 +996,35 @@ void OGLSysGlb::init_ogl() {
 	mExts.pfnGenVertexArrays = (PFNGLGENVERTEXARRAYSOESPROC)eglGetProcAddress("glGenVertexArraysOES");
 	mExts.pfnDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress("glDeleteVertexArraysOES");
 	mExts.pfnBindVertexArray = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress("glBindVertexArrayOES");
+	#ifdef OGLSYS_VIVANTE_FB
+	mExts.pfnDrawElementsBaseVertex = nullptr;
+	#else
 	mExts.pfnDrawElementsBaseVertex = (PFNGLDRAWELEMENTSBASEVERTEXOESPROC)eglGetProcAddress("glDrawElementsBaseVertexOES");
+	#endif
+#endif
+	
+#if defined(OGLSYS_VIVANTE_FB)
+	if (mReduceRes) {
+		int vivW = 0;
+		int vivH = 0;
+		fbGetDisplayGeometry(mVivDisp, &vivW, &vivH);
+		EGLNativeWindowType vivWnd = fbCreateWindow(mVivDisp, 0, 0, vivW, vivH);
+		EGLSurface vivSurf = eglCreateWindowSurface(mEGL.display, mEGL.config, vivWnd, nullptr);
+		eglMakeCurrent(mEGL.display, vivSurf, vivSurf, mEGL.context);
+		glViewport(0, 0, vivW, vivH);
+		glScissor(0, 0, vivW, vivH);
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		for (int i = 0; i < 8; ++i) {
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			eglSwapBuffers(mEGL.display, vivSurf);
+		}
+		eglDestroySurface(mEGL.display, vivSurf);
+		eglMakeCurrent(mEGL.display, mEGL.surface, mEGL.surface, mEGL.context);
+		fbDestroyWindow(vivWnd);
+		glViewport(0, 0, mWidth, mHeight);
+		glScissor(0, 0, mWidth, mHeight);
+	}
 #endif
 }
 
@@ -1256,10 +1339,12 @@ namespace OGLSys {
 			++GLG.mFrameCnt;
 		}
 #else
-		if (pLoop) {
-			pLoop();
+		while (true) {
+			if (pLoop) {
+				pLoop();
+			}
+			++GLG.mFrameCnt;
 		}
-		++GLG.mFrameCnt;
 #endif
 	}
 
@@ -1330,7 +1415,20 @@ namespace OGLSys {
 						char* pInfo = (char*)GLG.mem_alloc(infoLen);
 						if (pInfo) {
 							glGetShaderInfoLog(sid, infoLen, &infoLen, pInfo);
-							GLG.dbg_msg("%s", pInfo);
+							const int infoBlkSize = 512;
+							char infoBlk[infoBlkSize + 1];
+							infoBlk[infoBlkSize] = 0;
+							int nblk = infoLen / infoBlkSize;
+							for (int i = 0; i < nblk; ++i) {
+								::memcpy(infoBlk, &pInfo[infoBlkSize * i], infoBlkSize);
+								GLG.dbg_msg("%s", infoBlk);
+							}
+							int endSize = infoLen % infoBlkSize;
+							if (endSize) {
+								::memcpy(infoBlk, &pInfo[infoBlkSize * nblk], endSize);
+								infoBlk[endSize] = 0;
+								GLG.dbg_msg("%s", infoBlk);
+							}
 							GLG.mem_free(pInfo);
 							pInfo = nullptr;
 						}
@@ -1614,9 +1712,11 @@ namespace OGLSys {
 
 	void draw_tris_base_vtx(const int ntris, const GLenum idxType, const intptr_t ibOrg, const int baseVtx) {
 #if OGLSYS_ES
+		#if !defined(OGLSYS_VIVANTE_FB)
 		if (GLG.mExts.pfnDrawElementsBaseVertex != nullptr) {
 			GLG.mExts.pfnDrawElementsBaseVertex(GL_TRIANGLES, ntris * 3, idxType, (const void*)ibOrg, baseVtx);
 		}
+		#endif
 #elif defined(OGLSYS_APPLE)
 #else
 		if (glDrawElementsBaseVertex != nullptr) {

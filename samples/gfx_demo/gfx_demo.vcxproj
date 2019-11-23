@@ -19,18 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ext\oglsys\oglsys.hpp" />
     <ClInclude Include="src\demo.hpp" />
     <ClInclude Include="src\gpu.hpp" />
-    <ClInclude Include="src\oglsys.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\ext\oglsys\oglsys.cpp" />
     <ClCompile Include="src\gpu.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\oglsys.cpp" />
     <ClCompile Include="src\skinanim.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\oglsys.inc" />
+    <None Include="..\..\ext\oglsys\oglsys.inc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
