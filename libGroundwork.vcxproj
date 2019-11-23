@@ -25,6 +25,7 @@
     <ClCompile Include="src\GWImage.cpp" />
     <ClCompile Include="src\GWList.cpp" />
     <ClCompile Include="src\GWMatrix.cpp" />
+    <ClCompile Include="src\GWModel.cpp" />
     <ClCompile Include="src\GWMotion.cpp" />
     <ClCompile Include="src\GWQuaternion.cpp" />
     <ClCompile Include="src\GWRay.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="src\GWImage.hpp" />
     <ClInclude Include="src\GWList.hpp" />
     <ClInclude Include="src\GWMatrix.hpp" />
+    <ClInclude Include="src\GWModel.hpp" />
     <ClInclude Include="src\GWMotion.hpp" />
     <ClInclude Include="src\GWQuaternion.hpp" />
     <ClInclude Include="src\GWRay.hpp" />
