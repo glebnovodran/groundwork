@@ -10,6 +10,7 @@ enum class GWResourceKind {
 	// native
 	CATALOG = 0,
 	MODEL = 1,
+	COLLI_DATA = 2,
 	// foreign
 	DDS = 0x100,
 	TDMOT = 0x101,
