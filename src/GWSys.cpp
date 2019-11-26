@@ -30,12 +30,12 @@ namespace GWSys {
 		va_end(lst);
 #ifdef _WIN32
 		OutputDebugStringA(buf);
-#elif defined(UNIX)
+#else
 		std::cout << buf << std::endl;
 #endif
 	}
 
-	double GWSys::time_micros() {
+	double time_micros() {
 		using namespace std::chrono;
 		auto t = high_resolution_clock::now();
 		return (double)duration_cast<nanoseconds>(t.time_since_epoch()).count() * 1.0e-3;

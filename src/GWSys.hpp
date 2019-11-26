@@ -1,7 +1,7 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
-
+#include <cstddef>
 namespace GWSys {
 	void dbg_msg(const char* pFmt, ...);
 	double time_micros();
