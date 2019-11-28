@@ -65,14 +65,7 @@ public:
 	}
 
 	static GWResource* load(const std::string& path, const char* pSig);
-	static void unload(GWResource* pRsrc) {
-		if (pRsrc) {
-			if (pRsrc->binding_memory_allocated()) {
-				GWSys::dbg_msg("Warning: Unloading a resource that has an allocated binding memory");
-			}
-			delete[] reinterpret_cast<char*>(pRsrc);
-		}
-	}
+	static void unload(GWResource* pRsrc);
 
 	bool binding_memory_allocated() {
 		Binding bnd = get_binding();
@@ -80,13 +73,13 @@ public:
 	}
 	void alloc_binding_memory(uint32_t size) {
 		Binding bnd = get_binding();
-		bnd.pMem = new uint8_t[size];
+		bnd.pMem = new char[size];
 		set_binding(bnd);
 	}
 	void release_binding_memory() {
 		Binding bnd = get_binding();
 		if (bnd.pMem != nullptr) {
-			delete[] (uint8_t*)bnd.pMem;
+			delete[] (char*)bnd.pMem;
 			bnd.pMem = nullptr;
 		}
 	}
@@ -94,11 +87,7 @@ public:
 		Binding bnd = get_binding();
 		bnd.pMem = pMem;
 		set_binding(bnd);
-	}/*
-	void* get_binding_memory() {
-		Binding bnd = get_binding();
-		return bnd.pMem;
-	}*/
+	}
 	template<typename T> T* get_binding_memory() {
 		Binding bnd = get_binding();
 		return reinterpret_cast<T*>(bnd.pMem);

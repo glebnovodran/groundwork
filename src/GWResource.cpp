@@ -27,6 +27,7 @@ const char* GWResourceUtil::get_kind_string(GWResourceKind kind) {
 	switch (kind) {
 	case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
 	case GWResourceKind::MODEL: pStr = "Model"; break;
+	case GWResourceKind::COLLI_DATA: pStr = "Collision geo"; break;
 	case GWResourceKind::DDS: pStr = "DDS"; break;
 	case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
 	case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;
@@ -50,32 +51,46 @@ void write_py_mtx(std::ostream& os, const GWTransformF& xform) {
 	os << "]";
 }
 
+void GWResource::unload(GWResource* pRsrc) {
+	if (pRsrc) {
+		if (pRsrc->binding_memory_allocated()) {
+			GWSys::dbg_msg("Warning: Unloading a resource that has an allocated binding memory");
+		}
+		delete[] reinterpret_cast<char*>(pRsrc);
+	}
+}
+
 GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	char sig[0x10];
-	std::cout<<pSig<<std::endl;
-	std::ifstream fs(path, std::ios::binary);
-	if (fs.bad()) { return nullptr; }
-
-	fs.read(sig, 0x10);
-	if (::memcmp(sig, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) != 0) { return nullptr; }
-	if (pSig) {
-		if (::strcmp(sig, pSig) != 0) { return nullptr; }
+	char* pBuf = nullptr;
+	size_t fsize = 0;
+	FILE* pFile = nullptr;
+	const char* pMode = "rb";
+#if defined(_MSC_VER)
+	fopen_s(&pFile, pPath, pMode);
+#else
+	pFile = fopen(path.c_str(), pMode);
+#endif
+	if (pFile) {
+		if (fseek(pFile, 0, SEEK_END) == 0) {
+			fsize = ftell(pFile);
+		}
+		fseek(pFile, 0, SEEK_SET);
+		if (fsize > 0x10) {
+			fread(sig, 1, 0x10, pFile);
+			if (::memcmp(sig, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) == 0) {
+				uint32_t size = fsize + sizeof(Binding); // unaligned
+				fseek(pFile, 0, SEEK_SET);
+				pBuf = new char[size];
+				if (pBuf) {
+					fread(pBuf, 1, fsize, pFile);
+					uint8_t* pBinding = GWBase::incr_ptr(pBuf, fsize);
+					std::fill_n(pBinding, sizeof(Binding),0);
+				}
+			}
+		}
+		fclose(pFile);
 	}
-
-	fs.seekg(offsetof(GWResource, mDataSize));
-	uint32_t fsize = 0;
-	fs.read((char*)&fsize, 4);
-	if (fsize < 0x10) return nullptr;
-	uint32_t size = fsize + sizeof(Binding); // unaligned
-
-	char* pBuf = new char[size];
-	if (pBuf) {
-		fs.seekg(std::ios::beg);
-		fs.read(pBuf, size);
-	}
-	uint8_t* pBinding = GWBase::incr_ptr(pBuf, fsize);
-	std::fill_n(pBinding, sizeof(Binding),0);
-	fs.close();
 	return reinterpret_cast<GWResource*>(pBuf);
 }
 
