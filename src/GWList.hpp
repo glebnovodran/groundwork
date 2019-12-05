@@ -35,6 +35,8 @@ protected:
 public:
 	GWNamedObjList() : mpHead(nullptr), mpTail(nullptr), mCount(0) {}
 
+	uint32_t get_count() const { return mCount; }
+
 	void add(GWListItem<T>* pItem) {
 		if (pItem == nullptr) { return; }
 
