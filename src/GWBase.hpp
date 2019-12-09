@@ -210,6 +210,9 @@ namespace GWBase {
 	inline bool operator == (const StrHash& hashA, const StrHash& hashB) {
 		return hashA.val == hashB.val;
 	}
+
+	char* str_dup(const char* pStr);
+	void str_free(char* pStr);
 }
 
 namespace GWTuple {

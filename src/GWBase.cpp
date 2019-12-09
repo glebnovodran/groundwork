@@ -1,6 +1,8 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
+#include <cstring>
+
 #include "GWSys.hpp"
 #include "GWBase.hpp"
 
@@ -98,5 +100,19 @@ namespace GWBase {
 			}
 			hash = h;
 		}
+	}
+
+	char* str_dup(const char* pStr) {
+		char* pDpl = nullptr;
+		if (pStr != nullptr) {
+			size_t len = ::strlen(pStr) + 1;
+			pDpl = new char[len];
+			::memcpy(pDpl, pStr, len);
+		}
+		return pDpl;
+	}
+
+	void str_free(char* pStr) {
+		if (pStr) { delete[] pStr; }
 	}
 }
