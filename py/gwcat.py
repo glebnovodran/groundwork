@@ -51,7 +51,9 @@ class Strings:
 class GWResKind:
 	def __init__(self): pass
 
+GWResKind.CATALOG = 0
 GWResKind.MODEL = 1
+GWResKind.COLLI_DATA = 2
 GWResKind.DDS = 0x100
 GWResKind.TDMOT = 0x101
 GWResKind.TDGEO = 0x102
