@@ -27,6 +27,23 @@ template<typename T> struct GWListItem {
 };
 
 template<typename T> class GWNamedObjList {
+public:
+	class Itr {
+		protected:
+			GWListItem<T>* mpItem;
+		public:
+			Itr(GWListItem<T>* pItem) : mpItem(pItem) {}
+			GWListItem<T>* item() { return mpItem; }
+			T* val() { mpItem ? mpItem->mpVal : nullptr; }
+			const char* name() const { mpItem ? mpItem->mpName : nullptr; }
+			bool end() const { mpItem == nullptr; }
+			void next() {
+				if (mpItem) { mpItem = mpItem->mpNext; }
+			}
+			void back() {
+				if (mpItem) { mpItem = mpItem->mpPrev; }
+			}
+	};
 protected:
 	GWListItem<T>* mpHead;
 	GWListItem<T>* mpTail;
@@ -36,6 +53,7 @@ public:
 	GWNamedObjList() : mpHead(nullptr), mpTail(nullptr), mCount(0) {}
 
 	uint32_t get_count() const { return mCount; }
+	Itr get_itr() const { return Itr(mpHead); }
 
 	void add(GWListItem<T>* pItem) {
 		if (pItem == nullptr) { return; }
@@ -75,6 +93,15 @@ public:
 			}
 		}
 		--mCount;
+	}
+
+	void purge() {
+		GWListItem<T>* pItem = mpHead;
+		while (pItem) {
+			GWListItem<T>* pNext = pItem->mpNext;
+			delete pItem;
+			pItem = pNext;
+		}
 	}
 
 	GWListItem<T>* find_first(const char* pName) {
