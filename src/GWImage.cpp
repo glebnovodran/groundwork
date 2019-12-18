@@ -23,6 +23,9 @@ GWImage* GWImage::alloc(int w, int h) {
 
 void GWImage::free(GWImage * pImg) {
 	if (pImg) {
+		if(pImg->binding_memory_allocated()) {
+			GWSys::dbg_msg("Warning: binding memory is allocated still in GWImage::free");
+		}
 		delete[] reinterpret_cast<char*>(pImg);
 	}
 }
