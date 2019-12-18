@@ -109,7 +109,10 @@ public:
 		GWBase::StrHash nameHash(pName);
 		return find(nameHash, pName);
 	}
-
+	T* find_first_val(const char* pName) {
+		GWListItem<T>* pItem = find_first(pName);
+		return pItem != nullptr ? pItem->mpVal : nullptr;
+	}
 	GWListItem<T>* find_next(const GWListItem<T>* pFirst) {
 		if (pFirst == nullptr) { return nullptr; }
 		return find(pFirst->mNameHash, pFirst->mpName, pFirst);
