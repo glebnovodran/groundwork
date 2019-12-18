@@ -309,6 +309,13 @@ void GWMotion::clone_from(const GWMotion& mot) {
 	}
 }
 
+void GWMotion::alloc_binding_memory(uint32_t size) {
+	mpExtMem = new char[size];
+}
+void GWMotion::release_binding_memory() {
+	if (mpExtMem != nullptr) { delete[] reinterpret_cast<char*>(mpExtMem); }
+}
+
 GWTransformOrder GWMotion::eval_xord(uint32_t nodeId, float frame) const {
 	const NodeInfo* pInfo = get_node_info(nodeId);
 	if (pInfo == nullptr) { return GWTransformOrder::SRT; }

@@ -200,6 +200,7 @@ protected:
 	NodeInfo* mpNodeInfo;
 	TrackInfo* mpTrackInfo;
 	char* mpStrData;
+	void* mpExtMem;
 
 	uint32_t mNumNodes;
 	uint32_t mNumTracks;
@@ -208,11 +209,17 @@ protected:
 public:
 	GWMotion() : mNodeMap([](const char* a, const char* b) { return ::strcmp(a, b) < 0; }),
 		mpNodeInfo(nullptr), mpTrackInfo(nullptr), mpStrData(nullptr),
-		mNumNodes(0), mNumTracks(0), mStrDataSz(0) {}
+		mpExtMem(nullptr), mNumNodes(0), mNumTracks(0), mStrDataSz(0) {}
 
 	bool load(const std::string& filePath);
 	void unload();
 	void clone_from(const GWMotion& mot);
+
+	void alloc_binding_memory(uint32_t size);
+	void release_binding_memory();
+	void set_binding_memory(void* pMem) { mpExtMem = pMem; }
+	bool binding_memory_allocated() const { return mpExtMem != nullptr; }
+	template<typename T> T* get_binding_memory() { return reinterpret_cast<T*>(mpExtMem); }
 
 	uint32_t find_node_id(const char* name) const {
 		char* pName = const_cast<char*>(name);

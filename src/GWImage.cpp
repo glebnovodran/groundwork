@@ -14,6 +14,7 @@ GWImage* GWImage::alloc(int w, int h) {
 	GWImage* pImg = reinterpret_cast<GWImage*>(new char[numByte]);
 	pImg->mWidth = w;
 	pImg->mHeight = h;
+	pImg->mpExtMem = nullptr;
 	for (int i = 0; i < numPix; ++i) {
 		pImg->mPixels[i].zero();
 	}
@@ -24,6 +25,13 @@ void GWImage::free(GWImage * pImg) {
 	if (pImg) {
 		delete[] reinterpret_cast<char*>(pImg);
 	}
+}
+
+void GWImage::alloc_binding_memory(uint32_t size) {
+	mpExtMem = new char[size];
+}
+void GWImage::release_binding_memory() {
+	if (mpExtMem != nullptr) { delete[] reinterpret_cast<char*>(mpExtMem); }
 }
 
 static void calc_range(GWColorF& minVal, GWColorF& maxVal, const GWColorF* pPix, int n) {

@@ -51,6 +51,7 @@ protected:
 	int mHeight;
 	int mReserved0;
 	int mReserved1;
+	void* mpExtMem;
 	GWColorF mMin;
 	GWColorF mMax;
 	GWColorF mPixels[1];
@@ -88,4 +89,10 @@ public:
 	static GWImage* read_dds(std::ifstream& ifs);
 	static GWImage* read_dds(const std::string& path);
 	static GWImage* from_dds(const DDSHead& dds);
+
+	void alloc_binding_memory(uint32_t size);
+	void release_binding_memory();
+	void set_binding_memory(void* pMem) { mpExtMem = pMem; }
+	bool binding_memory_allocated() const { return mpExtMem != nullptr; }
+	template<typename T> T* get_binding_memory() { return reinterpret_cast<T*>(mpExtMem); }
 };
