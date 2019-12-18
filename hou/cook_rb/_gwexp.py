@@ -66,7 +66,7 @@ if expMot:
 			if node.type().name() == "null" and not node.isBypassed(): clips.append(node)
 		for chop in clips:
 			dbgmsg("Exporting motion: " + chop.path())
-			motName = chop.name() + ".txt"
+			motName = chop.name() + ".tdmot"
 			saveTDMot(expDir + "/" + motName, chop)
 			cat.add(motName, GWResKind.TDMOT)
 
