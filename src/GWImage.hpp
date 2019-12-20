@@ -49,8 +49,6 @@ class GWImage {
 protected:
 	int mWidth;
 	int mHeight;
-	int mReserved0;
-	int mReserved1;
 	void* mpExtMem;
 	GWColorF mMin;
 	GWColorF mMax;
