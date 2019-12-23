@@ -17,3 +17,4 @@
 #include "GWSphericalHarmonics.hpp"
 #include "GWResource.hpp"
 #include "GWModel.hpp"
+#include "GWScene.hpp"

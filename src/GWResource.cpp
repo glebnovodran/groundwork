@@ -21,13 +21,28 @@ const char* GWResourceUtil::name_from_path(const char* pPath, char sep) {
 	}
 	return pName;
 }
-
+/*
+size_t GWResourceUtil::dir_path_length(const char* pFilePath) {
+	size_t pathLen = pFilePath ? ::strlen(pFilePath) : 0;
+	if (pathLen > 0) {
+		--pathLen;
+		while (pathLen > 0) {
+			if (pFilePath == '/' || pFilePath == '\\') {
+				++pathLen;
+				break;
+			}
+			--pathLen;
+		}
+	}
+	return pathLen;
+}
+*/
 const char* GWResourceUtil::get_kind_string(GWResourceKind kind) {
 	const char* pStr = "UNKNOWN";
 	switch (kind) {
 	case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
 	case GWResourceKind::MODEL: pStr = "Model"; break;
-	case GWResourceKind::COLLI_DATA: pStr = "Collision geo"; break;
+	case GWResourceKind::COL_DATA: pStr = "Collision geo"; break;
 	case GWResourceKind::DDS: pStr = "DDS"; break;
 	case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
 	case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;

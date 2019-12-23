@@ -10,7 +10,7 @@ enum class GWResourceKind {
 	// native
 	CATALOG = 0,
 	MODEL = 1,
-	COLLI_DATA = 2,
+	COL_DATA = 2,
 	// foreign
 	DDS = 0x100,
 	TDMOT = 0x101,
@@ -478,7 +478,7 @@ public:
 	bool check_idx(uint32_t idx) const { return idx < mNum; }
 	const char* get_name(uint32_t idx) const { return check_idx(idx) ? get_str(mList[idx].mNameOffs) : nullptr; }
 	const char* get_file_name(uint32_t idx) const { return check_idx(idx) ? get_str(mList[idx].mFileNameOffs) : nullptr; }
-	GWResourceKind get_file_kind(uint32_t idx) const { return check_idx(idx) ? (GWResourceKind)mList[idx].mKind : GWResourceKind::UNKNOWN; }
+	GWResourceKind get_kind(uint32_t idx) const { return check_idx(idx) ? (GWResourceKind)mList[idx].mKind : GWResourceKind::UNKNOWN; }
 	uint32_t get_kind_count(GWResourceKind kind) const {
 		int count = 0;
 		for (uint32_t i = 0; i < mNum; ++i) {
