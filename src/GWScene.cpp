@@ -124,9 +124,9 @@ void GWBundle::destroy(GWBundle* pBdl) {
 	}
 }
 
-GWResourceRegry* GWResourceRegry::create(const std::string& appPath, const std::string& relDataDir) {
+GWRsrcRegistry* GWRsrcRegistry::create(const std::string& appPath, const std::string& relDataDir) {
 	using namespace std;
-	GWResourceRegry* pRgy = new GWResourceRegry();
+	GWRsrcRegistry* pRgy = new GWRsrcRegistry();
 	if (pRgy != nullptr) {
 		size_t last = appPath.find_last_of('/');
 		if (last == string::npos) {
@@ -138,7 +138,7 @@ GWResourceRegry* GWResourceRegry::create(const std::string& appPath, const std::
 	return pRgy;
 }
 
-void GWResourceRegry::destroy(GWResourceRegry* pRgy) {
+void GWRsrcRegistry::destroy(GWRsrcRegistry* pRgy) {
 	if (pRgy != nullptr) {
 		for (BundleList::Itr itr = pRgy->mBdlLst.get_itr(); !itr.end(); itr.next()) {
 			GWBundle* pBdl = itr.val();
@@ -149,7 +149,7 @@ void GWResourceRegry::destroy(GWResourceRegry* pRgy) {
 	}
 }
 
-void GWResourceRegry::unload_bundle(const std::string& name) {
+void GWRsrcRegistry::unload_bundle(const std::string& name) {
 	GWListItem<GWBundle>* pItem =  mBdlLst.find_first(name.c_str());
 	if (pItem != nullptr) {
 		GWBundle::destroy(pItem->mpVal);
@@ -158,7 +158,7 @@ void GWResourceRegry::unload_bundle(const std::string& name) {
 	}
 }
 
-GWBundle* GWResourceRegry::load_bundle(const std::string& name) {
+GWBundle* GWRsrcRegistry::load_bundle(const std::string& name) {
 	GWBundle* pBdl = GWBundle::create(name, mDataPath);
 	if (pBdl != nullptr) {
 		mBdlLst.add(new GWListItem<GWBundle>(name.c_str(), pBdl));

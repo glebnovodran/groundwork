@@ -46,7 +46,7 @@ public:
 	static void destroy(GWBundle* pBdl);
 };
 
-class GWResourceRegry {
+class GWRsrcRegistry {
 public:
 	typedef GWNamedObjList<GWBundle> BundleList;
 
@@ -54,7 +54,7 @@ protected:
 	BundleList mBdlLst;
 	std::string mDataPath;
 protected:
-	GWResourceRegry() {}
+	GWRsrcRegistry() {}
 public:
 	GWBundle* find_bundle(const std::string& name) {
 		return mBdlLst.find_first_val(name.c_str());
@@ -71,8 +71,8 @@ public:
 		return pBdl == nullptr ? nullptr : pBdl->find_model(mdlName);
 	}
 
-	static GWResourceRegry* create(const std::string& appPath, const std::string& relDataDir);
-	static void destroy(GWResourceRegry* pRgy);
+	static GWRsrcRegistry* create(const std::string& appPath, const std::string& relDataDir);
+	static void destroy(GWRsrcRegistry* pRgy);
 
 };
 
@@ -82,7 +82,7 @@ public:
 	struct Config {
 		const char* pAppPath;
 		const char* pDataDir;
-		GWResourceRegry* pResRgy;
+		GWRsrcRegistry* pResRgy;
 	};
 
 	static GWScene* create(const Config& cfg);
