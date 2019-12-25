@@ -504,9 +504,11 @@ void test_model(const std::string& mdlPath) {
 
 	GWModel* pMdl = GWModel::create(pMdr, 0x200, 0x300);
 	if (pMdl) {
+		GWModel::destroy(pMdl);
 	} else {
 		cout<< "Couldn't create model out of " << mdlPath << endl;
 	}
+	GWResource::unload(pMdr);
 }
 
 void test_gwcat(const char* pPath) {
@@ -516,8 +518,29 @@ void test_gwcat(const char* pPath) {
 	for (int i = 0; i < n; ++i) {
 		const char* pName = pCat->get_name(i);
 		const char* pFileName = pCat->get_file_name(i);
-		GWResourceKind kind = pCat->get_file_kind(i);
+		GWResourceKind kind = pCat->get_kind(i);
 		std::cout << i << ": " << pName << " : " << pFileName << " , " << GWResourceUtil::get_kind_string(kind) << std::endl;
+	}
+}
+
+void test_resource_registry(const std::string& appPath, const std::string& relDataPath, const std::string& bundleName) {
+	using namespace std;
+	cout << "test_resource_registry" << endl;
+	GWRsrcRegistry* pRgy = GWRsrcRegistry::create(appPath, relDataPath);
+	if (pRgy) {
+		GWBundle* pBdl = pRgy->load_bundle(bundleName);
+		GWBundle* pFound = pRgy->find_bundle(bundleName);
+		if (pBdl != pFound) {
+			cout << "Wrong bundle found" << endl;
+		}
+		if (pBdl) {
+			pRgy->unload_bundle(pBdl);
+		}
+		pBdl = pRgy->load_bundle(bundleName);
+		if (pBdl) {
+			pRgy->unload_bundle(bundleName);
+		}
+		GWRsrcRegistry::destroy(pRgy);
 	}
 }
 
@@ -531,11 +554,12 @@ int main(int argc, char* argv[]) {
 	test_ray();
 	test_xform();
 	test_quat();
-	test_motion("../data/walk_rn.txt");
-	test_image("../data/pano_test1_h.dds");
+	test_motion("./data/walk_rn.txt");
+	test_image("./data/pano_test1_h.dds");
 	test_model(argv[1]);
-	test_gwcat("../data/cook_rb/cook_rb.gwcat");
-
+	test_gwcat("./data/cook_rb/cook_rb.gwcat");
+	//test_bundle("./data/cook_rb/","cook_rb.gwcat");
+	test_resource_registry(argv[0], "./data", "cook_rb");
 	GWCamera cam;
 	cam.update(GWVectorF(10, 0, 0), GWVectorF(0, 0, 0), GWVectorF(0,1,0), GWBase::radians(60), 0.0001f, 10.0f);
 	return 0;

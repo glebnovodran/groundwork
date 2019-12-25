@@ -2,33 +2,42 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 
+class GWRsrcRegistry;
+
 class GWBundle {
 public:
 	typedef GWNamedObjList<GWModelResource> MdlRscList;
 	typedef GWNamedObjList<GWImage> ImgList;
 	typedef GWNamedObjList<GWMotion> MotList;
 	typedef GWNamedObjList<GWCollisionResource> ColList;
-
+	typedef GWListItem<GWBundle> Item;
 protected:
+	Item mItem;
 	MdlRscList mMdlLst;
 	ImgList mImgLst;
 	MotList mMotLst;
 	ColList mColLst;
 	GWCatalog* mpCat;
+	GWRsrcRegistry* mpRegistry;
 	std::string mName;
 protected:
-	GWBundle() : mpCat(nullptr) {}
-
-	static GWBundle* create(const std::string& name, const std::string& dataPath, GWCatalog* pCat);
+	friend class GWRsrcRegistry;
+	GWBundle() : mpCat(nullptr), mpRegistry(nullptr), mItem(nullptr, this) {}
 
 	void purge_models();
 	void purge_images();
 	void purge_motions();
 	void purge_colli_data();
 
+	static GWBundle* create(const std::string& name, const std::string& dataPath, GWRsrcRegistry* pRgy);
+	static void destroy(GWBundle* pBdl);
+
 public:
 	const char* get_name() const { return mName.c_str(); }
-
+	void set_name(const std::string& name) {
+		mName = name;
+		mItem.set_name(mName.c_str());
+	}
 	GWModelResource* find_model(const std::string& name) {
 		return mMdlLst.find_first_val(name.c_str());
 	}
@@ -41,9 +50,6 @@ public:
 	GWCollisionResource* find_colli_data(const std::string& name) {
 		return mColLst.find_first_val(name.c_str());
 	}
-
-	static GWBundle* create(const std::string& name, const std::string& dataPath);
-	static void destroy(GWBundle* pBdl);
 };
 
 class GWRsrcRegistry {
@@ -61,7 +67,10 @@ public:
 	}
 	GWBundle* load_bundle(const std::string& name);
 	void unload_bundle(const std::string& name);
-
+	void unload_bundle(GWBundle* pBdl);
+	bool contains_bundle(const GWBundle* pBdl) {
+		return (pBdl != nullptr) && (pBdl->mpRegistry == this);
+	}
 	inline GWModelResource* find_model(const std::string& bdlName, const std::string& mdlName) {
 		GWBundle* pBdl = find_bundle(bdlName);
 		return pBdl == nullptr ? nullptr : pBdl->find_model(mdlName);
@@ -73,7 +82,6 @@ public:
 
 	static GWRsrcRegistry* create(const std::string& appPath, const std::string& relDataDir);
 	static void destroy(GWRsrcRegistry* pRgy);
-
 };
 
 class GWScene {

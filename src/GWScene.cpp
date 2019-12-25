@@ -4,81 +4,82 @@
 
 #include "groundwork.hpp"
 
-GWBundle* GWBundle::create(const std::string& name, const std::string& dataPath) {
+GWBundle* GWBundle::create(const std::string& name, const std::string& dataPath, GWRsrcRegistry* pRgy) {
 	GWBundle* pBdl = nullptr;
-	const std::string catFilePath = dataPath + "/" + name + ".gwcat";
+	if (pRgy == nullptr) {
+		GWSys::dbg_msg("Error: GWBundle::create a null pointer to Resource Registry is passed");
+		return nullptr;
+	}
+	const std::string bundleFolder = dataPath + "/" + name + "/";
+	const std::string catFilePath = bundleFolder + name + ".gwcat";
 
 	GWCatalog* pCat = GWCatalog::load(catFilePath);
 	if (pCat != nullptr) {
-		pBdl = create(name, dataPath, pCat);
+		pBdl = new GWBundle();
+		pBdl->set_name(name);
+		MdlRscList* pMdlLst = &pBdl->mMdlLst;
+		ImgList* pImgLst = &pBdl->mImgLst;
+		MotList* pMotLst = &pBdl->mMotLst;
+		ColList* pColLst = &pBdl->mColLst;
+
+		uint32_t numRes = pCat->mNum;
+		pBdl->mName = name;
+		uint32_t numMdl = pCat->get_kind_count(GWResourceKind::MODEL);
+
+		for (uint32_t i = 0; i < numRes; ++i) {
+			GWResourceKind kind = pCat->get_kind(i);
+			const char* pName = pCat->get_name(i);
+			const char* pFileName = pCat->get_file_name(i);
+			const std::string filePath = bundleFolder + pCat->get_file_name(i);
+			switch (kind) {
+				case GWResourceKind::MODEL: {
+						GWModelResource* pMdlRsc = GWModelResource::load(filePath);
+						if (pMdlRsc != nullptr) {
+							pMdlLst->add(new GWListItem<GWModelResource>(pName, pMdlRsc));
+						} else {
+							GWSys::dbg_msg("Error loading model file %s", filePath.c_str());
+						}
+					}
+					break;
+				case GWResourceKind::DDS: {
+						GWImage* pImg = GWImage::read_dds(filePath);
+						if (pImg != nullptr) {
+							pImgLst->add(new GWListItem<GWImage>(pName, pImg));
+						} else {
+							GWSys::dbg_msg("Error loading image file %s", filePath.c_str());
+						}
+					}
+					break;
+				case GWResourceKind::TDMOT: {
+						GWMotion* pMot = new GWMotion();
+						if (pMot->load(filePath)) {
+							pMotLst->add(new GWListItem<GWMotion>(pName, pMot));
+						} else {
+							delete pMot;
+							GWSys::dbg_msg("Error loading TD motion file %s", filePath.c_str());
+						}
+					}
+					break;
+				case GWResourceKind::COL_DATA: {
+						GWCollisionResource* pColli = GWCollisionResource::load(filePath);
+						if (pColli != nullptr) {
+							pColLst->add(new GWListItem<GWCollisionResource>(pName, pColli));
+						} else {
+							GWSys::dbg_msg("Error loading cls file %s", filePath.c_str());
+						}
+					}
+					break;
+				default:
+					GWSys::dbg_msg("Error: unknown resource type");
+					break;
+			}
+		}
+		pBdl->mpCat = pCat;
+
 	} else {
 		GWSys::dbg_msg("Error: Cannot load %s", catFilePath.c_str());
 	}
 
-	return pBdl;
-}
-
-GWBundle* GWBundle::create(const std::string& name, const std::string& dataPath, GWCatalog* pCat) {
-	GWBundle* pBdl = new GWBundle();
-	MdlRscList* pMdlLst = &pBdl->mMdlLst;
-	ImgList* pImgLst = &pBdl->mImgLst;
-	MotList* pMotLst = &pBdl->mMotLst;
-	ColList* pColLst = &pBdl->mColLst;
-
-	uint32_t numRes = pCat->mNum;
-	//pBdl->mpName = GWBase::str_dup(name.c_str());
-	pBdl->mName = name;
-	uint32_t numMdl = pCat->get_kind_count(GWResourceKind::MODEL);
-
-	for (uint32_t i = 0; i < numRes; ++i) {
-		GWResourceKind kind = pCat->get_kind(i);
-		const char* pName = pCat->get_name(i);
-		const char* pFileName = pCat->get_file_name(i);
-		std::string filePath = dataPath + pCat->get_file_name(i);
-		switch (kind) {
-			case GWResourceKind::MODEL: {
-					GWModelResource* pMdlRsc = GWModelResource::load(filePath);
-					if (pMdlRsc != nullptr) {
-						pMdlLst->add(new GWListItem<GWModelResource>(pName, pMdlRsc));
-					} else {
-						GWSys::dbg_msg("Error loading model file %s", filePath.c_str());
-					}
-				}
-				break;
-			case GWResourceKind::DDS: {
-					GWImage* pImg = GWImage::read_dds(filePath);
-					if (pImg != nullptr) {
-						pImgLst->add(new GWListItem<GWImage>(pName, pImg));
-					} else {
-						GWSys::dbg_msg("Error loading image file %s", filePath.c_str());
-					}
-				}
-				break;
-			case GWResourceKind::TDMOT: {
-					GWMotion* pMot = new GWMotion();
-					if (pMot->load(filePath)) {
-						pMotLst->add(new GWListItem<GWMotion>(pName, pMot));
-					} else {
-						delete pMot;
-						GWSys::dbg_msg("Error loading TD motion file %s", filePath.c_str());
-					}
-				}
-				break;
-			case GWResourceKind::COL_DATA: {
-					GWCollisionResource* pColli = GWCollisionResource::load(filePath);
-					if (pColli != nullptr) {
-						pColLst->add(new GWListItem<GWCollisionResource>(pName, pColli));
-					} else {
-						GWSys::dbg_msg("Error loading cls file %s", filePath.c_str());
-					}
-				}
-				break;
-			default:
-				GWSys::dbg_msg("Error: unknown resource type");
-				break;
-		}
-	}
-	pBdl->mpCat = pCat;
 	return pBdl;
 }
 
@@ -150,17 +151,22 @@ void GWRsrcRegistry::destroy(GWRsrcRegistry* pRgy) {
 }
 
 void GWRsrcRegistry::unload_bundle(const std::string& name) {
-	GWListItem<GWBundle>* pItem =  mBdlLst.find_first(name.c_str());
+	GWBundle::Item* pItem =  mBdlLst.find_first(name.c_str());
 	if (pItem != nullptr) {
-		GWBundle::destroy(pItem->mpVal);
-		mBdlLst.remove(pItem);
-		delete pItem;
+		unload_bundle(pItem->mpVal);
 	}
 }
 
+void GWRsrcRegistry::unload_bundle(GWBundle* pBdl) {
+	if (contains_bundle(pBdl)) {
+		mBdlLst.remove(&pBdl->mItem);
+		GWBundle::destroy(pBdl);
+	}
+}
 GWBundle* GWRsrcRegistry::load_bundle(const std::string& name) {
-	GWBundle* pBdl = GWBundle::create(name, mDataPath);
+	GWBundle* pBdl = GWBundle::create(name, mDataPath, this);
 	if (pBdl != nullptr) {
 		mBdlLst.add(new GWListItem<GWBundle>(name.c_str(), pBdl));
 	}
+	return pBdl;
 }
