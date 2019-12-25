@@ -34,9 +34,9 @@ public:
 		public:
 			Itr(GWListItem<T>* pItem) : mpItem(pItem) {}
 			GWListItem<T>* item() { return mpItem; }
-			T* val() { mpItem ? mpItem->mpVal : nullptr; }
-			const char* name() const { mpItem ? mpItem->mpName : nullptr; }
-			bool end() const { mpItem == nullptr; }
+			T* val() { return mpItem ? mpItem->mpVal : nullptr; }
+			const char* name() const { return mpItem ? mpItem->mpName : nullptr; }
+			bool end() const { return mpItem == nullptr; }
 			void next() {
 				if (mpItem) { mpItem = mpItem->mpNext; }
 			}
