@@ -863,7 +863,7 @@ void GWRsrcRegistry::unload_bundle(GWBundle* pBdl) {
 GWBundle* GWRsrcRegistry::load_bundle(const std::string& name) {
 	GWBundle* pBdl = GWBundle::create(name, mDataPath, this);
 	if (pBdl != nullptr) {
-		mBdlLst.add(new GWListItem<GWBundle>(name.c_str(), pBdl));
+		mBdlLst.add(&pBdl->mItem);
 	}
 	return pBdl;
 }
