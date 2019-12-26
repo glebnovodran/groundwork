@@ -17,11 +17,6 @@ enum class GWResourceKind {
 	TDGEO = 0x102
 };
 
-namespace GWResourceUtil {
-	const char* name_from_path(const char* pPath, char sep = '/');
-	const char* get_kind_string(GWResourceKind kind);
-}
-
 class GWResource {
 public:
 	/* +00 */ char mSignature[0x10];
@@ -497,6 +492,27 @@ public:
 	}
 };
 
+namespace GWResourceUtil {
+	struct GPUIfc {
+		void (*prepareModel)(GWModelResource* pMdl);
+		void (*releaseModel)(GWModelResource* pMdl);
+		void (*prepareImage)(GWImage* pImg);
+		void (*releaseImage)(GWImage* pImg);
+
+		void reset() {
+			prepareModel = nullptr;
+			releaseModel = nullptr;
+			prepareImage = nullptr;
+			releaseImage = nullptr;
+		}
+	};
+	GPUIfc* get_gpu_ifc();
+	void set_gpu_ifc(GPUIfc* pIfc);
+
+	const char* name_from_path(const char* pPath, char sep = '/');
+	const char* get_kind_string(GWResourceKind kind);
+}
+
 class GWRsrcRegistry;
 
 class GWBundle {
@@ -523,7 +539,7 @@ protected:
 	void purge_images();
 	void purge_motions();
 	void purge_colli_data();
-
+	void release_gpu_data();
 	static GWBundle* create(const std::string& name, const std::string& dataPath, GWRsrcRegistry* pRgy);
 	static void destroy(GWBundle* pBdl);
 

@@ -7,7 +7,17 @@
 #include <vector>
 #include "groundwork.hpp"
 
-const char* GWResourceUtil::name_from_path(const char* pPath, char sep) {
+namespace GWResourceUtil {
+
+static GPUIfc* s_pGPURsrcIfc = nullptr;
+
+GPUIfc* get_gpu_ifc() { return s_pGPURsrcIfc; }
+
+void set_gpu_ifc(GPUIfc* pIfc) {
+	s_pGPURsrcIfc = pIfc;
+}
+
+const char* name_from_path(const char* pPath, char sep) {
 	const char* pName = nullptr;
 	if (pPath) {
 		const char* p = pPath + ::strlen(pPath);
@@ -21,23 +31,8 @@ const char* GWResourceUtil::name_from_path(const char* pPath, char sep) {
 	}
 	return pName;
 }
-/*
-size_t GWResourceUtil::dir_path_length(const char* pFilePath) {
-	size_t pathLen = pFilePath ? ::strlen(pFilePath) : 0;
-	if (pathLen > 0) {
-		--pathLen;
-		while (pathLen > 0) {
-			if (pFilePath == '/' || pFilePath == '\\') {
-				++pathLen;
-				break;
-			}
-			--pathLen;
-		}
-	}
-	return pathLen;
-}
-*/
-const char* GWResourceUtil::get_kind_string(GWResourceKind kind) {
+
+const char* get_kind_string(GWResourceKind kind) {
 	const char* pStr = "UNKNOWN";
 	switch (kind) {
 	case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
@@ -50,6 +45,8 @@ const char* GWResourceUtil::get_kind_string(GWResourceKind kind) {
 	}
 	return pStr;
 }
+
+} // namespace GWResourceUtil
 
 void write_py_mtx(std::ostream& os, const GWTransformF& xform) {
 	const float* pData = xform.as_tptr();
@@ -704,7 +701,7 @@ GWCollisionResource* GWCollisionResource::load(const std::string& path) {
 GWBundle* GWBundle::create(const std::string& name, const std::string& dataPath, GWRsrcRegistry* pRgy) {
 	GWBundle* pBdl = nullptr;
 	if (pRgy == nullptr) {
-		GWSys::dbg_msg("Error: GWBundle::create a null pointer to Resource Registry is passed");
+		GWSys::dbg_msg("Error: GWBundle::create - resource registry pointer can't be null");
 		return nullptr;
 	}
 	const std::string bundleFolder = dataPath + "/" + name + "/";
@@ -772,6 +769,7 @@ GWBundle* GWBundle::create(const std::string& name, const std::string& dataPath,
 			}
 		}
 		pBdl->mpCat = pCat;
+		pBdl->mpRegistry = pRgy;
 
 	} else {
 		GWSys::dbg_msg("Error: Cannot load %s", catFilePath.c_str());
@@ -811,8 +809,23 @@ void GWBundle::purge_colli_data() {
 	}
 }
 
+void GWBundle::release_gpu_data() {
+	GWResourceUtil::GPUIfc* pIfc = GWResourceUtil::get_gpu_ifc();
+	if (pIfc) {
+		for (MdlRscList::Itr itr = mMdlLst.get_itr(); !itr.end(); itr.next()) {
+			GWModelResource* pRsc = itr.val();
+			pIfc->releaseModel(pRsc);
+		}
+		for (ImgList::Itr itr = mImgLst.get_itr(); !itr.end(); itr.next()) {
+			GWImage* pImg = itr.val();
+			pIfc->releaseImage(pImg);
+		}
+	}
+}
+
 void GWBundle::destroy(GWBundle* pBdl) {
 	if (pBdl) {
+		pBdl->release_gpu_data();
 		pBdl->purge_models();
 		pBdl->purge_images();
 		pBdl->purge_motions();
@@ -839,10 +852,8 @@ GWRsrcRegistry* GWRsrcRegistry::create(const std::string& appPath, const std::st
 void GWRsrcRegistry::destroy(GWRsrcRegistry* pRgy) {
 	if (pRgy != nullptr) {
 		for (BundleList::Itr itr = pRgy->mBdlLst.get_itr(); !itr.end(); itr.next()) {
-			GWBundle* pBdl = itr.val();
-			GWBundle::destroy(pBdl);
+			pRgy->unload_bundle(itr.val());
 		}
-		pRgy->mBdlLst.purge();
 		delete pRgy;
 	}
 }

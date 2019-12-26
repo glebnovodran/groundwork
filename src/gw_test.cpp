@@ -537,9 +537,7 @@ void test_resource_registry(const std::string& appPath, const std::string& relDa
 			pRgy->unload_bundle(pBdl);
 		}
 		pBdl = pRgy->load_bundle(bundleName);
-		if (pBdl) {
-			pRgy->unload_bundle(bundleName);
-		}
+
 		GWRsrcRegistry::destroy(pRgy);
 	}
 }
