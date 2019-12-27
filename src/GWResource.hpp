@@ -5,6 +5,9 @@
 #define GW_RSRC_SIG "rsrc:"
 #define GW_RSRC_ID(_name) GW_RSRC_SIG _name
 
+class GWRsrcRegistry;
+class GWBundle;
+
 enum class GWResourceKind {
 	UNKNOWN = -1,
 	// native
@@ -511,9 +514,9 @@ namespace GWResourceUtil {
 
 	const char* name_from_path(const char* pPath, char sep = '/');
 	const char* get_kind_string(GWResourceKind kind);
+	void set_fallback_bundle(GWBundle* pBdl);
+	GWBundle* get_fallback_bundle();
 }
-
-class GWRsrcRegistry;
 
 class GWBundle {
 public:

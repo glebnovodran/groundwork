@@ -10,6 +10,7 @@
 namespace GWResourceUtil {
 
 static GPUIfc* s_pGPURsrcIfc = nullptr;
+static GWBundle* s_pFallbackBundle = nullptr;
 
 GPUIfc* get_gpu_ifc() { return s_pGPURsrcIfc; }
 
@@ -44,6 +45,14 @@ const char* get_kind_string(GWResourceKind kind) {
 	default: break;
 	}
 	return pStr;
+}
+
+void set_fallback_bundle(GWBundle* pBdl) {
+	s_pFallbackBundle = pBdl;
+}
+
+GWBundle* get_fallback_bundle() {
+	return s_pFallbackBundle;
 }
 
 } // namespace GWResourceUtil
