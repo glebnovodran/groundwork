@@ -496,6 +496,7 @@ public:
 };
 
 namespace GWResourceUtil {
+/*
 	struct GPUIfc {
 		void (*prepareModel)(GWModelResource* pMdl);
 		void (*releaseModel)(GWModelResource* pMdl);
@@ -511,6 +512,20 @@ namespace GWResourceUtil {
 	};
 	GPUIfc* get_gpu_ifc();
 	void set_gpu_ifc(GPUIfc* pIfc);
+*/
+	typedef void (*ModelBindFunc)(GWModelResource* pMdlRsc);
+	typedef void (*ModelUnbindFunc)(GWModelResource* pMdlRsc);
+
+	void set_model_binding(ModelBindFunc* pBind, ModelUnbindFunc* pUnbind);
+	void bind(GWModelResource* pMdlRsc);
+	void unbind(GWModelResource* pMdlRsc);
+
+	typedef void (*ImageBindFunc)(GWImage* pImg);
+	typedef void (*ImageUnbindFunc)(GWImage* pImg);
+
+	void set_image_binding(ImageBindFunc* pBind, ImageUnbindFunc* pUnbind);
+	void bind(GWImage* pImg);
+	void unbind(GWImage* pImg);
 
 	const char* name_from_path(const char* pPath, char sep = '/');
 	const char* get_kind_string(GWResourceKind kind);
@@ -538,11 +553,16 @@ protected:
 	friend class GWRsrcRegistry;
 	GWBundle() : mpCat(nullptr), mpRegistry(nullptr), mItem(nullptr, this) {}
 
+	void unbind_models();
 	void purge_models();
+
+	void unbind_images();
 	void purge_images();
+
 	void purge_motions();
 	void purge_colli_data();
-	void release_gpu_data();
+	void unbind_all();
+
 	static GWBundle* create(const std::string& name, const std::string& dataPath, GWRsrcRegistry* pRgy);
 	static void destroy(GWBundle* pBdl);
 
