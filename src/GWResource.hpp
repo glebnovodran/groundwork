@@ -496,23 +496,6 @@ public:
 };
 
 namespace GWResourceUtil {
-/*
-	struct GPUIfc {
-		void (*prepareModel)(GWModelResource* pMdl);
-		void (*releaseModel)(GWModelResource* pMdl);
-		void (*prepareImage)(GWImage* pImg);
-		void (*releaseImage)(GWImage* pImg);
-
-		void reset() {
-			prepareModel = nullptr;
-			releaseModel = nullptr;
-			prepareImage = nullptr;
-			releaseImage = nullptr;
-		}
-	};
-	GPUIfc* get_gpu_ifc();
-	void set_gpu_ifc(GPUIfc* pIfc);
-*/
 	typedef void (*ModelBindFunc)(GWModelResource* pMdlRsc);
 	typedef void (*ModelUnbindFunc)(GWModelResource* pMdlRsc);
 
