@@ -9,51 +9,70 @@
 
 namespace GWResourceUtil {
 
-static GPUIfc* s_pGPURsrcIfc = nullptr;
-static GWBundle* s_pFallbackBundle = nullptr;
+	static GWBundle* s_pFallbackBundle = nullptr;
+	static ModelBindFunc* s_pModelBind = nullptr;
+	static ModelUnbindFunc* s_pModelUnbind = nullptr;
+	static ImageBindFunc* s_pImageBind = nullptr;
+	static ImageUnbindFunc* s_pImageUnbind = nullptr;
 
-GPUIfc* get_gpu_ifc() { return s_pGPURsrcIfc; }
+	void set_model_binding(ModelBindFunc* pBind, ModelUnbindFunc* pUnbind) {
+		s_pModelBind = pBind;
+		s_pModelUnbind = pUnbind;
+	}
+	void bind(GWModelResource* pMdlRsc) {
+		if (s_pModelBind) { (*s_pModelBind)(pMdlRsc); }
+	}
+	void unbind(GWModelResource* pMdlRsc) {
+		if (s_pModelUnbind) { (*s_pModelUnbind)(pMdlRsc); }
+	}
 
-void set_gpu_ifc(GPUIfc* pIfc) {
-	s_pGPURsrcIfc = pIfc;
-}
+	void set_image_binding(ImageBindFunc* pBind, ImageUnbindFunc* pUnbind) {
+		s_pImageBind = pBind;
+		s_pImageUnbind = pUnbind;
+	}
+	void bind(GWImage* pImage) {
+		if (s_pImageBind) { (*s_pImageBind)(pImage); }
+	}
+	void unbind(GWImage* pImage) {
+		if (s_pImageUnbind) { (*s_pImageUnbind)(pImage); }
+	}
 
-const char* name_from_path(const char* pPath, char sep) {
-	const char* pName = nullptr;
-	if (pPath) {
-		const char* p = pPath + ::strlen(pPath);
-		for (; --p >= pPath;) {
-			if (*p == sep) {
-				pName = p + 1;
-				break;
+	const char* name_from_path(const char* pPath, char sep) {
+		const char* pName = nullptr;
+		if (pPath) {
+			const char* p = pPath + ::strlen(pPath);
+			for (; --p >= pPath;) {
+				if (*p == sep) {
+					pName = p + 1;
+					break;
+				}
 			}
+			if (!pName) pName = pPath;
 		}
-		if (!pName) pName = pPath;
+		return pName;
 	}
-	return pName;
-}
 
-const char* get_kind_string(GWResourceKind kind) {
-	const char* pStr = "UNKNOWN";
-	switch (kind) {
-	case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
-	case GWResourceKind::MODEL: pStr = "Model"; break;
-	case GWResourceKind::COL_DATA: pStr = "Collision geo"; break;
-	case GWResourceKind::DDS: pStr = "DDS"; break;
-	case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
-	case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;
-	default: break;
+	const char* get_kind_string(GWResourceKind kind) {
+		const char* pStr = "UNKNOWN";
+		switch (kind) {
+		case GWResourceKind::CATALOG: pStr = "Catalogue"; break;
+		case GWResourceKind::MODEL: pStr = "Model"; break;
+		case GWResourceKind::COL_DATA: pStr = "Collision geo"; break;
+		case GWResourceKind::DDS: pStr = "DDS"; break;
+		case GWResourceKind::TDMOT: pStr = "TDMotion"; break;
+		case GWResourceKind::TDGEO: pStr = "TDGeometry"; break;
+		default: break;
+		}
+		return pStr;
 	}
-	return pStr;
-}
 
-void set_fallback_bundle(GWBundle* pBdl) {
-	s_pFallbackBundle = pBdl;
-}
+	void set_fallback_bundle(GWBundle* pBdl) {
+		s_pFallbackBundle = pBdl;
+	}
 
-GWBundle* get_fallback_bundle() {
-	return s_pFallbackBundle;
-}
+	GWBundle* get_fallback_bundle() {
+		return s_pFallbackBundle;
+	}
 
 } // namespace GWResourceUtil
 
@@ -794,6 +813,13 @@ void GWBundle::purge_models() {
 	}
 	mMdlLst.purge();
 }
+void GWBundle::unbind_models() {
+	for (MdlRscList::Itr itr = mMdlLst.get_itr(); !itr.end(); itr.next()) {
+		GWModelResource* pRsc = itr.val();
+		GWResourceUtil::unbind(pRsc);
+	}
+	mMdlLst.purge();
+}
 
 void GWBundle::purge_images() {
 	for (ImgList::Itr itr = mImgLst.get_itr(); !itr.end(); itr.next()) {
@@ -801,6 +827,12 @@ void GWBundle::purge_images() {
 		if (pImg) { GWImage::free(pImg); }
 	}
 	mImgLst.purge();
+}
+void GWBundle::unbind_images() {
+	for (ImgList::Itr itr = mImgLst.get_itr(); !itr.end(); itr.next()) {
+		GWImage* pImg = itr.val();
+		GWResourceUtil::unbind(pImg);
+	}
 }
 
 void GWBundle::purge_motions() {
@@ -818,23 +850,14 @@ void GWBundle::purge_colli_data() {
 	}
 }
 
-void GWBundle::release_gpu_data() {
-	GWResourceUtil::GPUIfc* pIfc = GWResourceUtil::get_gpu_ifc();
-	if (pIfc) {
-		for (MdlRscList::Itr itr = mMdlLst.get_itr(); !itr.end(); itr.next()) {
-			GWModelResource* pRsc = itr.val();
-			pIfc->releaseModel(pRsc);
-		}
-		for (ImgList::Itr itr = mImgLst.get_itr(); !itr.end(); itr.next()) {
-			GWImage* pImg = itr.val();
-			pIfc->releaseImage(pImg);
-		}
-	}
+void GWBundle::unbind_all() {
+	unbind_models();
+	unbind_images();
 }
 
 void GWBundle::destroy(GWBundle* pBdl) {
 	if (pBdl) {
-		pBdl->release_gpu_data();
+		//pBdl->unbind_all();
 		pBdl->purge_models();
 		pBdl->purge_images();
 		pBdl->purge_motions();
