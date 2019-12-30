@@ -13,12 +13,21 @@ namespace GWDraw {
 		};
 
 		struct Hemi {
-			GWColorTuple3f hemiSky;
-			GWColorTuple3f hemiGround;
-			GWVectorF hemiUp;
+			GWColorTuple3f sky;
+			GWColorTuple3f ground;
+			GWVectorF up;
+			float exp;
+			float gain;
 
-			void set_hemi_up(const GWVectorF& up) {
-				hemiUp.normalize(up);
+			void set_hemi_up(const GWVectorF& v) {
+				up.normalize(v);
+			}
+			void reset() {
+				GWTuple::set(sky, 1.1f, 1.1f, 1.125f);
+				GWTuple::set(ground, 0.125f, 0.08f, 0.06f);
+				GWTuple::set(up, 0.0f, 1.0f, 0.0f);
+				exp = 1.0f;
+				gain = 1.0f;
 			}
 		};
 
@@ -46,4 +55,4 @@ namespace GWDraw {
 		void (*end)();
 		void (*batch)(GWModel* pMdl, const int batchIdx, const Context* pCtx);
 	};
-} // GPU
+}
