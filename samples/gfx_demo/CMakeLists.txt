@@ -10,8 +10,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/x11)
 
 add_executable(${PROJECT_NAME}
 	${GW_ROOT_DIR}/ext/oglsys/oglsys.cpp
-	src/gpu.cpp
-	src/rsrc.cpp
 	src/skinanim.cpp
 	src/main.cpp
 )
