@@ -18,3 +18,4 @@
 #include "GWResource.hpp"
 #include "GWModel.hpp"
 #include "GWScene.hpp"
+#include "GWDraw.hpp"
