@@ -30,6 +30,7 @@
     <ClCompile Include="src\GWQuaternion.cpp" />
     <ClCompile Include="src\GWRay.cpp" />
     <ClCompile Include="src\GWResource.cpp" />
+    <ClCompile Include="src\GWScene.cpp" />
     <ClCompile Include="src\GWSphere.cpp" />
     <ClCompile Include="src\GWSphericalHarmonics.cpp" />
     <ClCompile Include="src\GWSys.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\TDMotion\src\TDMotion.hpp" />
     <ClInclude Include="src\groundwork.hpp" />
     <ClInclude Include="src\GWBase.hpp" />
+    <ClInclude Include="src\GWCamera.hpp" />
     <ClInclude Include="src\GWColor.hpp" />
     <ClInclude Include="src\GWImage.hpp" />
     <ClInclude Include="src\GWList.hpp" />
@@ -49,6 +51,7 @@
     <ClInclude Include="src\GWQuaternion.hpp" />
     <ClInclude Include="src\GWRay.hpp" />
     <ClInclude Include="src\GWResource.hpp" />
+    <ClInclude Include="src\GWScene.hpp" />
     <ClInclude Include="src\GWSphere.hpp" />
     <ClInclude Include="src\GWSphericalHarmonics.hpp" />
     <ClInclude Include="src\GWSys.hpp" />
