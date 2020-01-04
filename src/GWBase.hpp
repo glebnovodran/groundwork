@@ -101,7 +101,7 @@ namespace GWBase {
 		return ((x + (a - 1)) / a) * a;
 	}
 
-	inline uint8_t* incr_ptr(void* ptr, const uint32_t inc) {
+	inline uint8_t* incr_ptr(void* ptr, const size_t inc) {
 		return &reinterpret_cast<uint8_t*>(ptr)[inc];
 	}
 
