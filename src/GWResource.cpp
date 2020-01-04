@@ -107,7 +107,7 @@ GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	FILE* pFile = nullptr;
 	const char* pMode = "rb";
 #if defined(_MSC_VER)
-	fopen_s(&pFile, pPath, pMode);
+	fopen_s(&pFile, path.c_str(), pMode);
 #else
 	pFile = fopen(path.c_str(), pMode);
 #endif
@@ -119,7 +119,7 @@ GWResource* GWResource::load(const std::string& path, const char* pSig) {
 		if (fsize > 0x10) {
 			fread(sig, 1, 0x10, pFile);
 			if (::memcmp(sig, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) == 0) {
-				uint32_t size = fsize + sizeof(Binding); // unaligned
+				size_t size = fsize + sizeof(Binding); // unaligned
 				fseek(pFile, 0, SEEK_SET);
 				pBuf = new char[size];
 				if (pBuf) {
