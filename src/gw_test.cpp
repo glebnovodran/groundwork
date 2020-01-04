@@ -506,7 +506,7 @@ void test_model(const std::string& mdlPath) {
 	if (pMdl) {
 		GWModel::destroy(pMdl);
 	} else {
-		cout<< "Couldn't create model out of " << mdlPath << endl;
+		cout << "Couldn't create GWModel" << endl;
 	}
 	GWResource::unload(pMdr);
 }
