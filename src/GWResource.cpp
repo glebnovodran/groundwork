@@ -10,31 +10,31 @@
 namespace GWResourceUtil {
 
 	static GWBundle* s_pFallbackBundle = nullptr;
-	static ModelBindFunc* s_pModelBind = nullptr;
-	static ModelUnbindFunc* s_pModelUnbind = nullptr;
-	static ImageBindFunc* s_pImageBind = nullptr;
-	static ImageUnbindFunc* s_pImageUnbind = nullptr;
+	static ModelBindFunc s_modelBind = nullptr;
+	static ModelUnbindFunc s_modelUnbind = nullptr;
+	static ImageBindFunc s_imageBind = nullptr;
+	static ImageUnbindFunc s_imageUnbind = nullptr;
 
-	void set_model_binding(ModelBindFunc* pBind, ModelUnbindFunc* pUnbind) {
-		s_pModelBind = pBind;
-		s_pModelUnbind = pUnbind;
+	void set_model_binding(ModelBindFunc pBind, ModelUnbindFunc pUnbind) {
+		s_modelBind = pBind;
+		s_modelUnbind = pUnbind;
 	}
 	void bind(GWModelResource* pMdlRsc) {
-		if (s_pModelBind) { (*s_pModelBind)(pMdlRsc); }
+		if (s_modelBind) { (s_modelBind)(pMdlRsc); }
 	}
 	void unbind(GWModelResource* pMdlRsc) {
-		if (s_pModelUnbind) { (*s_pModelUnbind)(pMdlRsc); }
+		if (s_modelUnbind) { (s_modelUnbind)(pMdlRsc); }
 	}
 
-	void set_image_binding(ImageBindFunc* pBind, ImageUnbindFunc* pUnbind) {
-		s_pImageBind = pBind;
-		s_pImageUnbind = pUnbind;
+	void set_image_binding(ImageBindFunc pBind, ImageUnbindFunc pUnbind) {
+		s_imageBind = pBind;
+		s_imageUnbind = pUnbind;
 	}
 	void bind(GWImage* pImage) {
-		if (s_pImageBind) { (*s_pImageBind)(pImage); }
+		if (s_imageBind) { (s_imageBind)(pImage); }
 	}
 	void unbind(GWImage* pImage) {
-		if (s_pImageUnbind) { (*s_pImageUnbind)(pImage); }
+		if (s_imageUnbind) { (s_imageUnbind)(pImage); }
 	}
 
 	const char* name_from_path(const char* pPath, char sep) {
@@ -806,17 +806,25 @@ GWBundle* GWBundle::create(const std::string& name, const std::string& dataPath,
 	return pBdl;
 }
 
-void GWBundle::purge_models() {
-	for (MdlRscList::Itr itr = mMdlLst.get_itr(); !itr.end(); itr.next()) {
-		GWModelResource* pRsc = itr.val();
-		GWResource::unload(pRsc);
-	}
-	mMdlLst.purge();
-}
 void GWBundle::unbind_models() {
 	for (MdlRscList::Itr itr = mMdlLst.get_itr(); !itr.end(); itr.next()) {
 		GWModelResource* pRsc = itr.val();
 		GWResourceUtil::unbind(pRsc);
+	}
+	mMdlLst.purge();
+}
+
+void GWBundle::unbind_images() {
+	for (ImgList::Itr itr = mImgLst.get_itr(); !itr.end(); itr.next()) {
+		GWImage* pImg = itr.val();
+		GWResourceUtil::unbind(pImg);
+	}
+}
+
+void GWBundle::purge_models() {
+	for (MdlRscList::Itr itr = mMdlLst.get_itr(); !itr.end(); itr.next()) {
+		GWModelResource* pRsc = itr.val();
+		GWResource::unload(pRsc);
 	}
 	mMdlLst.purge();
 }
@@ -827,12 +835,6 @@ void GWBundle::purge_images() {
 		if (pImg) { GWImage::free(pImg); }
 	}
 	mImgLst.purge();
-}
-void GWBundle::unbind_images() {
-	for (ImgList::Itr itr = mImgLst.get_itr(); !itr.end(); itr.next()) {
-		GWImage* pImg = itr.val();
-		GWResourceUtil::unbind(pImg);
-	}
 }
 
 void GWBundle::purge_motions() {
@@ -848,6 +850,7 @@ void GWBundle::purge_colli_data() {
 		GWCollisionResource* pRsc = itr.val();
 		GWResource::unload(pRsc);
 	}
+	mColLst.purge();
 }
 
 void GWBundle::unbind_all() {
@@ -883,8 +886,17 @@ GWRsrcRegistry* GWRsrcRegistry::create(const std::string& appPath, const std::st
 
 void GWRsrcRegistry::destroy(GWRsrcRegistry* pRgy) {
 	if (pRgy != nullptr) {
-		for (BundleList::Itr itr = pRgy->mBdlLst.get_itr(); !itr.end(); itr.next()) {
-			pRgy->unload_bundle(itr.val());
+		uint32_t numBundles = pRgy->mBdlLst.get_count();
+		if (numBundles > 0) {
+			GWBundle** ppBundles = new GWBundle*[numBundles];
+			uint32_t i = 0;
+			for (BundleList::Itr itr = pRgy->mBdlLst.get_itr(); !itr.end(); itr.next(), ++i) {
+				ppBundles[i] = itr.val();
+			}
+			for (i = 0; i < numBundles; ++i) {
+				pRgy->unload_bundle(ppBundles[i]);
+			}
+			delete[] ppBundles;
 		}
 		delete pRgy;
 	}
@@ -898,9 +910,14 @@ void GWRsrcRegistry::unload_bundle(const std::string& name) {
 }
 
 void GWRsrcRegistry::unload_bundle(GWBundle* pBdl) {
-	if (contains_bundle(pBdl)) {
-		mBdlLst.remove(&pBdl->mItem);
-		GWBundle::destroy(pBdl);
+	if (pBdl != nullptr) {
+		if (contains_bundle(pBdl)) {
+			mBdlLst.remove(&pBdl->mItem);
+			GWBundle::destroy(pBdl);
+		}
+	}
+	else {
+		GWSys::dbg_msg("GWRsrcRegistry::unload_bundle: nullptr passed");
 	}
 }
 GWBundle* GWRsrcRegistry::load_bundle(const std::string& name) {

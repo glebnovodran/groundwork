@@ -499,14 +499,14 @@ namespace GWResourceUtil {
 	typedef void (*ModelBindFunc)(GWModelResource* pMdlRsc);
 	typedef void (*ModelUnbindFunc)(GWModelResource* pMdlRsc);
 
-	void set_model_binding(ModelBindFunc* pBind, ModelUnbindFunc* pUnbind);
+	void set_model_binding(ModelBindFunc pBind, ModelUnbindFunc pUnbind);
 	void bind(GWModelResource* pMdlRsc);
 	void unbind(GWModelResource* pMdlRsc);
 
 	typedef void (*ImageBindFunc)(GWImage* pImg);
 	typedef void (*ImageUnbindFunc)(GWImage* pImg);
 
-	void set_image_binding(ImageBindFunc* pBind, ImageUnbindFunc* pUnbind);
+	void set_image_binding(ImageBindFunc pBind, ImageUnbindFunc pUnbind);
 	void bind(GWImage* pImg);
 	void unbind(GWImage* pImg);
 
