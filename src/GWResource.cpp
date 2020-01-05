@@ -915,8 +915,7 @@ void GWRsrcRegistry::unload_bundle(GWBundle* pBdl) {
 			mBdlLst.remove(&pBdl->mItem);
 			GWBundle::destroy(pBdl);
 		}
-	}
-	else {
+	} else {
 		GWSys::dbg_msg("GWRsrcRegistry::unload_bundle: nullptr passed");
 	}
 }
