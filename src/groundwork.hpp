@@ -2,6 +2,7 @@
  * Author: Gleb Novodran <novodran@gmail.com>
  */
 #include "GWSys.hpp"
+#include "GWApp.hpp"
 #include "GWBase.hpp"
 #include "GWList.hpp"
 #include "GWVector.hpp"
