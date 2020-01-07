@@ -16,6 +16,7 @@ static void init_ogl(int x, int y, int w, int h) {
 	cfg.width = w;
 	cfg.height = h;
 	cfg.ifc.dbg_msg = GWSys::dbg_msg;
+	cfg.withoutCtx = false;
 	OGLSys::init(cfg);
 }
 

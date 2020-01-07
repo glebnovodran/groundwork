@@ -3,6 +3,8 @@
  */
 
 class DemoIfc {
+protected:
+	GWDraw::Interface mDrawIfc;
 public:
 	virtual void init() = 0;
 	virtual void loop() = 0;
@@ -11,6 +13,7 @@ public:
 };
 
 class SkinAnimDemo : public DemoIfc {
+public:
 	void init();
 	void loop();
 	void reset();
