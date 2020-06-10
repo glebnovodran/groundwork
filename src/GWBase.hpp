@@ -47,6 +47,15 @@ enum class GWRotationOrder : uint8_t {
 	MAX = ZYX
 };
 
+enum class GWAxis : uint8_t {
+	PLUS_X = 0,
+	MINUS_X = 1,
+	PLUS_Y = 2,
+	MINUS_Y = 3,
+	PLUS_Z = 4,
+	MINUS_Z = 5,
+}
+
 enum class GWTrackKind : uint8_t {
 	ROT = 0,
 	TRN = 1,
