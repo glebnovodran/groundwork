@@ -54,13 +54,13 @@ enum class GWAxis : uint8_t {
 	MINUS_Y = 3,
 	PLUS_Z = 4,
 	MINUS_Z = 5,
-}
+};
 
 enum class GWTrackKind : uint8_t {
 	ROT = 0,
 	TRN = 1,
 	SCL = 2,
-	MAX = SCL
+	MAX = SCL,
 };
 
 namespace GWBase {
