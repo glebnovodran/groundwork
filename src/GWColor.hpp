@@ -3,6 +3,7 @@
  */
 
 #include <ostream>
+
 class GWColorF : public GWColorTuple4f {
 public:
 
@@ -32,14 +33,47 @@ public:
 		return (r + g + b) / 3.0f;
 	}
 
+	void to_nonlinear(float gamma = 2.2f) {
+		if (gamma <= 0.0f || gamma == 1.0f) { return; }
+		float igamma = 1.0f / gamma;
+		for (int i = 0; i < 3; ++i) {
+			if (elems[i] <= 0.0f) {
+				elems[i] = 0.0f;
+			} else {
+				elems[i] = ::powf(elems[i], igamma);
+			}
+		}
+	}
+
+	void to_linear(float gamma = 2.2f) {
+		if (gamma <= 0.0f || gamma == 1.0f) { return; }
+		for (int i = 0; i < 3; ++i) {
+			if (elems[i] > 0.0f) {
+				elems[i] = ::powf(elems[i], gamma);
+			}
+		}
+	}
+
 	void add(const GWColorF& c) { GWTuple::add(*this, c); }
 	void add(const GWColorF& c0, const GWColorF& c1) { GWTuple::add(*this, c0, c1); }
+	void add_rgb(const GWColorTuple3f& v) { GWTuple::add(*this, v); }
+	void add_rgb(const GWColorF& c) {
+		r += c.r; g += c.g; b += c.b;
+	}
 
 	void sub(const GWColorF& c) { GWTuple::sub(*this, c); }
 	void sub(const GWColorF& c0, const GWColorF& c1) { GWTuple::sub(*this, c0, c1); }
+	void sub_rgb(const GWColorTuple3f c) { GWTuple::add(*this, c); }
+	void sub_rgb(const GWColorF& c) {
+		r -= c.r; g -= c.g; b -= c.b;
+	}
 
 	void mul(const GWColorF& c) { GWTuple::mul(*this, c); }
 	void mul(const GWColorF& c0, const GWColorF& c1) { GWTuple::mul(*this, c0, c1); }
+	void mul_rgb(const GWColorTuple3f c) { GWTuple::add(*this, c); }
+	void mul_rgb(const GWColorF& c) {
+		r -= c.r; g -= c.g; b -= c.b;
+	}
 
 	void scl(const GWColorF& c, float s) { GWTuple::scl(*this, c, s); }
 	void scl(float s) { GWTuple::scl(*this, s); }
@@ -49,6 +83,7 @@ public:
 			(*this)[i] = c[i] * s;
 		}
 	}
+	void scl_rgb(const GWColorTuple3f c, float s) { GWTuple::scl(*this, c, s); }
 	void scl_rgb(float s) {
 		for (int i = 0; i < 3; ++i) {
 			(*this)[i] *= s;
