@@ -189,6 +189,12 @@ void test_tuple() {
 	uint32_t encC = c.encode_rgba8();
 	GWTuple::saturate(clr4);
 
+	GWTuple4d expArgs = { 1.0, 2.0, 3.0, 4.0 };
+	GWTuple4d tplRes = { 0.0, 0.0, 0.0, 0.0 };
+	GWTuple::pow(tplRes, expArgs, 2.0);
+	GWTuple::exp(tplRes, expArgs);
+	GWTuple::exp(expArgs);
+	
 	cout << "=====================" << endl;
 }
 

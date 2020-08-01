@@ -47,11 +47,20 @@ enum class GWRotationOrder : uint8_t {
 	MAX = ZYX
 };
 
+enum class GWAxis : uint8_t {
+	PLUS_X = 0,
+	MINUS_X = 1,
+	PLUS_Y = 2,
+	MINUS_Y = 3,
+	PLUS_Z = 4,
+	MINUS_Z = 5,
+};
+
 enum class GWTrackKind : uint8_t {
 	ROT = 0,
 	TRN = 1,
 	SCL = 2,
-	MAX = SCL
+	MAX = SCL,
 };
 
 namespace GWBase {
@@ -167,7 +176,10 @@ namespace GWBase {
 
 	template<typename T> inline T tsqrt(T x) { return std::sqrt(x); }
 	inline float tsqrt(float x) { return ::sqrtf(x); } // GCC: force single-precision
-
+	template<typename T> inline T texp(T x) { return std::exp(x); }
+	inline float texp(float x) { return ::exp(x); }
+	template<typename T> inline T tpow(T x, T y) { return std::pow(x, y); }
+	inline float tpow(float x, float y) { return ::powf(x, y); }
 	template<typename T> inline T div0(T x, T y) { return y != T(0) ? x / y : T(0); }
 	template<typename T> inline T rcp0(T x) { return div0(T(1), x); }
 
@@ -470,6 +482,26 @@ namespace GWTuple {
 
 	template<typename TUPLE_DST_T> inline void sqrt(TUPLE_DST_T& dst) {
 		GWTuple::sqrt(dst, dst);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
+	inline void exp(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
+		const int n = std::min((int)TUPLE_DST_T::ELEMS_NUM, (int)TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = GWBase::texp(src.elems[i]);
+		}
+	}
+	template<typename TUPLE_DST_T>
+	inline void exp(TUPLE_DST_T& dst) {
+		GWTuple::exp(dst, dst);
+	}
+
+	template<typename TUPLE_DST_T, typename TUPLE_SRC_T, typename T>
+	inline void pow(TUPLE_DST_T& dst, const TUPLE_SRC_T& src, T val) {
+		const int n = std::min((int)TUPLE_DST_T::ELEMS_NUM, (int)TUPLE_SRC_T::ELEMS_NUM);
+		for (int i = 0; i < n; ++i) {
+			dst.elems[i] = GWBase::tpow(src.elems[i], val);
+		}
 	}
 
 	template<typename TUPLE_T> inline typename TUPLE_T::elem_t sum(const TUPLE_T& v) {
