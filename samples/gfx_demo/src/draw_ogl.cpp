@@ -17,7 +17,7 @@ static void unbind_image(GWImage* pImg) {}
 
 static struct DrawState {
 	enum TransparencyMode {
-		OPAQUE = 0,
+		OPAQ = 0,
 		SEMI = 1
 	} mode;
 	bool initialized;
@@ -39,7 +39,7 @@ static struct DrawState {
 
 	void set_opaque() {
 		glDisable(GL_BLEND);
-		mode = OPAQUE;
+		mode = OPAQ;
 	};
 	void set_semi() {
 		glEnable(GL_BLEND);
