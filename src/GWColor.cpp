@@ -22,3 +22,12 @@ uint32_t GWColorF::encode_rgba8() const {
 	}
 	return val.u;
 }
+
+void GWColorF::decode_rgba8(uint32_t rgba) {
+	GWBase::Cvt32 cvt;
+	cvt.u = rgba;
+	for (int i = 0; i < 4; ++i) {
+		elems[i] = (float)cvt.b[i];
+	}
+	scl(1.0f/255.0f);
+}

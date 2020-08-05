@@ -99,6 +99,7 @@ public:
 	void zero() { GWTuple::fill(*this, 0.0f); }
 
 	uint32_t encode_rgba8() const;
+	void decode_rgba8(uint32_t rgba);
 
 	template<typename TUPLE_T> GWColorF& operator = (const TUPLE_T& tuple) {
 		GWTuple::copy(*this, tuple);
