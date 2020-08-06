@@ -5,6 +5,9 @@
 #include "GWSys.hpp"
 #include "GWBase.hpp"
 #include "GWVector.hpp"
+#include "GWMatrix.hpp"
+#include "GWQuaternion.hpp"
+#include "GWTransform.hpp"
 #include "GWColor.hpp"
 #include "GWImage.hpp"
 

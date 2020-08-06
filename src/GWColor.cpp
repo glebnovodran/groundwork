@@ -5,7 +5,46 @@
 
 #include "GWSys.hpp"
 #include "GWBase.hpp"
+#include "GWVector.hpp"
+#include "GWMatrix.hpp"
+#include "GWQuaternion.hpp"
+#include "GWTransform.hpp"
 #include "GWColor.hpp"
+
+namespace GWColor {
+	static inline const GWTransformF* get_RGB2XYZ(const GWTransformF* pRGB2XYZ) {
+		// Rec. 709; 1931 CIE, D65
+		static const GWTransformF s_rec709_RGB2XYZ = {
+			0.412453f, 0.212671f, 0.019334f, 0.0f,
+			0.357580f, 0.715160f, 0.119193f, 0.0f,
+			0.180423f, 0.072169f, 0.950227f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		};
+		return pRGB2XYZ ? pRGB2XYZ : &s_rec709_RGB2XYZ;
+	}
+
+	static inline const GWTransformF* get_XYZ2RGB(const GWTransformF* pXYZ2RGB) {
+		// Rec. 709; 1931 CIE, D65
+		static const GWTransformF s_rec709_XYZ2RGB = {
+			3.240479f, -0.969256f,  0.055648f, 0.0f,
+			-1.537150f,  1.875992f, -0.204043f, 0.0f,
+			-0.498535f,  0.041556f,  1.057311f, 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		};
+		return pXYZ2RGB ? pXYZ2RGB : &s_rec709_XYZ2RGB;
+	}
+} // namespace
+
+GWVectorF GWColorF::XYZ(const GWTransformF* pRGB2XYZ) const {
+	const GWTransformF* pXform = GWColor::get_RGB2XYZ(pRGB2XYZ);
+	return pXform->calc_vec(GWVectorF(r, g, b));
+}
+
+void GWColorF::from_XYZ(const GWVectorF& xyz, const GWTransformF* pXYZ2RGB) {
+	const GWTransformF* pXform = GWColor::get_XYZ2RGB(pXYZ2RGB);
+	GWVectorF rgb = pXform->calc_vec(xyz);
+	set(rgb);
+}
 
 std::ostream& operator << (std::ostream & os, const GWColorF & color) {
 	os << "(" << color.r << ", " << color.g << ", " << color.b << ", " << color.a << ")";
@@ -31,3 +70,4 @@ void GWColorF::decode_rgba8(uint32_t rgba) {
 	}
 	scl(1.0f/255.0f);
 }
+

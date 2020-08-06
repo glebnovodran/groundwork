@@ -198,6 +198,19 @@ void test_tuple() {
 	cout << "=====================" << endl;
 }
 
+void test_color() {
+	using namespace std;
+	GWColorF clr(1.0f, 0.0f, 0.0f);
+	GWColorF clr0;
+	GWVectorF xyz = clr.XYZ();
+	cout << "test_color" << endl;
+	clr0.from_XYZ(xyz);
+	if (!GWTuple::compare(clr, clr0, 0.001f)) {
+		cout << "XYZ reverse conversion failed" << endl;
+	}
+	cout << "=====================" << endl;
+}
+
 void test_vec() {
 	using namespace std;
 	GWVectorF a(1.0f, 0.0f, 0.0f);
@@ -558,6 +571,7 @@ int main(int argc, char* argv[]) {
 	test_ray();
 	test_xform();
 	test_quat();
+	test_color();
 	test_motion("./data/walk_rn.txt");
 	test_image("./data/pano_test1_h.dds");
 	test_model(argv[1]);

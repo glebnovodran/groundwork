@@ -19,6 +19,8 @@ public:
 		a = ca;
 	}
 
+	void set(const GWVectorF& rgb) { set(rgb.x, rgb.y, rgb.z); }
+
 	template<typename TUPLE_T> void from_tuple(const TUPLE_T& tuple) { GWTuple::copy(*this, tuple); }
 
 	float luma() const {
@@ -101,6 +103,9 @@ public:
 	uint32_t encode_rgba8() const;
 	void decode_rgba8(uint32_t rgba);
 
+	GWVectorF XYZ(const GWTransformF* pRGB2XYZ = nullptr) const;
+	void from_XYZ(const GWVectorF& xyz, const GWTransformF* pXYZ2RGB = nullptr);
+	
 	template<typename TUPLE_T> GWColorF& operator = (const TUPLE_T& tuple) {
 		GWTuple::copy(*this, tuple);
 		return *this;
