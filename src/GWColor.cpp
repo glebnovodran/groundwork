@@ -33,6 +33,20 @@ namespace GWColor {
 		};
 		return pXYZ2RGB ? pXYZ2RGB : &s_rec709_XYZ2RGB;
 	}
+
+	GWVectorF XYZ_to_xyY(const GWVectorF& xyz) {
+		GWVectorF s = xyz * GWBase::rcp0(xyz.x + xyz.y + xyz.z);
+		return GWVectorF(s.x, s.y, xyz.y);
+	}
+
+	GWVectorF xyY_to_XYZ(const GWVectorF& xyY) {
+		float x = xyY.x;
+		float y = xyY.y;
+		float z = 1.0f - x - y;
+		float Y = xyY.z;
+		float s = GWBase::div0(Y, y);
+		return GWVectorF(x * s, Y, z * s);
+	}
 } // namespace
 
 GWVectorF GWColorF::XYZ(const GWTransformF* pRGB2XYZ) const {
@@ -44,6 +58,14 @@ void GWColorF::from_XYZ(const GWVectorF& xyz, const GWTransformF* pXYZ2RGB) {
 	const GWTransformF* pXform = GWColor::get_XYZ2RGB(pXYZ2RGB);
 	GWVectorF rgb = pXform->calc_vec(xyz);
 	set(rgb);
+}
+
+GWVectorF GWColorF::xyY(const GWTransformF* pRGB2XYZ) const {
+	return GWColor::XYZ_to_xyY(XYZ(pRGB2XYZ));
+}
+
+void GWColorF::from_xyY(const GWVectorF& xyY, const GWTransformF* pXYZ2RGB) {
+	from_XYZ(GWColor::xyY_to_XYZ(xyY), pXYZ2RGB);
 }
 
 std::ostream& operator << (std::ostream & os, const GWColorF & color) {

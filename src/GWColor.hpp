@@ -105,11 +105,18 @@ public:
 
 	GWVectorF XYZ(const GWTransformF* pRGB2XYZ = nullptr) const;
 	void from_XYZ(const GWVectorF& xyz, const GWTransformF* pXYZ2RGB = nullptr);
-	
+	GWVectorF xyY(const GWTransformF* pRGB2XYZ = nullptr) const;
+	void from_xyY(const GWVectorF& xyY, const GWTransformF* pXYZ2RGB = nullptr);
+
 	template<typename TUPLE_T> GWColorF& operator = (const TUPLE_T& tuple) {
 		GWTuple::copy(*this, tuple);
 		return *this;
 	}
 };
+
+namespace GWColor {
+	GWVectorF XYZ_to_xyY(const GWVectorF& xyz);
+	GWVectorF xyY_to_XYZ(const GWVectorF& xyY);
+}
 
 std::ostream& operator << (std::ostream& os, const GWColorF& color);

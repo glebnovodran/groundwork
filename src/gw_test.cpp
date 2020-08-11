@@ -200,13 +200,19 @@ void test_tuple() {
 
 void test_color() {
 	using namespace std;
+	cout << "test_color" << endl;
 	GWColorF clr(1.0f, 0.0f, 0.0f);
 	GWColorF clr0;
 	GWVectorF xyz = clr.XYZ();
-	cout << "test_color" << endl;
+
 	clr0.from_XYZ(xyz);
 	if (!GWTuple::compare(clr, clr0, 0.001f)) {
 		cout << "XYZ reverse conversion failed" << endl;
+	}
+	GWVectorF xyY = clr0.xyY();
+	clr.from_xyY(xyY);
+	if (!GWTuple::compare(clr, clr0, 0.001f)) {
+		cout << "xyY reverse conversion failed" << endl;
 	}
 	cout << "=====================" << endl;
 }
