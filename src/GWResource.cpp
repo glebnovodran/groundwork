@@ -102,6 +102,8 @@ void GWResource::unload(GWResource* pRsrc) {
 
 GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	char sig[0x10];
+	uint32_t version = 0;
+	uint32_t dataSz = 0;
 	char* pBuf = nullptr;
 	size_t fsize = 0;
 	FILE* pFile = nullptr;
@@ -116,18 +118,29 @@ GWResource* GWResource::load(const std::string& path, const char* pSig) {
 			fsize = ftell(pFile);
 		}
 		fseek(pFile, 0, SEEK_SET);
-		if (fsize > 0x10) {
+		size_t baseHdrSz = offsetof(GWResource, mStrsSize) + sizeof(mStrsSize);
+		if (fsize > baseHdrSz) {
 			fread(sig, 1, 0x10, pFile);
 			if (::memcmp(sig, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) == 0) {
-				size_t size = fsize + sizeof(Binding); // unaligned
-				fseek(pFile, 0, SEEK_SET);
-				pBuf = new char[size];
-				if (pBuf) {
-					fread(pBuf, 1, fsize, pFile);
-					uint8_t* pBinding = GWBase::incr_ptr(pBuf, fsize);
-					std::fill_n(pBinding, sizeof(Binding),0);
+				fread(&version, 4, 1, pFile);
+				fread(&dataSz, 4, 1, pFile);
+				if (fsize >= dataSz) {
+					size_t size = fsize + sizeof(Binding); // unaligned
+					fseek(pFile, 0, SEEK_SET);
+					pBuf = new char[size];
+					if (pBuf) {
+						fread(pBuf, 1, dataSz, pFile);
+						uint8_t* pBinding = GWBase::incr_ptr(pBuf, dataSz);
+						std::fill_n(pBinding, sizeof(Binding),0);
+					}
+				} else {
+					GWSys::dbg_msg("%s is of a size smaller than the specified in the file header", path.c_str());
 				}
+			} else {
+				GWSys::dbg_msg("%s has a signature different to the specified by the call", path.c_str());
 			}
+		} else {
+			GWSys::dbg_msg("%s is too short for a resource file.", path.c_str());
 		}
 		fclose(pFile);
 	}
@@ -925,4 +938,14 @@ GWBundle* GWRsrcRegistry::load_bundle(const std::string& name) {
 		mBdlLst.add(&pBdl->mItem);
 	}
 	return pBdl;
+}
+
+GWSkyMapResource* GWSkyMapResource::load(const std::string& path) {
+	GWSkyMapResource* pSkyr = nullptr;
+	GWResource* pRsrc = GWResource::load(path, GW_RSRC_ID("GWModel"));
+	if (pRsrc) {
+		pSkyr = reinterpret_cast<GWSkyMapResource*>(pRsrc);
+		//GWSys::dbg_msg("+ skymap resource: %s\n", pSkyr->get_path());
+	}
+	return pSkyr;
 }
