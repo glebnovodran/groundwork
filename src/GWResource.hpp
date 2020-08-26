@@ -463,32 +463,6 @@ public:
 	static GWCollisionResource* load(const std::string& path);
 };
 
-class GWSkyMapResource : public GWResource {
-public:
-	enum class StorageFormat : uint8_t {
-		FLOAT,
-		HALF
-	};
-	/* +20 */ uint32_t mHeight;
-	/* +24 */ uint32_t mWidth;
-	/* +28 */ float mHaziness;
-	/* +2C */ float mBrightness;
-	/* +30 */ GWVectorF mSunDirection;
-	/* +34 */ uint32_t mFlags; // storage type, ground kind
-public:
-	StorageFormat get_storage_format() const {
-		uint8_t fmt = uint8_t(mFlags & 0xff);
-		return StorageFormat(fmt);
-	}
-
-	void get_side(const GWAxis axis, void* pMem) const;
-	void get_panorama(void* pMem) const;
-	void* get_cubemap();
-
-	static GWSkyMapResource* load(const std::string& path);
-
-};
-
 class GWCatalog : public GWResource {
 public:
 	/* +20 */ uint32_t mNum;
