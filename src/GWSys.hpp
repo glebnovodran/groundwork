@@ -8,4 +8,6 @@ namespace GWSys {
 	void* bin_load(const char* pPath, size_t* pSize = nullptr);
 	char* txt_load(const char* pPath);
 	void bin_free(void* pData);
+	void* alloc_rsrc_mem(const size_t size);
+	void free_rsrc_mem(void* pMem);
 };
