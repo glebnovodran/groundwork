@@ -26,6 +26,13 @@ namespace GWSys {
 		delete[] (char*)pMem;
 	}
 
+	void* alloc_temp_mem(const size_t size) {
+		return new char[size];
+	}
+	void free_temp_mem(void* pMem) {
+		delete[] (char*)pMem;
+	}
+
 	void dbg_msg(const char* pFmt, ...) {
 		char buf[1024];
 		va_list lst;

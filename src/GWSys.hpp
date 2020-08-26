@@ -10,4 +10,6 @@ namespace GWSys {
 	void bin_free(void* pData);
 	void* alloc_rsrc_mem(const size_t size);
 	void free_rsrc_mem(void* pMem);
+	void* alloc_temp_mem(const size_t size);
+	void free_temp_mem(void* pMem);
 };
