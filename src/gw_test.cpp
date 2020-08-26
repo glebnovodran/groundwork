@@ -527,12 +527,16 @@ void test_model(const std::string& mdlPath) {
 	*pMdlMem = 16;
 	pMdr->save_geo("out.geo");
 
+	GWSphereF* pSph = pMdr->calc_skin_spheres_of_influence();
+	GWSys::free_rsrc_mem(pSph);
+
 	GWModel* pMdl = GWModel::create(pMdr, 0x200, 0x300);
 	if (pMdl) {
 		GWModel::destroy(pMdl);
 	} else {
 		cout << "Couldn't create GWModel" << endl;
 	}
+
 	GWResource::unload(pMdr);
 }
 
