@@ -263,7 +263,7 @@ GWSphereF GWModelResource::calc_skin_node_sphere_of_influence(uint32_t skinIdx, 
 	if (check_skin_node_idx(skinIdx)) {
 		GWVectorF* pMdlPts = reinterpret_cast<GWVectorF*>(get_pnt_ptr(0));
 		size_t ptsMemSz = sizeof(GWVectorF) * mNumPnt;
-		GWVectorF* pPts = (pMem == nullptr) ? reinterpret_cast<GWVectorF*>(GWSys::alloc_temp_mem(ptsMemSz))/*new GWVectorF[mNumPnt]*/ : pMem;
+		GWVectorF* pPts = (pMem == nullptr) ? reinterpret_cast<GWVectorF*>(GWSys::alloc_temp_mem(ptsMemSz)) : pMem;
 
 		uint32_t k = 0;
 		for (uint32_t i = 0; i < mNumPnt; ++i) {
