@@ -436,8 +436,8 @@ void test_motion(const std::string& motPath) {
 			cout << "Rot : ";
 			if (track.is_valid()) {
 				const GWMotion::TrackInfo* pInfo = track.get_track_info();
-				cout << " srcMask = " << (uint32_t)pInfo->srcMask;
-				cout << "; dataMask = " << (uint32_t)pInfo->dataMask;
+				cout << " srcMask = " << (uint32_t)pInfo->mSrcMask;
+				cout << "; dataMask = " << (uint32_t)pInfo->mDataMask;
 			} else {
 				cout << "None";
 			}
@@ -447,8 +447,8 @@ void test_motion(const std::string& motPath) {
 			cout << "Trn : ";
 			if (track.is_valid()) {
 				const GWMotion::TrackInfo* pInfo = track.get_track_info();
-				cout << " srcMask = " << (uint32_t)pInfo->srcMask;
-				cout << "; dataMask = " << (uint32_t)pInfo->dataMask;
+				cout << " srcMask = " << (uint32_t)pInfo->mSrcMask;
+				cout << "; dataMask = " << (uint32_t)pInfo->mDataMask;
 			} else {
 				cout << "None";
 			}
@@ -458,8 +458,8 @@ void test_motion(const std::string& motPath) {
 			cout << "Scl : ";
 			if (track.is_valid()) {
 				const GWMotion::TrackInfo* pInfo = track.get_track_info();
-				cout << " srcMask = " << (uint32_t)pInfo->srcMask;
-				cout << "; dataMask = " << (uint32_t)pInfo->dataMask;
+				cout << " srcMask = " << (uint32_t)pInfo->mSrcMask;
+				cout << "; dataMask = " << (uint32_t)pInfo->mDataMask;
 			} else {
 				cout << "None";
 			}
