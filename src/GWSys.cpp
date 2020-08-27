@@ -23,14 +23,14 @@ namespace GWSys {
 	}
 
 	void free_rsrc_mem(void* pMem) {
-		delete[] (char*)pMem;
+		delete[] reinterpret_cast<char*>(pMem);
 	}
 
 	void* alloc_temp_mem(const size_t size) {
 		return new char[size];
 	}
 	void free_temp_mem(void* pMem) {
-		delete[] (char*)pMem;
+		delete[] reinterpret_cast<char*>(pMem);
 	}
 
 	void dbg_msg(const char* pFmt, ...) {

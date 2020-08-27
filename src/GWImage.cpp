@@ -14,7 +14,7 @@
 GWImage* GWImage::alloc(int w, int h) {
 	int numPix = w * h;
 	size_t numByte = sizeof(GWImage) + sizeof(GWColorF) * (numPix - 1);
-	GWImage* pImg = reinterpret_cast<GWImage*>(new char[numByte]);
+	GWImage* pImg = reinterpret_cast<GWImage*>(GWSys::alloc_rsrc_mem(numByte));
 	pImg->mWidth = w;
 	pImg->mHeight = h;
 	pImg->mpExtMem = nullptr;
@@ -29,15 +29,15 @@ void GWImage::free(GWImage * pImg) {
 		if(pImg->binding_memory_allocated()) {
 			GWSys::dbg_msg("Warning: binding memory is allocated still in GWImage::free");
 		}
-		delete[] reinterpret_cast<char*>(pImg);
+		GWSys::free_rsrc_mem(pImg);
 	}
 }
 
 void GWImage::alloc_binding_memory(uint32_t size) {
-	mpExtMem = new char[size];
+	mpExtMem = GWSys::alloc_rsrc_mem(size);
 }
 void GWImage::release_binding_memory() {
-	if (mpExtMem != nullptr) { delete[] reinterpret_cast<char*>(mpExtMem); }
+	if (mpExtMem != nullptr) { GWSys::free_rsrc_mem(mpExtMem); }
 }
 
 static void calc_range(GWColorF& minVal, GWColorF& maxVal, const GWColorF* pPix, int n) {
@@ -68,10 +68,10 @@ GWImage* GWImage::read_dds(std::ifstream& ifs) {
 		} else {
 			pImg = alloc(w, h);
 			int n = npix * 4;
-			uint16_t* pTmp = new uint16_t[n];
+			uint16_t* pTmp = reinterpret_cast<uint16_t*>(GWSys::alloc_temp_mem(n*sizeof(uint16_t)));
 			ifs.read(reinterpret_cast<char*>(pTmp), header.pitchLin);
 			GWBase::half_to_float(reinterpret_cast<float*>(&pImg->mPixels[0]), pTmp, n);
-			delete[] pTmp;
+			GWSys::free_temp_mem(pTmp);//delete[] pTmp;
 		}
 	}
 
