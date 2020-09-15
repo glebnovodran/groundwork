@@ -71,7 +71,7 @@ GWImage* GWImage::read_dds(std::ifstream& ifs) {
 			uint16_t* pTmp = reinterpret_cast<uint16_t*>(GWSys::alloc_temp_mem(n*sizeof(uint16_t)));
 			ifs.read(reinterpret_cast<char*>(pTmp), header.pitchLin);
 			GWBase::half_to_float(reinterpret_cast<float*>(&pImg->mPixels[0]), pTmp, n);
-			GWSys::free_temp_mem(pTmp);//delete[] pTmp;
+			GWSys::free_temp_mem(pTmp);
 		}
 	}
 
