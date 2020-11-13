@@ -122,7 +122,7 @@ namespace GWBase {
 		return (T(std::fabs(a - b)) <= ::fmax(::fabs(a), std::fabs(b)) * eps);
 	}
 
-	static int64_t factorial(int64_t x) {
+	inline int64_t factorial(int64_t x) {
 		int64_t res = 1;
 		if (x > 1) {
 			res = x;
