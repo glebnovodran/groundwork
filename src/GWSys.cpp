@@ -18,6 +18,21 @@
 
 namespace GWSys {
 
+	void* alloc_rsrc_mem(const size_t size) {
+		return new char[size];
+	}
+
+	void free_rsrc_mem(void* pMem) {
+		delete[] reinterpret_cast<char*>(pMem);
+	}
+
+	void* alloc_temp_mem(const size_t size) {
+		return new char[size];
+	}
+	void free_temp_mem(void* pMem) {
+		delete[] reinterpret_cast<char*>(pMem);
+	}
+
 	void dbg_msg(const char* pFmt, ...) {
 		char buf[1024];
 		va_list lst;
@@ -58,7 +73,7 @@ namespace GWSys {
 			fseek(pFile, 0, SEEK_SET);
 			if (size) {
 				if (asText) ++size;
-				pData = malloc(size);
+				pData = alloc_rsrc_mem(size);
 				if (pData) {
 					fread(pData, 1, size, pFile);
 					if (asText) {
@@ -74,6 +89,9 @@ namespace GWSys {
 		return pData;
 	}
 
+	void free_impl(void* pData) {
+		free_rsrc_mem(pData);
+	}
 	void* bin_load(const char* pPath, size_t* pSize) {
 		return load_impl(pPath, pSize, false);
 	}
@@ -83,6 +101,6 @@ namespace GWSys {
 	}
 
 	void bin_free(void* pData) {
-		free(pData);
+		free_impl(pData);
 	}
 }

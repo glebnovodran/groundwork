@@ -198,6 +198,10 @@ static bool test_distmtx() {
 	}
 	int dsgn = 0;
 	bool res = GWMatrix::lu_decomp(pLU, pMtx, N, pTmpVec, pPerm, &dsgn);
+	delete[] pMtx;
+	delete[] pLU;
+	delete[] pPerm;
+	delete[] pTmpVec;
 	return res;
 }
 

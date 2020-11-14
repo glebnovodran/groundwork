@@ -96,12 +96,14 @@ void GWResource::unload(GWResource* pRsrc) {
 		if (pRsrc->binding_memory_allocated()) {
 			GWSys::dbg_msg("Warning: Unloading a resource that has an allocated binding memory");
 		}
-		delete[] reinterpret_cast<char*>(pRsrc);
+		GWSys::free_rsrc_mem(pRsrc);
 	}
 }
 
 GWResource* GWResource::load(const std::string& path, const char* pSig) {
 	char sig[0x10];
+	GWResource header;
+
 	char* pBuf = nullptr;
 	size_t fsize = 0;
 	FILE* pFile = nullptr;
@@ -116,18 +118,29 @@ GWResource* GWResource::load(const std::string& path, const char* pSig) {
 			fsize = ftell(pFile);
 		}
 		fseek(pFile, 0, SEEK_SET);
-		if (fsize > 0x10) {
-			fread(sig, 1, 0x10, pFile);
-			if (::memcmp(sig, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) == 0) {
-				size_t size = fsize + sizeof(Binding); // unaligned
-				fseek(pFile, 0, SEEK_SET);
-				pBuf = new char[size];
-				if (pBuf) {
-					fread(pBuf, 1, fsize, pFile);
-					uint8_t* pBinding = GWBase::incr_ptr(pBuf, fsize);
-					std::fill_n(pBinding, sizeof(Binding),0);
+
+		size_t baseHdrSz = sizeof(GWResource);
+		if (fsize > baseHdrSz) {
+			fread(&header, baseHdrSz, 1, pFile);
+
+			if (::memcmp(header.mSignature, GW_RSRC_SIG, sizeof(GW_RSRC_SIG) - 1) == 0) {
+				if (fsize >= header.mDataSize) {
+					size_t size = header.mDataSize + sizeof(Binding); // unaligned
+					fseek(pFile, 0, SEEK_SET);
+					pBuf = reinterpret_cast<char*>(GWSys::alloc_rsrc_mem(size));
+					if (pBuf) {
+						fread(pBuf, 1, header.mDataSize, pFile);
+						uint8_t* pBinding = GWBase::incr_ptr(pBuf, header.mDataSize);
+						std::fill_n(pBinding, sizeof(Binding),0);
+					}
+				} else {
+					GWSys::dbg_msg("%s is of a smaller size than the specified in the file header", path.c_str());
 				}
+			} else {
+				GWSys::dbg_msg("%s has a signature different to the specified by the call", path.c_str());
 			}
+		} else {
+			GWSys::dbg_msg("%s is too short for a resource file.", path.c_str());
 		}
 		fclose(pFile);
 	}
@@ -249,7 +262,8 @@ GWSphereF GWModelResource::calc_skin_node_sphere_of_influence(uint32_t skinIdx, 
 
 	if (check_skin_node_idx(skinIdx)) {
 		GWVectorF* pMdlPts = reinterpret_cast<GWVectorF*>(get_pnt_ptr(0));
-		GWVectorF* pPts = (pMem == nullptr) ? new GWVectorF[mNumPnt] : pMem;
+		size_t ptsMemSz = sizeof(GWVectorF) * mNumPnt;
+		GWVectorF* pPts = (pMem == nullptr) ? reinterpret_cast<GWVectorF*>(GWSys::alloc_temp_mem(ptsMemSz)) : pMem;
 
 		uint32_t k = 0;
 		for (uint32_t i = 0; i < mNumPnt; ++i) {
@@ -265,24 +279,27 @@ GWSphereF GWModelResource::calc_skin_node_sphere_of_influence(uint32_t skinIdx, 
 		}
 
 		sph.ritter(pPts, k);
-		if (pMem == nullptr) { delete[] pPts; }
+		if (pMem == nullptr) { GWSys::free_temp_mem(pPts); }
 	}
 	return sph;
 }
 
-GWSphereF* GWModelResource::calc_skin_spheres_of_influence() {
+GWSphereF* GWModelResource::calc_skin_spheres_of_influence(GWSphereF* pMem) {
 	GWSphereF* pSph = nullptr;
 	if (has_skin()) {
-		GWVectorF* pMem = new GWVectorF[mNumPnt];
-		pSph = new GWSphereF[mNumSkinNodes];
+		size_t sphMemSz = sizeof(GWSphereF) * mNumSkinNodes;
+		size_t ptsMemSz = sizeof(GWVectorF) * mNumPnt;
+		GWVectorF* pPntMem = reinterpret_cast<GWVectorF*>(GWSys::alloc_temp_mem(ptsMemSz));
+		pSph = (pMem == nullptr) ? reinterpret_cast<GWSphereF*>(GWSys::alloc_rsrc_mem(sphMemSz)) : pMem;
+
 		for (uint32_t i = 0; i < mNumSkinNodes; ++i) {
 			if (is_skel_node_skin_deformer(i)) {
-				pSph[i] = calc_skin_node_sphere_of_influence(i, pMem);
+				pSph[i] = calc_skin_node_sphere_of_influence(i, pPntMem);
 			} else {
 				pSph[i].set_zero();
 			}
 		}
-		delete[] pMem;
+		GWSys::free_temp_mem(pPntMem);
 	}
 	return pSph;
 }
@@ -444,7 +461,7 @@ void GWModelResource::write_skel(std::ostream& os, const char* pBase) {
 		}
 	}
 
-	if (pSph != nullptr) { delete[] pSph; }
+	if (pSph != nullptr) { GWSys::free_rsrc_mem(pSph); }
 }
 
 

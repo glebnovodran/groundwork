@@ -9,50 +9,50 @@ public:
 	static const uint32_t NONE = (uint32_t)-1;
 
 	struct TrackInfo {
-		float* pFrmData;
-		GWVectorF minVal;
-		GWVectorF maxVal;
-		uint32_t numFrames;
-		GWTrackKind kind;
-		uint8_t dataMask;
-		uint8_t srcMask;
+		float* mpFrmData;
+		GWVectorF mMinVal;
+		GWVectorF mMaxVal;
+		uint32_t mNumFrames;
+		GWTrackKind mKind;
+		uint8_t mDataMask;
+		uint8_t mSrcMask;
 
-		TrackInfo() : pFrmData(nullptr), minVal(0), maxVal(0), numFrames(0),
-			kind(GWTrackKind::ROT), dataMask(0), srcMask(0) {}
+		TrackInfo() : mpFrmData(nullptr), mMinVal(0), mMaxVal(0), mNumFrames(0),
+			mKind(GWTrackKind::ROT), mDataMask(0), mSrcMask(0) {}
 		~TrackInfo() { reset(); }
 
 		void reset() {
-			if (pFrmData != nullptr) { delete[] pFrmData; }
-			pFrmData = nullptr;
-			minVal.fill(0.0f);
-			maxVal.fill(0.0f);
-			numFrames = 0;
-			kind = GWTrackKind::ROT;
-			dataMask = 0;
-			srcMask = 0;
+			if (mpFrmData != nullptr) { delete[] mpFrmData; }
+			mpFrmData = nullptr;
+			mMinVal.fill(0.0f);
+			mMaxVal.fill(0.0f);
+			mNumFrames = 0;
+			mKind = GWTrackKind::ROT;
+			mDataMask = 0;
+			mSrcMask = 0;
 		}
 
 		uint32_t get_stride() const {
 			uint32_t val = 0;
 			for (int i = 0; i < 3; ++i) {
-				if (dataMask & (1 << i)) { ++val; }
+				if (mDataMask & (1 << i)) { ++val; }
 			}
 			return val;
 		}
 
-		float* get_at(int32_t fno) const { return pFrmData + get_stride() * fno; }
+		float* get_at(int32_t fno) const { return mpFrmData + get_stride() * fno; }
 
 		GWVectorF get_vec_at(int32_t fno) const {
 			GWVectorF val(0.0f);
-			if (kind == GWTrackKind::SCL) {
+			if (mKind == GWTrackKind::SCL) {
 				val.fill(1.0f);
 			}
 			float* pData = get_at(fno);
 			for (int i = 0; i < 3; ++i) {
-				if (dataMask & (1 << i)) {
+				if (mDataMask & (1 << i)) {
 					val[i] = *pData++;
-				} else if (srcMask & (1 << i)) {
-					val[i] = minVal[i];
+				} else if (mSrcMask & (1 << i)) {
+					val[i] = mMinVal[i];
 				}
 			}
 			return val;
@@ -94,7 +94,7 @@ public:
 			uint32_t mask = 0;
 			if (mpMot != nullptr) {
 				const TrackInfo* pInfo = get_track_info();
-				mask = pInfo->srcMask;
+				mask = pInfo->mSrcMask;
 			}
 			return mask;
 		}
@@ -252,7 +252,7 @@ public:
 
 	// all tracks have the same length
 	uint32_t num_frames() const {
-		return mpTrackInfo == nullptr ? 0 : mpTrackInfo[0].numFrames;
+		return mpTrackInfo == nullptr ? 0 : mpTrackInfo[0].mNumFrames;
 	}
 
 	GWVectorF eval(uint32_t nodeId, GWTrackKind trackKind, float frame) const;

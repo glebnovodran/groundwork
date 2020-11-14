@@ -71,13 +71,13 @@ public:
 	}
 	void alloc_binding_memory(uint32_t size) {
 		Binding bnd = get_binding();
-		bnd.pMem = new char[size];
+		bnd.pMem = GWSys::alloc_rsrc_mem(size);
 		set_binding(bnd);
 	}
 	void release_binding_memory() {
 		Binding bnd = get_binding();
 		if (bnd.pMem != nullptr) {
-			delete[] (char*)bnd.pMem;
+			GWSys::free_rsrc_mem(bnd.pMem);
 			bnd.pMem = nullptr;
 		}
 	}
@@ -362,7 +362,7 @@ public:
 	uint32_t get_pnt_skin_joints_count(uint32_t pntIdx);
 
 	GWSphereF calc_skin_node_sphere_of_influence(uint32_t skinIdx, GWVectorF* pMem = nullptr);
-	GWSphereF* calc_skin_spheres_of_influence();
+	GWSphereF* calc_skin_spheres_of_influence(GWSphereF* pMem = nullptr);
 
 	static GWModelResource* load(const std::string& path);
 

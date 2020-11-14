@@ -40,35 +40,35 @@ uint8_t calc_data_mask(const GWVectorF& minVal, const GWVectorF& maxVal) {
 }
 
 void GWMotion::TrackInfo::create_from_raw(GWVectorF* pRawData, uint32_t len, uint8_t srcMask) {
-	assert(pFrmData == nullptr);
-	this->srcMask = srcMask;
+	assert(mpFrmData == nullptr);
+	this->mSrcMask = srcMask;
 	uint32_t numChan = 0;
 
-	GWTuple::calc_bbox(pRawData, len, minVal, maxVal);
-	dataMask = calc_data_mask(minVal, maxVal);
+	GWTuple::calc_bbox(pRawData, len, mMinVal, mMaxVal);
+	mDataMask = calc_data_mask(mMinVal, mMaxVal);
 	numChan = get_stride();
-	pFrmData = new float[numChan * len];
-	place_data(pFrmData, pRawData, len, dataMask);
-	numFrames = len;
+	mpFrmData = new float[numChan * len];
+	place_data(mpFrmData, pRawData, len, mDataMask);
+	mNumFrames = len;
 }
 
 void GWMotion::TrackInfo::replace_data(GWVectorF* pRawData) {
-	assert(pFrmData != nullptr);
+	assert(mpFrmData != nullptr);
 	uint32_t numChan = 0;
 	uint32_t oldNumChan = get_stride();
 
-	GWTuple::calc_bbox(pRawData, numFrames, minVal, maxVal);
-	dataMask = calc_data_mask(minVal, maxVal);
+	GWTuple::calc_bbox(pRawData, mNumFrames, mMinVal, mMaxVal);
+	mDataMask = calc_data_mask(mMinVal, mMaxVal);
 	numChan = get_stride();
 	if (numChan != oldNumChan) {
-		delete[] pFrmData;
-		pFrmData = nullptr;
-		uint32_t newSz = numChan * numFrames;
+		delete[] mpFrmData;
+		mpFrmData = nullptr;
+		uint32_t newSz = numChan * mNumFrames;
 		if (newSz > 0) {
-			pFrmData = new float[newSz];
+			mpFrmData = new float[newSz];
 		}
 	}
-	place_data(pFrmData, pRawData, numFrames, dataMask);
+	place_data(mpFrmData, pRawData, mNumFrames, mDataMask);
 }
 
 
@@ -279,11 +279,11 @@ void GWMotion::clone_from(const GWMotion& mot) {
 				mpNodeInfo[i].pTrk[j] = mpTrackInfo + (pTrkInfo - mot.mpTrackInfo);
 				*mpNodeInfo[i].pTrk[j] = *pTrkInfo;
 				uint32_t numChan = mpNodeInfo[i].pTrk[j]->get_stride();
-				uint32_t numFrames = pTrkInfo->numFrames;
+				uint32_t numFrames = pTrkInfo->mNumFrames;
 				uint32_t dataSize = numChan * numFrames;
 				float* pFrameData = new float[dataSize];
-				std::copy_n(pTrkInfo->pFrmData, dataSize, pFrameData);
-				mpNodeInfo[i].pTrk[j]->pFrmData = pFrameData;
+				std::copy_n(pTrkInfo->mpFrmData, dataSize, pFrameData);
+				mpNodeInfo[i].pTrk[j]->mpFrmData = pFrameData;
 			}
 		}
 
@@ -310,10 +310,10 @@ void GWMotion::clone_from(const GWMotion& mot) {
 }
 
 void GWMotion::alloc_binding_memory(uint32_t size) {
-	mpExtMem = new char[size];
+	mpExtMem = GWSys::alloc_rsrc_mem(size);
 }
 void GWMotion::release_binding_memory() {
-	if (mpExtMem != nullptr) { delete[] reinterpret_cast<char*>(mpExtMem); }
+	if (mpExtMem != nullptr) { GWSys::free_rsrc_mem(mpExtMem); }
 }
 
 GWTransformOrder GWMotion::eval_xord(uint32_t nodeId, float frame) const {
@@ -334,7 +334,7 @@ GWVectorF GWMotion::eval(uint32_t nodeId, GWTrackKind trackKind, float frame) co
 	if (nodeId < mNumNodes) {
 		const TrackInfo* pTrack = mpNodeInfo[nodeId].get_track_info(trackKind);
 		if (pTrack != nullptr) {
-			float len = (float)pTrack->numFrames;
+			float len = (float)pTrack->mNumFrames;
 			float maxFrame = len - 1.0f;
 			float f = ::fmodf(frame, len);
 			f = f < 0 ? f + len : f;
@@ -357,7 +357,7 @@ void dump_track_to_clip(std::ostream & os, const GWMotion::Track& track) {
 
 	uint32_t numFrames = track.num_frames();
 	const GWMotion::TrackInfo* pInfo = track.get_track_info();
-	uint32_t srcMask = pInfo->srcMask;
+	uint32_t srcMask = pInfo->mSrcMask;
 	const char* nodeName = track.node_name();
 
 	for (uint32_t i = 0; i < 3; ++i) {
@@ -380,7 +380,7 @@ void dump_rot_track_to_clip(std::ostream & os, const GWMotion::Track& track, GWM
 
 	uint32_t numFrames = track.num_frames();
 	const GWMotion::TrackInfo* pInfo = track.get_track_info();
-	uint32_t mask = pInfo->srcMask;
+	uint32_t mask = pInfo->mSrcMask;
 	const char* nodeName = track.node_name();
 	uint32_t maxComp = (dumpKind == GWMotion::RotDumpKind::QUAT) ? 4 : 3;
 	
@@ -452,7 +452,7 @@ bool GWMotion::dump_clip(std::ostream & os, RotDumpKind rotDumpKind, bool rle) c
 	os << "{" << endl;
 	os << "\trate = 60" << endl;
 	os << "\tstart = -1" << endl;
-	os << "\ttracklength = " << mpTrackInfo[0].numFrames << endl;
+	os << "\ttracklength = " << mpTrackInfo[0].mNumFrames << endl;
 	os << "\ttracks = " << numTracks << endl;
 
 	for (uint32_t id = 0; id < mNumNodes; ++id) {
