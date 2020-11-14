@@ -64,10 +64,10 @@ public:
 	bool is_hdr() const {
 		GWColorF minClr = get_min();
 		GWColorF maxClr = get_max();
-		float maxVal = GWTuple::max_elem(minClr);
-		if (maxVal > 1.0f) { return false; }
+		float maxVal = GWTuple::max_elem(maxClr);
+		if (maxVal > 1.0f) { return true; }
 		float minVal = GWTuple::min_elem(minClr);
-		return (minVal > 0.0f);
+		return (minVal < 0.0f);
 	}
 
 	GWColorF* get_pixels() { return mPixels; }
