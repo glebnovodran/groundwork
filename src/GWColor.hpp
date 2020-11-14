@@ -95,6 +95,10 @@ public:
 		}
 	}
 
+	void lerp(const GWColorF& c0, const GWColorF& c1, float t) {
+		GWTuple::lerp(*this, c0, c1, t);
+	}
+
 	void clip_negative() { GWTuple::clip_low(*this, 0.0f); }
 	void zero() { GWTuple::fill(*this, 0.0f); }
 
