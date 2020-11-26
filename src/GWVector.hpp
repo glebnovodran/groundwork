@@ -73,8 +73,8 @@ namespace GWVector {
 		return res;
 	}
 
-	template<typename T> inline GWVectorBase<T> triple(const GWVectorBase<T>& v0, const GWVectorBase<T>& v1, const GWVectorBase<T>& v2) {
-		return v0.cross(v1).dot(v2);
+	template<typename T> inline T triple(const GWVectorBase<T>& v0, const GWVectorBase<T>& v1, const GWVectorBase<T>& v2) {
+		return GWVector::cross(v0,v1).dot(v2);
 	}
 }
 

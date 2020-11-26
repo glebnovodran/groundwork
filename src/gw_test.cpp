@@ -224,6 +224,11 @@ void test_vec() {
 
 	GWVectorF c;
 	c.cross(a, b);
+	c = a;
+	c.cross(b);
+	float sclTriple = GWVector::triple(a, b, -2.0f*c);
+	sclTriple = GWVector::triple(a, b, b);
+	sclTriple = GWVector::triple(a, b, a);
 	GWVectorF d = 0.5f * (a + b);
 	c.set(b);
 	GWTuple3f tupleA = { 0.0f, 1.0f, 2.0f };
@@ -569,6 +574,16 @@ void test_resource_registry(const std::string& appPath, const std::string& relDa
 
 		GWRsrcRegistry::destroy(pRgy);
 	}
+}
+
+void test_isect() {
+	GWVectorF p(0.0f, 0.5f, 0.0f);
+	GWVectorF q(0.0f, -0.5f, 0.0f);
+	GWVectorF a(1.0f, 0.0f, 0.0f);
+	GWVectorF b(-1.0f, 0.0f, 0.0f);
+	GWVectorF c(0.0f, 0.0f, 1.0f);
+	GWVectorF hitPos, hitNrm;
+	GWIntersect::seg_tri_ccw(p, q, a, b, c, &hitPos, &hitNrm);
 }
 
 int main(int argc, char* argv[]) {
