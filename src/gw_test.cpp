@@ -583,7 +583,12 @@ void test_isect() {
 	GWVectorF b(-1.0f, 0.0f, 0.0f);
 	GWVectorF c(0.0f, 0.0f, 1.0f);
 	GWVectorF hitPos, hitNrm;
-	GWIntersect::seg_tri_ccw(p, q, a, b, c, &hitPos, &hitNrm);
+	bool res = GWIntersect::seg_tri_ccw(p, q, a, b, c, &hitPos, &hitNrm);
+//	res = GWIntersect::seg_tri_ccw(p, q, c, b, a, &hitPos, &hitNrm);
+//	res = GWIntersect::seg_tri_ccw(q, p, a, b, c, &hitPos, &hitNrm);
+	res = GWIntersect::seg_tri_ccw_alt(p, q, a, b, c, &hitPos, &hitNrm);
+	res = GWIntersect::seg_tri_ccw_alt(p, q, c, b, a, &hitPos, &hitNrm);
+	res = GWIntersect::seg_tri_ccw_alt(q, p, a, b, c, &hitPos, &hitNrm);
 }
 
 int main(int argc, char* argv[]) {
@@ -596,6 +601,7 @@ int main(int argc, char* argv[]) {
 	test_ray();
 	test_xform();
 	test_quat();
+	test_isect();
 	test_color();
 	test_motion("./data/walk_rn.txt");
 	test_image("./data/pano_test1_h.dds");

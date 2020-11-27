@@ -6,6 +6,8 @@
 #include "GWBase.hpp"
 #include "GWList.hpp"
 #include "GWVector.hpp"
+#include "GWOverlap.hpp"
+#include "GWIntersect.hpp"
 #include "GWSphere.hpp"
 #include "GWRay.hpp"
 #include "GWMatrix.hpp"
