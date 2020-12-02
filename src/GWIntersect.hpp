@@ -4,7 +4,7 @@
 
 namespace GWIntersect {
 	template<typename T> bool seg_tri_ccw_alt(const GWVectorBase<T>& p, const GWVectorBase<T>& q,
-		const GWVectorBase<T>& a, const GWVectorBase<T>& b, const GWVectorBase<T>& c, GWVectorBase<T>* pHitPos, GWVectorBase<T>* pHitDir, const bool normalizeDir = true) {
+		const GWVectorBase<T>& a, const GWVectorBase<T>& b, const GWVectorBase<T>& c, GWVectorBase<T>* pHitPos, GWVectorBase<T>* pHitNrm) {
 
 		GWVectorBase<T> ab = b - a;
 		GWVectorBase<T> ac = c - a;
@@ -26,9 +26,9 @@ namespace GWIntersect {
 		if (pHitPos) {
 			*pHitPos = p + t * (q - p);
 		}
-		if (pHitDir) {
-			if (normalizeDir) { n.normalize(); }
-			*pHitDir = n;
+		if (pHitNrm) {
+			n.normalize();
+			*pHitNrm = n;
 		}
 		return true;
 	}
