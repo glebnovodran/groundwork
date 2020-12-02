@@ -20,6 +20,7 @@ public:
 
 	void parse(int argc, char* argv[]) {
 		mAppPath = string(argv[0]);
+		mArgs.push_back(mAppPath);
 		for (int i = 1; i < argc; ++i) {
 			string sarg(argv[i]);
 			if (sarg.front() == '-') {
@@ -37,6 +38,10 @@ public:
 		mAppPath = "";
 		mOptMap.clear();
 		mArgs.clear();
+	}
+
+	const char* get_full_app_path() {
+		return mAppPath.c_str();
 	}
 
 	int get_options_num() { return mOptMap.size(); }
@@ -70,6 +75,8 @@ namespace GWApp {
 	void reset() {
 		s_CmdLine.reset();
 	}
+
+	const char* get_full_path() { return s_CmdLine.get_full_app_path(); }
 
 	int get_options_num() { return s_CmdLine.get_options_num(); }
 
