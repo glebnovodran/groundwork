@@ -279,10 +279,10 @@ namespace GWUnitQuaternion {
 		T det = std::fabs(-x*y - z*w);
 		if (det < T(0.5f)) {
 			GWTuple2<T> sc0, sc1;
-			T d = GWBase::tsqrt(std::fabs(T(1.0f) - T(4.0f)*det*det));
+			T d = GWBase::tsqrt(std::fabs(T(1) - T(4)*det*det));
 			T a = x*w - y*z;
 			T b = w*w - x*x + y*y - z*z;
-			if (b >= T(0.0f)) {
+			if (b >= T(0)) {
 				sc0[0] = a;
 				sc0[1] = T(0.5f) * (d + b);
 			} else {
@@ -301,7 +301,7 @@ namespace GWUnitQuaternion {
 			res.set_vs(v, sc0[1]*sc1[1]);
 		} else {
 			s = GWBase::rcp0(GWBase::tsqrt(det));
-			const GWVectorBase<T> v(x*s, T(0.0f), T(0.0f));
+			const GWVectorBase<T> v(x*s, T(0), T(0));
 			res.set_vs(v, w*s);
 		}
 		return res;

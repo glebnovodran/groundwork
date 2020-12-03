@@ -13,17 +13,17 @@ namespace GWIntersect {
 		GWVectorBase<T> n = GWVector::cross(ab, ac);
 		GWVectorBase<T> qp = p - q;
 		T d = qp.dot(n);
-		if (d <= T(0.0f)) { return false; }
+		if (d <= T(0)) { return false; }
 
 		GWVectorBase<T> ap = p - a;
 		T t = ap.dot(n);
-		if ((t < T(0.0f)) || (t > d)) { return false; }
+		if ((t < T(0)) || (t > d)) { return false; }
 		GWVectorBase<T> e = GWVector::cross(qp, ap);
 		T u, v, w;
 		v = ac.dot(e);
-		if ((v < T(0.0f)) || (v > d)) { return false; }
+		if ((v < T(0)) || (v > d)) { return false; }
 		w = -ab.dot(e);
-		if ((w < T(0.0f)) || ((w + v) > d)) { return false; }
+		if ((w < T(0)) || ((w + v) > d)) { return false; }
 		t = t / d;
 		if (pHitPos) {
 			*pHitPos = p + t * (q - p);

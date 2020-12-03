@@ -87,7 +87,7 @@ namespace GWSH {
 			std::fill_n(pWgt, 3, T(0));
 			pWgt[0] = scl;
 			pWgt[1] = scl / T(1.5f);
-			pWgt[2] = scl / T(4.0f);
+			pWgt[2] = scl / T(4);
 		}
 	}
 
