@@ -584,11 +584,8 @@ void test_isect() {
 	GWVectorF c(0.0f, 0.0f, 1.0f);
 	GWVectorF hitPos, hitNrm;
 	bool res = GWIntersect::seg_tri_ccw(p, q, a, b, c, &hitPos, &hitNrm);
-//	res = GWIntersect::seg_tri_ccw(p, q, c, b, a, &hitPos, &hitNrm);
-//	res = GWIntersect::seg_tri_ccw(q, p, a, b, c, &hitPos, &hitNrm);
-	res = GWIntersect::seg_tri_ccw_alt(p, q, a, b, c, &hitPos, &hitNrm);
-	res = GWIntersect::seg_tri_ccw_alt(p, q, c, b, a, &hitPos, &hitNrm);
-	res = GWIntersect::seg_tri_ccw_alt(q, p, a, b, c, &hitPos, &hitNrm);
+	res = GWIntersect::seg_tri_ccw(p, q, c, b, a, &hitPos, &hitNrm);
+	res = GWIntersect::seg_tri_ccw(q, p, a, b, c, &hitPos, &hitNrm);
 }
 
 int main(int argc, char* argv[]) {
@@ -605,7 +602,7 @@ int main(int argc, char* argv[]) {
 	test_color();
 	test_motion("./data/walk_rn.txt");
 	test_image("./data/pano_test1_h.dds");
-	test_model(argv[1]);
+	if (argc > 1) { test_model(argv[1]); }
 	test_gwcat("./data/cook_rb/cook_rb.gwcat");
 	//test_bundle("./data/cook_rb/","cook_rb.gwcat");
 	test_resource_registry(argv[0], "./data", "cook_rb");
