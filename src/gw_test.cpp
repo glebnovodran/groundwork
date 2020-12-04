@@ -28,7 +28,7 @@ void test_basic() {
 	GWBase::vec_to_oct(v.x, v.y, v.z, ox, oy);
 	GWBase::oct_to_vec(ox, oy, decoded.x, decoded.y, decoded.z);
 
-	if (!GWTuple::compare(v, decoded, 0.001f)) {
+	if (!GWTuple::almost_equal(v, decoded, 0.001f)) {
 		cout << "octo encoding diff test failed" << endl;
 	}
 
@@ -206,12 +206,12 @@ void test_color() {
 	GWVectorF xyz = clr.XYZ();
 
 	clr0.from_XYZ(xyz);
-	if (!GWTuple::compare(clr, clr0, 0.001f)) {
+	if (!GWTuple::almost_equal(clr, clr0, 0.001f)) {
 		cout << "XYZ reverse conversion failed" << endl;
 	}
 	GWVectorF xyY = clr0.xyY();
 	clr.from_xyY(xyY);
-	if (!GWTuple::compare(clr, clr0, 0.001f)) {
+	if (!GWTuple::almost_equal(clr, clr0, 0.001f)) {
 		cout << "xyY reverse conversion failed" << endl;
 	}
 	cout << "=====================" << endl;
@@ -303,7 +303,7 @@ void test_xform() {
 	GWVectorF a = xform1.calc_pnt(c);
 	GWTransformF xform2 = xform1.get_inverted();
 	GWVectorF b = xform2.calc_pnt(a);
-	if (!GWTuple::compare(c, b, 0.001f)) {
+	if (!GWTuple::almost_equal(c, b, 0.001f)) {
 		std::cout << "Inversion error\n";
 	}
 	xform2.invert();
@@ -318,7 +318,7 @@ void test_xform() {
 	GWQuaternionF q;
 	q.set_degrees(10.0f, 20.0f, 30.0f);
 	xform2.make_rotation(q);
-	if (!xform1.compare(xform2, 0.0001f)) {
+	if (!xform1.almost_equal(xform2, 0.0001f)) {
 		std::cout << "make_rotation error\n";
 	} else {
 		std::cout << "make_rotation : ok" << endl;
@@ -339,7 +339,7 @@ void test_xform() {
 
 	GWVectorF trn34 = xform34.get_translation();
 	GWVectorF trn = xform.get_translation();
-	cout << GWTuple::compare(trn, trn34, 0.001f) << endl;
+	cout << GWTuple::almost_equal(trn, trn34, 0.001f) << endl;
 	cout << "=====================" << endl;
 }
 

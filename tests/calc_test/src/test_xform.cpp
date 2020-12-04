@@ -34,12 +34,12 @@ static bool test_make_xform() {
 	GWVectorF trn(1.0f, 2.0f, 4.0f);
 	GWVectorF scl(3.0f, 2.0f, 1.0f);
 	xform.make_transform(q, trn, scl, GWTransformOrder::TRS);
-	bool res = xform.compare(testData, 0.001f);
+	bool res = xform.almost_equal(testData, 0.001f);
 
 	GWTransform3x4F xform34;
 	xform34.make_transform(q, trn, scl, GWTransformOrder::TRS);
 	GWTransformF xform1 = GWXformCvt::get_4x4(xform34);
-	res &= xform.compare(xform1, 0.001f);
+	res &= xform.almost_equal(xform1, 0.001f);
 
 	return res;
 }
@@ -55,13 +55,13 @@ static bool test_xform_invert() {
 	GWVectorF a = xform1.calc_pnt(c);
 	GWTransformF invXfrom = xform1.get_inverted_fast();
 	GWVectorF b = invXfrom.calc_pnt(a);
-	if (!GWTuple::compare(c, b, 0.001f)) {
+	if (!GWTuple::almost_equal(c, b, 0.001f)) {
 		return false;
 	}
 
 	invXfrom = xform1.get_inverted();
 	b = invXfrom.calc_pnt(a);
-	if (!GWTuple::compare(c, b, 0.001f)) {
+	if (!GWTuple::almost_equal(c, b, 0.001f)) {
 		return false;
 	}
 
@@ -72,14 +72,14 @@ static bool test_xform_invert() {
 	GWTransformF invSRT = xformSRT.get_inverted();
 	a = xformSRT.calc_pnt(c);
 	b = invSRT.calc_pnt(a);
-	if (!GWTuple::compare(c, b, 0.001f)) {
+	if (!GWTuple::almost_equal(c, b, 0.001f)) {
 		return false;
 	}
 
 	GWTransformF invSRT1 = xformSRT.get_inverted_fast();
 	a = xformSRT.calc_pnt(c);
 	GWVectorF b0 = invSRT1.calc_pnt(a);
-	if (!GWTuple::compare(c, b0, 0.001f)) {
+	if (!GWTuple::almost_equal(c, b0, 0.001f)) {
 		return false;
 	}
 	return true;
@@ -94,7 +94,7 @@ static bool test_make_view() {
 		-0, 0, -1.73205, 1
 	};
 	xform.make_view(GWVectorF(1, 1, 1), GWVectorF(0, 0, 0));
-	bool res = xform.compare(testData, 0.001f);
+	bool res = xform.almost_equal(testData, 0.001f);
 	return res;
 }
 
@@ -108,7 +108,7 @@ static bool test_3x4_apply() {
 
 	xform34 = GWXformCvt::get_3x4(xform);
 	GWVectorF px34 = xform34.calc_pnt(pnt);
-	if (!GWTuple::compare(px, px34, 0.001f)) {
+	if (!GWTuple::almost_equal(px, px34, 0.001f)) {
 		GWSys::dbg_msg("test_3x4: vector transform test failed");
 		return false;
 	}
@@ -130,7 +130,7 @@ static bool test_3x4_rotation() {
 	xform34 = GWXformCvt::get_3x4(xform);
 	GWVectorF v = xform.calc_vec(axisX);
 	GWVectorF v34 = xform34.calc_vec(axisX);
-	if (!GWTuple::compare(v, v34, 0.001f)) {
+	if (!GWTuple::almost_equal(v, v34, 0.001f)) {
 		GWSys::dbg_msg("test_3x4: vector rotation test failed");
 		return false;
 	}
@@ -138,20 +138,20 @@ static bool test_3x4_rotation() {
 	v0.normalize();
 	v = xform.calc_vec(v0);
 	v34 = xform34.calc_vec(v0);
-	if (!GWTuple::compare(v, v34, 0.001f)) {
+	if (!GWTuple::almost_equal(v, v34, 0.001f)) {
 		GWSys::dbg_msg("test_3x4: vector rotation test 1 failed");
 		return false;
 	}
 
 	xform.set_translation(1.0f, 2.0f, 3.0f);
 	GWVectorF vv = xform.calc_vec(v0);
-	if (!GWTuple::compare(v, vv, 0.001f)) {
+	if (!GWTuple::almost_equal(v, vv, 0.001f)) {
 		GWSys::dbg_msg("test_3x4: vector rotation test 1.1 failed");
 		return false;
 	}
 	xform34.set_translation(1.0f, 2.0f, 3.0f);
 	GWVectorF vv34 = xform.calc_vec(v0);
-	if (!GWTuple::compare(v34, vv34, 0.001f)) {
+	if (!GWTuple::almost_equal(v34, vv34, 0.001f)) {
 		GWSys::dbg_msg("test_3x4: vector rotation test 1.2 failed");
 		return false;
 	}

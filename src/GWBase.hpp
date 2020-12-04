@@ -612,7 +612,7 @@ namespace GWTuple {
 		}
 	}
 	template<typename TUPLE_SRC_T, typename SCALAR_T>
-	inline bool compare(const TUPLE_SRC_T& a, const TUPLE_SRC_T& b, SCALAR_T eps) {
+	inline bool almost_equal(const TUPLE_SRC_T& a, const TUPLE_SRC_T& b, SCALAR_T eps) {
 		const int n = (int)TUPLE_SRC_T::ELEMS_NUM;
 		bool res = true;
 		for (int i = 0; i < n; ++i) {

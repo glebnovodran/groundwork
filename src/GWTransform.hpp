@@ -245,10 +245,10 @@ public:
 		return pTuple;
 	}
 
-	bool compare(const GWTransform& xform, T eps) const {
+	bool almost_equal(const GWTransform& xform, T eps) const {
 		for (uint32_t i = 0; i < 4; ++i) {
 			GWTuple4<T>* pTuple = as_tuple(i);
-			if (!GWTuple::compare(*as_tuple(i),
+			if (!GWTuple::almost_equal(*as_tuple(i),
 				*xform.as_tuple(i),
 				eps)) {
 				return false;
