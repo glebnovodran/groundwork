@@ -7,7 +7,7 @@
 #include <iomanip>
 
 #define COMPARE_QUAT(q, p) GWBase::almost_equal(q.arc_distance(p), 0.0f)
-#define COMPARE_VEC(v0, v1, eps) GWTuple::compare(v0, v1, eps)
+#define COMPARE_VEC(v0, v1, eps) GWTuple::almost_equal(v0, v1, eps)
 
 template<typename T>
 bool compare_mtx(const T* mtx0, const T* mtx1, int m, int n) {
@@ -42,5 +42,6 @@ bool test_quat();
 bool test_mtx();
 bool test_xform();
 bool test_inner();
+bool test_isect();
 
 int run_all_tests();

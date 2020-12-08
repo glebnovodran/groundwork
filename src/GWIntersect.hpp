@@ -23,7 +23,7 @@ namespace GWIntersect {
 		v = ac.dot(e);
 		if ((v < T(0)) || (v > d)) { return false; }
 		w = -ab.dot(e);
-		if ((w < T(0)) || ((w + v) > d)) { return false; }
+		if ((w < T(0)) || ((v + w) > d)) { return false; }
 		t = t / d;
 		if (pHitPos) {
 			*pHitPos = p + t * (q - p);
@@ -34,4 +34,5 @@ namespace GWIntersect {
 		}
 		return true;
 	}
+
 }

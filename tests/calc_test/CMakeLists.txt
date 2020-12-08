@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
 	src/test_quat.cpp
 	src/test_mtx.cpp
 	src/test_xform.cpp
+	src/test_isect.cpp
 	src/test.cpp
 	src/main.cpp
 )
