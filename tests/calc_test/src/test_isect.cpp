@@ -61,8 +61,8 @@ struct SegTriTest {
 		for(int i = 0; i < mNseg; i++) {
 			int isectTriId = mpRes[i].triId;
 			for(int j = 0; j < mNtri; j++) {
-				hitRes = GWIntersect::seg_tri_ccw(mpSegPts[2*i], mpSegPts[2*i+1],
-					mpTriPts[3*j], mpTriPts[3*j+2], mpTriPts[3*j+1], &hitPos, &hitNrm);
+				hitRes = GWIntersect::seg_tri_cw(mpSegPts[2*i], mpSegPts[2*i+1],
+					mpTriPts[3*j], mpTriPts[3*j+1], mpTriPts[3*j+2], &hitPos, &hitNrm);
 				if (hitRes) {
 					if (isectTriId != j) {
 						GWSys::dbg_msg("An unexpected intersection result for segment %d, triangle %d", i, j);

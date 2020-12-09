@@ -6,7 +6,7 @@ namespace GWIntersect {
 
 	// Ericson, Real-Time Collision Detection 2nd ed., p. 191
 	template<typename T> bool seg_tri_ccw(const GWVectorBase<T>& p, const GWVectorBase<T>& q,
-		const GWVectorBase<T>& a, const GWVectorBase<T>& b, const GWVectorBase<T>& c, GWVectorBase<T>* pHitPos, GWVectorBase<T>* pHitNrm) {
+		const GWVectorBase<T>& a, const GWVectorBase<T>& b, const GWVectorBase<T>& c, GWVectorBase<T>* pHitPos = nullptr, GWVectorBase<T>* pHitNrm = nullptr) {
 
 		GWVectorBase<T> ab = b - a;
 		GWVectorBase<T> ac = c - a;
@@ -34,5 +34,10 @@ namespace GWIntersect {
 		}
 		return true;
 	}
+
+	template<typename T> bool seg_tri_cw(const GWVectorBase<T>& p, const GWVectorBase<T>& q,
+		const GWVectorBase<T>& a, const GWVectorBase<T>& b, const GWVectorBase<T>& c, GWVectorBase<T>* pHitPos = nullptr, GWVectorBase<T>* pHitNrm = nullptr) {
+			return seg_tri_ccw(p, q, a, c, b, pHitPos, pHitNrm);
+		}
 
 }
