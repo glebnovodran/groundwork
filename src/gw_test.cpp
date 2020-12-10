@@ -588,6 +588,22 @@ void test_isect() {
 	res = GWIntersect::seg_tri_ccw(q, p, a, b, c, &hitPos, &hitNrm);
 }
 
+void test_overlap() {
+	GWVectorF minA(0.0f, 0.0f, 0.0f);
+	GWVectorF maxA(1.0f, 1.0f, 1.0f);
+	GWVectorF minB(0.5f, 0.5f, 0.0f);
+	GWVectorF maxB(1.0f, 1.0f, 1.0f);
+	GWVectorF segAp(-0.25f, -0.25f, -0.25);
+	GWVectorF segAq(0.25f, 0.25f, 0.25);
+	GWVectorF segBp(-0.25f, -0.275f, 0.25);
+	GWVectorF segBq(0.25f, 0.225f, -0.25);
+
+	bool res = GWOverlap::aabb_aabb(minA, maxA, minB, maxB);
+	res = GWOverlap::seg_aabb(segAp, segAq, minA, maxA);
+	res = GWOverlap::seg_aabb(segAq, segAp, minA, maxA);
+	res = GWOverlap::seg_aabb(segBp, segBq, minA, maxA);
+}
+
 int main(int argc, char* argv[]) {
 
 	test_basic();
@@ -599,6 +615,7 @@ int main(int argc, char* argv[]) {
 	test_xform();
 	test_quat();
 	test_isect();
+	test_overlap();
 	test_color();
 	test_motion("./data/walk_rn.txt");
 	test_image("./data/pano_test1_h.dds");
