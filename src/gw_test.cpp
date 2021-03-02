@@ -340,6 +340,16 @@ void test_xform() {
 	GWVectorF trn34 = xform34.get_translation();
 	GWVectorF trn = xform.get_translation();
 	cout << GWTuple::almost_equal(trn, trn34, 0.001f) << endl;
+
+	GWVectorF y(0.0f, 1.0f, 0.0f);
+	GWVectorF ox, oz;
+	GWXform::ortho_from_Y_axis(y, ox, oz);
+	GWTuple::set(y, 0.0f, -1.0f, 0.0f);
+	GWXform::ortho_from_Y_axis(y, ox, oz);
+	GWTransformF xformY;
+	xformY.from_Y_axis(y);
+	GWTransform3x4F y3x4;
+	y3x4.from_Y_axis(-y);
 	cout << "=====================" << endl;
 }
 

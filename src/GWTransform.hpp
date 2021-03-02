@@ -1,15 +1,21 @@
 /*
  * Author: Gleb Novodran <novodran@gmail.com>
  */
-/*
-template<typename T> class GWTransform3x4;
-template<typename T> class GWTransform;
 
-namespace GWXformCvt {
-template <typename T> inline GWTransform3x4<T> get_3x4(const GWTransform<T>& xform);
-template <typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34);
+namespace GWXform {
+
+// http://graphics.pixar.com/library/OrthonormalB/paper.pdf
+template <typename T>
+inline void ortho_from_Y_axis(const GWVectorBase<T>& ny, GWVectorBase<T>& x, GWVectorBase<T>& z) {
+	T sign = ny.z < T(0) ? T(-1) :  T(1);
+	const T a = -GWBase::rcp0(sign - ny.z);
+	const T b = ny.x * ny.y * a;
+	GWTuple::set(x, T(1) + sign * ny.x*ny.x * a, sign * b, sign * ny.x);
+	GWTuple::set(z, b, sign + ny.y*ny.y * a, ny.y);
 }
-*/
+
+} // namespace GWXform
+
 template<typename T> class GWTransform {
 public:
 	T m[4][4];
@@ -162,6 +168,15 @@ public:
 		set_row(2, -dir, 0.0f);
 		transpose_sr();
 		set_translation(calc_vec(-pos));
+	}
+
+	void from_Y_axis(const GWVectorBase<T>& y) {
+		GWVectorBase<T> x,z;
+		GWXform::ortho_from_Y_axis(y, x, z);
+		set_row(0, x, T(0));
+		set_row(1, y, T(0));
+		set_row(2, z, T(0));
+		set_translation(T(0), T(0), T(0));
 	}
 
 	void apply(const GWTransform& parent) {
@@ -403,6 +418,16 @@ public:
 		xform.transpose();
 		GWMatrix::copy(as_tptr(), xform.as_tptr(), 3, 4);
 	}
+
+	void from_Y_axis(const GWVectorBase<T>& y) {
+		GWVectorBase<T> x,z;
+		GWXform::ortho_from_Y_axis(y, x, z);
+		set_column(0, x);
+		set_column(1, y);
+		set_column(2, z);
+		set_translation(T(0), T(0), T(0));
+	}
+
 
 	GWVectorBase<T> calc_vec(const GWVectorBase<T>&v) const {
 		GWTuple4<T> res;
