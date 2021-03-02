@@ -331,12 +331,12 @@ namespace GWTuple {
 
 	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
 	inline void saturate(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
-		clamp(dst, src, 0.0f, 1.0f);
+		clamp(dst, src, T(0), T(1));
 	}
 
 	template<typename TUPLE_DST_T>
 	inline void saturate(TUPLE_DST_T& dst) {
-		clamp(dst, dst, 0.0f, 1.0f);
+		clamp(dst, dst,  T(0), T(1));
 	}
 
 	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>

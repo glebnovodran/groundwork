@@ -163,9 +163,9 @@ public:
 		side.normalize();
 		GWVectorBase<T> up = GWVector::cross(side, dir);
 
-		set_row(0, -side, 0.0f);
-		set_row(1, -up, 0.0f);
-		set_row(2, -dir, 0.0f);
+		set_row(0, -side, T(0));
+		set_row(1, -up, T(0));
+		set_row(2, -dir, T(0));
 		transpose_sr();
 		set_translation(calc_vec(-pos));
 	}
@@ -465,7 +465,7 @@ template <typename T> inline GWTransform<T> get_4x4(const GWTransform3x4<T>& x34
 	T* pDst = res.as_tptr();
 	const T* pSrc = x34.as_tptr();
 	GWMatrix::copy(pDst, pSrc, 3, 4);
-	res.set_row(3, GWVectorBase<T>(0.0f), 1.0f);
+	res.set_row(3, GWVectorBase<T>(T(0)), T(1));
 	res.transpose();
 	return res;
 }

@@ -536,7 +536,7 @@ namespace GWMatrix {
 					pLU[j*n + i] -= inner_row_col(pLU, n, j, pLU, n, i, 0, j - 1);
 				}
 			}
-			s = 1.0f / s;
+			s = T(1) / s;
 			for (int i = j + 1; i < n; ++i) {
 				pLU[j*n + i] *= s;
 			}
@@ -728,7 +728,7 @@ namespace GWMatrix {
 			int rc = icol * n;
 			int pivOffs = rc + icol;
 			T pivVal = pGJ[pivOffs];
-			if (pivVal == 0.0f) { return false; } // singular matrix
+			if (pivVal == T(0)) { return false; } // singular matrix
 			T invPiv = T(1) / pivVal;
 			pGJ[pivOffs] = T(1);
 			tup_scl(&pGJ[rc], n, invPiv);

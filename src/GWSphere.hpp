@@ -28,8 +28,8 @@ template<typename T> struct GWSphereBase {
 	}
 
 	void set_zero() {
-		c.fill(0.0f);
-		r = 0.0f;
+		c.fill(T(0));
+		r = T(0);
 	}
 
 	void ritter(const GWVectorBase<T>* pPts, int numPts);
