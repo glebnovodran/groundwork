@@ -59,7 +59,7 @@ public:
 	GWVectorBase& operator *= (const GWVectorBase& v) { mul(v); return *this; }
 	GWVectorBase& operator /= (const GWVectorBase& v) { div(v); return *this; }
 	GWVectorBase& operator *= (T s) { scl(s); return *this; }
-	GWVectorBase& operator /= (T s) { scl(1.0f / s); return *this; }
+	GWVectorBase& operator /= (T s) { scl(T(1) / s); return *this; }
 };
 
 namespace GWVector {
