@@ -183,26 +183,36 @@ namespace GWBase {
 	template<typename T> inline T div0(T x, T y) { return y != T(0) ? x / y : T(0); }
 	template<typename T> inline T rcp0(T x) { return div0(T(1), x); }
 
-	// Ranq1, Numerical Recipes 3d ed., chapter 3.7.1
+	// Ranq1, Numerical Recipes 3d ed., chapter 7.1.3
 	class Random {
 	private:
 		uint64_t mVal;
 	public:
 		Random(uint64_t seed = 0ULL) { set_seed(seed); }
+
 		void set_seed(uint64_t seed) {
 			mVal = seed ^ 4101842887655102017ULL;
 			mVal = u64();
 		}
+
 		uint64_t u64() {
 			mVal ^= mVal >> 21;
 			mVal ^= mVal << 35;
 			mVal ^= mVal >> 4;
 			return mVal * 2685821657736338717ULL;
 		}
+
+		double d01() {
+			return 5.42101086242752217E-20 * u64();
+		}
+
+		float f01() { return float(d01()); }
 	};
 
 	void set_random_seed(uint64_t seed);
 	uint64_t random_u64();
+	double random_d01();
+	float random_f01();
 
 	struct StrHash {
 		union {

@@ -41,6 +41,12 @@ void test_basic() {
 	cout << hashB.len << ":" << hashB.hash << endl;
 	cout << "=====================" << endl;
 
+	GWBase::set_random_seed(0);
+	for (int i = 0; i < 16; ++i) {
+		float val = GWBase::random_f01();
+		cout << val << endl;
+	}
+
 	float orig = -12.1f;
 	float dec = 0.0f;
 	uint16_t half;
