@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClInclude Include="..\..\ext\oglsys\oglsys.hpp" />
     <ClInclude Include="src\demo.hpp" />
+    <ClInclude Include="src\draw.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\ext\oglsys\oglsys.cpp" />
+    <ClCompile Include="src\draw_ogl.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\skinanim.cpp" />
   </ItemGroup>
