@@ -161,9 +161,22 @@ namespace GWBase {
 		return kind < GWTrackKind::MAX ? kind : GWTrackKind::ROT;
 	}
 
+	template<typename T> inline T tsqrt(T x) { return std::sqrt(x); }
+	inline float tsqrt(float x) { return ::sqrtf(x); } // GCC: force single-precision
+	template<typename T> inline T texp(T x) { return std::exp(x); }
+	inline float texp(float x) { return ::exp(x); }
+	template<typename T> inline T tpow(T x, T y) { return std::pow(x, y); }
+	inline float tpow(float x, float y) { return ::powf(x, y); }
+	template<typename T> inline T div0(T x, T y) { return y != T(0) ? x / y : T(0); }
+	template<typename T> inline T rcp0(T x) { return div0(T(1), x); }
+
 	template<typename T> inline T clamp(T x, T lo, T hi) { return std::max(std::min(x, hi), lo); }
 	template<typename T> inline T saturate(T x) { return clamp<T>(x, T(0), T(1)); }
 	template<typename T> inline T lerp(T a, T b, T t) { return a + (b - a)*t; }
+	template<typename T> inline T fit(T val, T oldA, T oldB, T newA, T newB) {
+		T t = div0(val - oldA, oldB - oldA);
+		return lerp(newA, newB, saturate(t));
+	}
 
 	template<typename T> inline T mod_pi(T rad) {
 		T twoPi = T(2 * pi);
@@ -173,15 +186,6 @@ namespace GWBase {
 		}
 		return rad;
 	}
-
-	template<typename T> inline T tsqrt(T x) { return std::sqrt(x); }
-	inline float tsqrt(float x) { return ::sqrtf(x); } // GCC: force single-precision
-	template<typename T> inline T texp(T x) { return std::exp(x); }
-	inline float texp(float x) { return ::exp(x); }
-	template<typename T> inline T tpow(T x, T y) { return std::pow(x, y); }
-	inline float tpow(float x, float y) { return ::powf(x, y); }
-	template<typename T> inline T div0(T x, T y) { return y != T(0) ? x / y : T(0); }
-	template<typename T> inline T rcp0(T x) { return div0(T(1), x); }
 
 	// Ranq1, Numerical Recipes 3d ed., chapter 3.7.1
 	class Random {
@@ -331,12 +335,12 @@ namespace GWTuple {
 
 	template<typename TUPLE_DST_T, typename TUPLE_SRC_T>
 	inline void saturate(TUPLE_DST_T& dst, const TUPLE_SRC_T& src) {
-		clamp(dst, src, T(0), T(1));
+		clamp(dst, src, 0.0f, 1.0f);
 	}
 
 	template<typename TUPLE_DST_T>
 	inline void saturate(TUPLE_DST_T& dst) {
-		clamp(dst, dst,  T(0), T(1));
+		clamp(dst, dst,  0.0f, 1.0f);
 	}
 
 	template<typename TUPLE_DST_T, typename TUPLE_SRC0_T, typename TUPLE_SRC1_T>

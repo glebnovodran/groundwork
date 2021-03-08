@@ -54,9 +54,12 @@ void test_basic() {
 	cout << v.x << v.y << v.z << endl;
 	cout << v1.x << v1.y << v1.z << endl;
 	GWHalf4 h4;
-
 	cout << "=====================" << endl;
 
+	float val = 0.33f;
+	float f = GWBase::fit(val, 0.0f, 1.0f, 0.0f, 5.0f);
+	cout << "original " << val << " fit to " << f << endl;
+	cout << "=====================" << endl;
 }
 
 void test_list() {
