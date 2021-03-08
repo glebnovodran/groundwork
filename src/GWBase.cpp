@@ -15,6 +15,8 @@ namespace GWBase {
 	}
 
 	uint64_t random_u64() { return s_rnd.u64(); }
+	double random_d01() { return s_rnd.d01(); }
+	float random_f01() { return s_rnd.f01(); }
 
 	void half_to_float(float* pDst, const uint16_t* pSrc, int n) {
 		uint32_t* p = reinterpret_cast<uint32_t*>(pDst);

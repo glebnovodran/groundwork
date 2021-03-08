@@ -20,13 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\TDMotion\src\TDMotion.cpp" />
+    <ClCompile Include="src\GWApp.cpp" />
     <ClCompile Include="src\GWBase.cpp" />
     <ClCompile Include="src\GWColor.cpp" />
     <ClCompile Include="src\GWImage.cpp" />
+    <ClCompile Include="src\GWIntersect.cpp" />
     <ClCompile Include="src\GWList.cpp" />
     <ClCompile Include="src\GWMatrix.cpp" />
     <ClCompile Include="src\GWModel.cpp" />
     <ClCompile Include="src\GWMotion.cpp" />
+    <ClCompile Include="src\GWOverlap.cpp" />
     <ClCompile Include="src\GWQuaternion.cpp" />
     <ClCompile Include="src\GWRay.cpp" />
     <ClCompile Include="src\GWResource.cpp" />
@@ -40,14 +43,18 @@
   <ItemGroup>
     <ClInclude Include="..\TDMotion\src\TDMotion.hpp" />
     <ClInclude Include="src\groundwork.hpp" />
+    <ClInclude Include="src\GWApp.hpp" />
     <ClInclude Include="src\GWBase.hpp" />
     <ClInclude Include="src\GWCamera.hpp" />
     <ClInclude Include="src\GWColor.hpp" />
+    <ClInclude Include="src\GWDraw.hpp" />
     <ClInclude Include="src\GWImage.hpp" />
+    <ClInclude Include="src\GWIntersect.hpp" />
     <ClInclude Include="src\GWList.hpp" />
     <ClInclude Include="src\GWMatrix.hpp" />
     <ClInclude Include="src\GWModel.hpp" />
     <ClInclude Include="src\GWMotion.hpp" />
+    <ClInclude Include="src\GWOverlap.hpp" />
     <ClInclude Include="src\GWQuaternion.hpp" />
     <ClInclude Include="src\GWRay.hpp" />
     <ClInclude Include="src\GWResource.hpp" />
