@@ -14,7 +14,7 @@
 #include "GWQuaternion.hpp"
 #include "GWTransform.hpp"
 #include "GWColor.hpp"
-#include "GWCamera.hpp"
+#include "GWView.hpp"
 #include "GWMotion.hpp"
 #include "GWImage.hpp"
 #include "GWSphericalHarmonics.hpp"

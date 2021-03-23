@@ -643,6 +643,11 @@ int main(int argc, char* argv[]) {
 	//test_bundle("./data/cook_rb/","cook_rb.gwcat");
 	test_resource_registry(argv[0], "./data", "cook_rb");
 	GWCamera cam;
-	cam.update(GWVectorF(10, 0, 0), GWVectorF(0, 0, 0), GWVectorF(0,1,0), GWBase::radians(60), 0.0001f, 10.0f);
+	GWScreenIfc ifc;
+	cam.init(&ifc);
+	cam.set_view(GWVectorF(10, 0, 0), GWVectorF(0, 0, 0));
+	cam.set_FOVY(GWBase::radians(60));
+	cam.set_view_range(0.0001f, 10.0f);
+	cam.update();
 	return 0;
 }
