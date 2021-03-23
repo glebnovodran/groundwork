@@ -47,9 +47,9 @@ struct GWCamera {
 		mViewMtx.make_view(mPos, mTgt, mUp);
 		mProjMtx.make_projection(mFOVY, get_aspect(), mNear, mFar);
 		mViewProjMtx = GWXform::concatenate(mViewMtx, mProjMtx);
-
+		mInvViewMtx = mViewMtx.get_inverted();
 		mInvProjMtx = mProjMtx.get_inverted();
-		mInvViewProj = mViewProjMtx.get_inverted();
+		mInvViewProj = GWXform::concatenate(mProjMtx, mViewMtx);
 	}
 
 	GWVectorF get_dir() const {
